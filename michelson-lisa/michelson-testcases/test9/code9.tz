@@ -1,0 +1,23 @@
+{ storage (map int (pair (int %horseId) (string %horseName))) ;
+  parameter (pair (int %horseId) (string %horseName)) ;
+  code { DUP ;
+         CDR ;
+         SWAP ;
+         CAR ;
+         SWAP ;
+         DUP ;
+         DUG 2 ;
+         SWAP ;
+         DUP ;
+         DUG 2 ;
+         SOME ;
+         DIG 2 ;
+         DUP ;
+         DUG 3 ;
+         CAR ;
+         UPDATE ;
+         DUG 2 ;
+         DROP ;
+         DROP ;
+         NIL operation ;
+         PAIR } }

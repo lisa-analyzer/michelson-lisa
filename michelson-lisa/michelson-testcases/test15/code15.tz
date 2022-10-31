@@ -1,0 +1,20 @@
+{ parameter
+    (or (or (address %expectAddress) (unit %triggerFailWith))
+        (or (unit %triggerShiftOverflow) (unit %voidEP))) ;
+  storage unit ;
+  code { CAST (pair (or (or address unit) (or unit unit)) unit) ;
+         CAR ;
+         IF_LEFT
+           { IF_LEFT
+               { DROP ; UNIT ; NIL operation ; PAIR }
+               { DROP ; PUSH string "oops" ; FAILWITH } }
+           { IF_LEFT
+               { DROP ;
+                 PUSH nat 257 ;
+                 PUSH nat 1 ;
+                 LSL ;
+                 DROP ;
+                 UNIT ;
+                 NIL operation ;
+                 PAIR }
+               { DROP ; PUSH nat 123 ; PUSH string "VoidResult" ; PAIR ; FAILWITH } } } }

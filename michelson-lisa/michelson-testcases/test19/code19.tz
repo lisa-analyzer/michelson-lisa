@@ -1,0 +1,37 @@
+{ storage (map address (pair (int %count) (string %qid))) ;
+  parameter (or (unit %addParameters) (string %addQid)) ;
+  code { DUP ;
+         CDR ;
+         SWAP ;
+         CAR ;
+         IF_LEFT
+           { { SWAP ;
+               DUP ;
+               DUG 2 ;
+               PUSH (option (pair (int %count) (string %qid))) (Some (Pair 0 "")) ;
+               SENDER ;
+               UPDATE ;
+               DUG 2 ;
+               DROP 2 } }
+           { { SWAP ;
+               DUP ;
+               DUG 2 ;
+               DUP ;
+               SENDER ;
+               DUP ;
+               DUG 2 ;
+               GET ;
+               IF_NONE { { PUSH string "set_in_top-any" ; FAILWITH } } {} ;
+               CAR ;
+               DIG 3 ;
+               DUP ;
+               DUG 4 ;
+               SWAP ;
+               PAIR ;
+               SOME ;
+               SWAP ;
+               UPDATE ;
+               DUG 2 ;
+               DROP 2 } } ;
+         NIL operation ;
+         PAIR } }

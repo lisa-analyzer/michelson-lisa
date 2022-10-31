@@ -1,0 +1,17 @@
+{ parameter nat ;
+  storage nat ;
+  code { { { DUP ; CAR ; DIP { CDR } } } ;
+         SWAP ;
+         DROP ;
+         PUSH nat 0 ;
+         SWAP ;
+         PUSH bool True ;
+         LOOP { DUP ;
+                PUSH nat 1 ;
+                { COMPARE ;
+                  EQ ;
+                  IF { PUSH bool False }
+                     { PUSH nat 1 ; SWAP ; LSR ; DIP { PUSH nat 1 ; ADD } ; PUSH bool True } } } ;
+         DROP ;
+         NIL operation ;
+         PAIR } }

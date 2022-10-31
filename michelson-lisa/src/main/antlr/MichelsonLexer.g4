@@ -1,0 +1,235 @@
+//luca.olivieri@univr.it
+//https://tezos.gitlab.io/active/michelson.html#full-grammar
+
+lexer grammar MichelsonLexer;
+
+@ lexer :: header
+{package it.unive.michelsonlisa.antlr;}
+
+// Keywords
+
+UNIT_DATA : 'Unit';
+TRUE_DATA : 'True';
+FALSE_DATA : 'False';
+LEFT_DATA : 'Left';
+RIGHT_DATA : 'Right';
+SOME_DATA : 'Some';
+NONE_DATA : 'None';
+PAIR_DATA : 'Pair';
+ELT_DATA : 'Elt';
+
+NAL_CONST : [0-9]+;
+
+STRING_DATA : '"' (~["\\\r\n] | EscapeSequence)* '"';
+
+fragment EscapeSequence
+    : '\\' [btnfr"'\\]
+    | '\\' ([0-3]? [0-7])? [0-7]
+    | '\\' 'u'+ HexDigit HexDigit HexDigit HexDigit
+    ;
+
+fragment HexDigits
+    : HexDigit ((HexDigit | '_')* HexDigit)?
+    ;
+fragment HexDigit
+    : [0-9a-fA-F]
+    ;
+    
+BYTE_SEQUENCE_CONST : '0x'[0-9a-fA-F]*;
+
+DROP : 'DROP';
+DUP : 'DUP';
+SWAP : 'SWAP';
+DIG : 'DIG';
+DUG : 'DUG';
+PUSH : 'PUSH';
+SOME : 'SOME';
+NONE : 'NONE';
+UNIT : 'UNIT';
+NEVER : 'NEVER';
+PAIR : 'PAIR';
+CAR : 'CAR';
+CDR : 'CDR';
+UNPAIR : 'UNPAIR';
+LEFT : 'LEFT';
+RIGHT : 'RIGHT';
+NIL : 'NIL';
+CONS : 'CONS';
+SIZE : 'SIZE';
+EMPTY_SET : 'EMPTY_SET';
+EMPTY_MAP : 'EMPTY_MAP';
+EMPTY_BIG_MAP : 'EMPTY_BIG_MAP';
+MEM : 'MEM';
+GET : 'GET';
+UPDATE : 'UPDATE';
+EXEC : 'EXEC';
+APPLY : 'APPLY';
+DIP : 'DIP';
+FAILWITH : 'FAILWITH';
+CAST : 'CAST';
+RENAME : 'RENAME';
+CONCAT : 'CONCAT';
+SLICE : 'SLICE';
+PACK : 'PACK';
+UNPACK : 'UNPACK';
+ADD : 'ADD';
+SUB : 'SUB';
+MUL : 'MUL';
+EDIV : 'EDIV';
+ABS : 'ABS';
+ISNAT : 'ISNAT';
+INT : 'INT';
+NEG : 'NEG';
+LSL : 'LSL';
+LSR : 'LSR';
+OR : 'OR';
+AND : 'AND';
+XOR : 'XOR';
+NOT : 'NOT';
+COMPARE : 'COMPARE';
+EQ : 'EQ';
+NEQ : 'NEQ';
+LT : 'LT';
+GT : 'GT';
+LE : 'LE';
+GE : 'GE';
+SELF : 'SELF';
+SELF_ADDRESS : 'SELF_ADDRESS';
+CONTRACT : 'CONTRACT';
+TRANSFER_TOKENS : 'TRANSFER_TOKENS';
+SET_DELEGATE : 'SET_DELEGATE';
+IMPLICIT_ACCOUNT : 'IMPLICIT_ACCOUNT';
+VOTING_POWER : 'VOTING_POWER';
+NOW : 'NOW';
+LEVEL : 'LEVEL';
+AMOUNT : 'AMOUNT';
+BALANCE : 'BALANCE';
+CHECK_SIGNATURE : 'CHECK_SIGNATURE';
+BLAKE2B : 'BLAKE2B';
+KECCAK : 'KECCAK';
+SHA3 : 'SHA3';
+SHA256 : 'SHA256';
+SHA512 : 'SHA512';
+HASH_KEY : 'HASH_KEY';
+SOURCE : 'SOURCE';
+SENDER : 'SENDER';
+ADDRESS : 'ADDRESS';
+CHAIN_ID : 'CHAIN_ID';
+TOTAL_VOTING_POWER : 'TOTAL_VOTING_POWER';
+PAIRING_CHECK : 'PAIRING_CHECK';
+SAPLING_EMPTY_STATE : 'SAPLING_EMPTY_STATE ';
+SAPLING_VERIFY_UPDATE : 'SAPLING_VERIFY_UPDATE';
+TICKET : 'TICKET';
+READ_TICKET : 'READ_TICKET';
+SPLIT_TICKET : 'SPLIT_TICKET';
+JOIN_TICKETS : 'JOIN_TICKETS';
+OPEN_CHEST : 'OPEN_CHEST';
+
+OPTION_TYPE : 'option';
+OPERATION_TYPE : 'operation';
+LIST_TYPE : 'list';
+SET_TYPE : 'set';
+CONTRACT_TYPE : 'contract';
+TICKET_TYPE : 'ticket';
+PAIR_TYPE : 'pair';
+OR_TYPE : 'or';
+LAMBDA_TYPE : 'lambda';
+MAP_TYPE : 'map';
+BIG_MAP_TYPE : 'big_map';
+BLS12_381_G1_TYPE : 'bls12_381_g1';
+BLS12_381_G2_TYPE : 'bls12_381_g2';
+BLS12_381_FR_TYPE : 'bls12_381_fr';
+SAPLING_TRANSACTION_TYPE : 'sapling_transaction';
+SAPLING_STATE_TYPE : 'sapling_state';
+CHEST_TYPE : 'chest';
+CHEST_KEY_TYPE : 'chest_key';
+  
+UNIT_TYPE : 'unit';
+NEVER_TYPE : 'never';
+BOOL_TYPE : 'bool';
+INT_TYPE : 'int';
+NAT_TYPE : 'nat';
+STRING_TYPE : 'string';
+CHAIN_ID_TYPE : 'chain_id';
+BYTES_TYPE : 'bytes';
+MUTEZ_TYPE : 'mutez';
+KEY_HASH_TYPE : 'key_hash';
+KEY_TYPE  : 'key';
+SIGNATURE_TYPE : 'signature';
+TIMESTAMP_TYPE : 'timestamp';
+ADDRESS_TYPE : 'address';
+
+LBRACE : '{' ;
+RBRACE : '}' ;
+
+LROUNDBRACE : '(' ;
+RROUNDBRACE : ')' ;
+
+SEMICOL : ';' ;
+
+MINUS : '-';
+
+QUOTE : '"';
+
+IF : 'IF';
+IF_SOME : 'IF_SOME';
+IF_NONE : 'IF_NONE';
+IF_LEFT : 'IF_LEFT';
+IF_CONS : 'IF_CONS';
+MAP : 'MAP';
+ITER : 'ITER';
+LOOP : 'LOOP';
+LOOP_LEFT : 'LOOP_LEFT';
+LAMBDA : 'LAMBDA';
+CREATE_CONTRACT : 'CREATE_CONTRACT';
+
+CMPEQ : 'CMPEQ';
+CMPNEQ : 'CMPNEQ';
+CMPLT : 'CMPLT';
+CMPGT : 'CMPGT';
+CMPLE : 'CMPLE';
+CMPGE : 'CMPGE';
+IFEQ : 'IFEQ';
+IFNEQ : 'IFNEQ';
+IFLT : 'IFLT';
+IFGT : 'IFGT';
+IFLE : 'IFLE';
+IFGE : 'IFGE';
+IFCMPEQ : 'IFCMPEQ';
+IFCMPNEQ : 'IFCMPNEQ';
+IFCMPLT : 'IFCMPLT';
+IFCMPGT : 'IFCMPGT';
+IFCMPLE : 'IFCMPLE';
+IFCMPGE : 'IFCMPGE';
+ASSERT : 'ASSERT';
+ASSERT_EQ : 'ASSERT_EQ';
+ASSERT_NEQ : 'ASSERT_NEQ';
+ASSERT_LT : 'ASSERT_LT';
+ASSERT_LE : 'ASSERT_LE';
+ASSERT_GT : 'ASSERT_GT';
+ASSERT_GE : 'ASSERT_GE';
+ASSERT_CMPEQ : 'ASSERT_CMPEQ';
+ASSERT_CMPNEQ : 'ASSERT_CMPNEQ';
+ASSERT_CMPLT : 'ASSERT_CMPLT';
+ASSERT_CMPGT : 'ASSERT_CMPGT';
+ASSERT_CMPLE : 'ASSERT_CMPLE';
+ASSERT_CMPGE : 'ASSERT_CMPGE';
+ASSERT_NONE : 'ASSERT_NONE';
+ASSERT_SOME : 'ASSERT_SOME';
+ASSERT_LEFT : 'ASSERT_LEFT';
+ASSERT_RIGHT : 'ASSERT_RIGHT';
+FAIL : 'FAIL';
+
+CODE : 'code';
+PARAMETER : 'parameter';
+STORAGE : 'storage';
+
+LINE_COMMENT : '#' ~ [\r\n]* -> channel (HIDDEN);
+
+TYPE_ANNOTATION : ':'([a-zA-Z_0-9])*;
+VAR_ANNOTATION : '@'([a-zA-Z_0-9])*;
+FIELD_ANNOTATION : '%'([a-zA-Z_0-9])*; 
+SPECIAL_VAR_ANNOTATION : '@%' | '@%%';
+SPECIAL_FIELD_ANNOTATION : '%@';
+ 
+WS : [ \t\r\n\u000C]+ -> channel (HIDDEN);

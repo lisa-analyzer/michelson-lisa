@@ -1,0 +1,13 @@
+parameter int;
+storage int ;
+code { DROP ;
+	   PUSH int -5;
+       DUP ;
+       PUSH int -5;
+       COMPARE ;
+       EQ ;
+	   IF {  PUSH int -99;  }
+          {PUSH int -5;}
+	   ADD;
+       NIL operation ;
+       PAIR };

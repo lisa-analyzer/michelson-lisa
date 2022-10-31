@@ -1,0 +1,21 @@
+{ storage nat ;
+  parameter
+    (or (nat %divide)
+        (or (unit %double)
+            (pair %replace (list %myList string) (pair (map %myMap string nat) (nat %value))))) ;
+  code { DUP ;
+         CDR ;
+         SWAP ;
+         CAR ;
+         IF_LEFT
+           { DUP ;
+             PUSH nat 5 ;
+             COMPARE ;
+             LT ;
+             IF {} { PUSH string "WrongCondition: params.divisor > 5" ; FAILWITH } ;
+             SWAP ;
+             EDIV ;
+             IF_NONE { PUSH int 22 ; FAILWITH } { CAR } }
+           { IF_LEFT { DROP ; PUSH nat 2 ; MUL } { SWAP ; DROP ; CDR ; CDR } } ;
+         NIL operation ;
+         PAIR } }

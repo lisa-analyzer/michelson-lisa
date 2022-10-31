@@ -1,0 +1,52 @@
+{ storage (pair (pair (address %owner) (bool %qwe)) (bytes %sh)) ;
+  parameter
+    (or (pair %checkingSig (pair (bytes %b) (key %k)) (signature %s)) (bytes %hashValue)) ;
+  code { DUP ;
+         CDR ;
+         SWAP ;
+         CAR ;
+         IF_LEFT
+           { { SWAP ;
+               DUP ;
+               DUG 2 ;
+               DUP ;
+               CDR ;
+               SWAP ;
+               CAR ;
+               CAR ;
+               DIG 2 ;
+               DUP ;
+               DUG 3 ;
+               CAR ;
+               CAR ;
+               DIG 3 ;
+               DUP ;
+               DUG 4 ;
+               CDR ;
+               DIG 4 ;
+               DUP ;
+               DUG 5 ;
+               CAR ;
+               CDR ;
+               CHECK_SIGNATURE ;
+               SWAP ;
+               PAIR ;
+               PAIR ;
+               DUG 2 ;
+               DROP ;
+               DROP } }
+           { { SWAP ;
+               DUP ;
+               DUG 2 ;
+               CAR ;
+               SWAP ;
+               DUP ;
+               DUG 2 ;
+               BLAKE2B ;
+               SWAP ;
+               PAIR ;
+               DUG 2 ;
+               DROP ;
+               DROP } } ;
+         NIL operation ;
+         PAIR } }

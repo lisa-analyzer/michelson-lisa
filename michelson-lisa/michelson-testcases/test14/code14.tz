@@ -1,0 +1,39 @@
+{ storage
+    (pair (map %horses int (pair (int %horseId) (string %horseName)))
+          (pair (address %owner) (string %track))) ;
+  parameter
+    (or (pair %addHorse (int %horseId) (string %horseName))
+        (or (address %addOwner) (string %changeTrack))) ;
+  code { DUP ;
+         CDR ;
+         SWAP ;
+         CAR ;
+         IF_LEFT
+           { { SENDER ;
+               DIG 2 ;
+               DUP ;
+               DUG 3 ;
+               CDR ;
+               CAR ;
+               COMPARE ;
+               EQ ;
+               IF { {} }
+                  { { PUSH string "WrongCondition: self.data.owner == sp.sender" ; FAILWITH } } ;
+               SWAP ;
+               DUP ;
+               CDR ;
+               SWAP ;
+               CAR ;
+               DIG 2 ;
+               DUP ;
+               DUG 3 ;
+               SOME ;
+               DIG 3 ;
+               CAR ;
+               UPDATE ;
+               PAIR } }
+           { IF_LEFT
+               { { SWAP ; DUP ; CAR ; SWAP ; CDR ; CDR ; DIG 2 ; PAIR ; SWAP ; PAIR } }
+               { { SWAP ; DUP ; CAR ; SWAP ; CDR ; CAR ; DIG 2 ; SWAP ; PAIR ; SWAP ; PAIR } } } ;
+         NIL operation ;
+         PAIR } }

@@ -1,0 +1,11 @@
+{ storage unit ;
+  parameter unit ;
+  code { CAR ;
+         PUSH address "KT18apu7iDnqnUeXdMv3ZVjs81DTPWK6f1Me%transfer" ;
+         CONTRACT (pair (address %from) (pair (address %to) (nat %value))) ;
+         { IF_NONE { 
+           { UNIT ; FAILWITH } 
+           } {} } ;
+         DROP ;
+         NIL operation ;
+         PAIR } }

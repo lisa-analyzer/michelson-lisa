@@ -1,0 +1,26 @@
+parameter mutez ;
+storage unit ;
+code {
+    CAR ;
+    DUP ;
+    BALANCE ;
+    COMPARE ; LT ; IF
+        { UNIT; FAILWITH }
+        {
+            SENDER ;
+            CONTRACT unit ;
+            IF_NONE
+                { UNIT; FAILWITH }
+                {
+                    SWAP ;
+                    UNIT ;
+                    TRANSFER_TOKENS ;
+                    NIL operation ;
+                    SWAP ;
+                    CONS ;
+                    UNIT ;
+                    SWAP ;
+                    PAIR
+                } ;
+        };
+} ;
