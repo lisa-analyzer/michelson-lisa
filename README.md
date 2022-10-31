@@ -7,7 +7,7 @@ The main class is [MichelsonLiSA](michelson-lisa/src/main/java/it/unive/michelso
 - `-o path`: the output directory
 - `-a analysis`: the analysis to perform, where `analysis` is one of the following values:
 	-  `sign` sign analysis
-	- `ucci` untrusted cross-contract analysis
+	- `ucci` untrusted cross-contract invocation analysis
 - `-d` dump additional the analysis informations (optional)
 
 ### Example of command line
