@@ -10,9 +10,8 @@ import java.util.Set;
 import org.apache.commons.lang3.tuple.Pair;
 
 import it.unive.lisa.program.Program;
-import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.CodeMember;
-import it.unive.lisa.program.cfg.NativeCFG;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.michelsonlisa.annotations.AnnotationSet;
 import it.unive.michelsonlisa.annotations.CodeAnnotation;
 import it.unive.michelsonlisa.annotations.MethodAnnotation;
@@ -34,7 +33,7 @@ public class AnnotationLoader implements Loader {
 	 * The set of annotations applied after the calling of load method by the
 	 * loader.
 	 */
-	protected final Set<Pair<CodeAnnotation, CFGDescriptor>> appliedAnnotations;
+	protected final Set<Pair<CodeAnnotation, CodeMemberDescriptor>> appliedAnnotations;
 
 	/**
 	 * Builds an instance of annotation loader.
@@ -66,20 +65,20 @@ public class AnnotationLoader implements Loader {
 
 	@Override
 	public void load(Program program) {
-		Collection<CodeMember> codeMembers = program.getAllCodeMembers();
-		Collection<NativeCFG> constructs = program.getAllConstructs();
+		Collection<CodeMember> codeMembers = program.getCodeMembers();
+	//	Collection<NativeCFG> constructs = program.getAllCFGs();
 
 		for (CodeMember cm : codeMembers)
 			for (AnnotationSet set : annotationSets)
 				for (CodeAnnotation ca : set.getAnnotationsForCodeMembers())
 					checkAndAddAnnotation(cm.getDescriptor(), ca);
 
-		for (NativeCFG c : constructs) {
+	/*	for (NativeCFG c : constructs) {
 			for (AnnotationSet set : annotationSets)
 				for (CodeAnnotation ca : set.getAnnotationsForConstructors())
 					checkAndAddAnnotation(c.getDescriptor(), ca);
 		}
-		
+		*/
 	}
 
 	/**
@@ -87,7 +86,7 @@ public class AnnotationLoader implements Loader {
 	 * 
 	 * @return the annotations applied after a load
 	 */
-	public Set<Pair<CodeAnnotation, CFGDescriptor>> getAppliedAnnotations() {
+	public Set<Pair<CodeAnnotation, CodeMemberDescriptor>> getAppliedAnnotations() {
 		return appliedAnnotations;
 	}
 
@@ -97,7 +96,7 @@ public class AnnotationLoader implements Loader {
 	 * @param descriptor the descriptor
 	 * @param ca         the code annotation
 	 */
-	private void checkAndAddAnnotation(CFGDescriptor descriptor, CodeAnnotation ca) {
+	private void checkAndAddAnnotation(CodeMemberDescriptor descriptor, CodeAnnotation ca) {
 		if (ca instanceof MethodAnnotation) {
 			MethodAnnotation ma = (MethodAnnotation) ca;
 				if (ca instanceof MethodParameterAnnotation) {

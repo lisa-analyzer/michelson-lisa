@@ -13,7 +13,7 @@ import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.symbolic.value.operator.AdditionOperator;
 import it.unive.lisa.symbolic.value.operator.DivisionOperator;
-import it.unive.lisa.symbolic.value.operator.Multiplication;
+import it.unive.lisa.symbolic.value.operator.MultiplicationOperator;
 import it.unive.lisa.symbolic.value.operator.SubtractionOperator;
 import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
 import it.unive.lisa.symbolic.value.operator.binary.ComparisonEq;
@@ -80,12 +80,12 @@ public class Sign extends BaseNonRelationalValueDomain<Sign> {
 	}
 
 	@Override
-	protected Sign evalNullConstant(ProgramPoint pp) {
+	public Sign evalNullConstant(ProgramPoint pp) {
 		return top();
 	}
 
 	@Override
-	protected Sign evalNonNullConstant(Constant constant, ProgramPoint pp) {
+	public Sign evalNonNullConstant(Constant constant, ProgramPoint pp) {
 		if (constant.getValue() instanceof Integer) {
 			Integer i = (Integer) constant.getValue();
 			return i == 0 ? ZERO : i > 0 ? POS : NEG;
@@ -113,7 +113,7 @@ public class Sign extends BaseNonRelationalValueDomain<Sign> {
 	}
 
 	@Override
-	protected Sign evalUnaryExpression(UnaryOperator operator, Sign arg, ProgramPoint pp) {
+	public Sign evalUnaryExpression(UnaryOperator operator, Sign arg, ProgramPoint pp) {
 		if (operator == NumericNegation.INSTANCE)
 			if (arg.isPositive())
 				return NEG;
@@ -127,7 +127,7 @@ public class Sign extends BaseNonRelationalValueDomain<Sign> {
 	}
 
 	@Override
-	protected Sign evalBinaryExpression(BinaryOperator operator, Sign left, Sign right, ProgramPoint pp) {
+	public Sign evalBinaryExpression(BinaryOperator operator, Sign left, Sign right, ProgramPoint pp) {
 		if (operator instanceof AdditionOperator)
 			if (left.isZero())
 				return right;
@@ -158,9 +158,9 @@ public class Sign extends BaseNonRelationalValueDomain<Sign> {
 				return left.isTop() ? left : POS;
 			else
 				return top();
-		else if (operator instanceof it.unive.lisa.symbolic.value.operator.Module)
+		else if (operator instanceof it.unive.lisa.symbolic.value.operator.ModuloOperator)
 			return top();
-		else if (operator instanceof Multiplication)
+		else if (operator instanceof MultiplicationOperator)
 			if (left.isZero() || right.isZero())
 				return ZERO;
 			else if (left.equals(right))
@@ -177,17 +177,17 @@ public class Sign extends BaseNonRelationalValueDomain<Sign> {
 	}
 
 	@Override
-	protected Sign lubAux(Sign other) throws SemanticException {
+	public Sign lubAux(Sign other) throws SemanticException {
 		return TOP;
 	}
 
 	@Override
-	protected Sign wideningAux(Sign other) throws SemanticException {
+	public Sign wideningAux(Sign other) throws SemanticException {
 		return lubAux(other);
 	}
 
 	@Override
-	protected boolean lessOrEqualAux(Sign other) throws SemanticException {
+	public boolean lessOrEqualAux(Sign other) throws SemanticException {
 		return false;
 	}
 
@@ -214,7 +214,7 @@ public class Sign extends BaseNonRelationalValueDomain<Sign> {
 	}
 
 	@Override
-	protected Satisfiability satisfiesBinaryExpression(BinaryOperator operator, Sign left, Sign right,
+	public Satisfiability satisfiesBinaryExpression(BinaryOperator operator, Sign left, Sign right,
 			ProgramPoint pp) {
 		if (left.isTop() || right.isTop())
 			return Satisfiability.UNKNOWN;
@@ -258,13 +258,13 @@ public class Sign extends BaseNonRelationalValueDomain<Sign> {
 	}
 
 	@Override
-	protected Satisfiability satisfiesTernaryExpression(TernaryOperator operator, Sign left, Sign middle, Sign right,
+	public Satisfiability satisfiesTernaryExpression(TernaryOperator operator, Sign left, Sign middle, Sign right,
 			ProgramPoint pp) {
 		return Satisfiability.UNKNOWN;
 	}
 
 	@Override
-	protected ValueEnvironment<Sign> assumeBinaryExpression(
+	public ValueEnvironment<Sign> assumeBinaryExpression(
 			ValueEnvironment<Sign> environment, BinaryOperator operator, ValueExpression left,
 			ValueExpression right, ProgramPoint pp) throws SemanticException {
 		if (operator == ComparisonEq.INSTANCE)

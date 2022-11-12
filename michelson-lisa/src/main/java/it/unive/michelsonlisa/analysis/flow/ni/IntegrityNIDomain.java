@@ -144,13 +144,13 @@ public class IntegrityNIDomain extends BaseInferredValue<IntegrityNIDomain> {
 	}
 
 	@Override
-	protected InferredPair<IntegrityNIDomain> evalNullConstant(IntegrityNIDomain state, ProgramPoint pp)
+	public InferredPair<IntegrityNIDomain> evalNullConstant(IntegrityNIDomain state, ProgramPoint pp)
 			throws SemanticException {
 		return new InferredPair<>(this, HIGH, state(state, pp));
 	}
 
 	@Override
-	protected InferredPair<IntegrityNIDomain> evalNonNullConstant(Constant constant, IntegrityNIDomain state,
+	public InferredPair<IntegrityNIDomain> evalNonNullConstant(Constant constant, IntegrityNIDomain state,
 			ProgramPoint pp) throws SemanticException {
 		if (constant instanceof Tainted)
 			return new InferredPair<>(this, LOW, state(state, pp));
@@ -158,13 +158,13 @@ public class IntegrityNIDomain extends BaseInferredValue<IntegrityNIDomain> {
 	}
 
 	@Override
-	protected InferredPair<IntegrityNIDomain> evalUnaryExpression(UnaryOperator operator, IntegrityNIDomain arg,
+	public InferredPair<IntegrityNIDomain> evalUnaryExpression(UnaryOperator operator, IntegrityNIDomain arg,
 			IntegrityNIDomain state, ProgramPoint pp) throws SemanticException {
 		return new InferredPair<>(this, arg, state(state, pp));
 	}
 
 	@Override
-	protected InferredPair<IntegrityNIDomain> evalBinaryExpression(BinaryOperator operator,
+	public InferredPair<IntegrityNIDomain> evalBinaryExpression(BinaryOperator operator,
 			IntegrityNIDomain left,
 			IntegrityNIDomain right, IntegrityNIDomain state, ProgramPoint pp) throws SemanticException {
 		if (left == LOW || right == LOW)
@@ -177,7 +177,7 @@ public class IntegrityNIDomain extends BaseInferredValue<IntegrityNIDomain> {
 	}
 
 	@Override
-	protected InferredPair<IntegrityNIDomain> evalTernaryExpression(TernaryOperator operator,
+	public InferredPair<IntegrityNIDomain> evalTernaryExpression(TernaryOperator operator,
 			IntegrityNIDomain left,
 			IntegrityNIDomain middle, IntegrityNIDomain right, IntegrityNIDomain state, ProgramPoint pp)
 			throws SemanticException {
@@ -191,7 +191,7 @@ public class IntegrityNIDomain extends BaseInferredValue<IntegrityNIDomain> {
 	}
 
 	@Override
-	protected InferredPair<IntegrityNIDomain> evalIdentifier(Identifier id,
+	public InferredPair<IntegrityNIDomain> evalIdentifier(Identifier id,
 			InferenceSystem<IntegrityNIDomain> environment, ProgramPoint pp) throws SemanticException {
 		IntegrityNIDomain variable = variable(id, null);
 		if (!variable.isBottom())
@@ -201,13 +201,13 @@ public class IntegrityNIDomain extends BaseInferredValue<IntegrityNIDomain> {
 	}
 
 	@Override
-	protected InferredPair<IntegrityNIDomain> evalPushAny(PushAny pushAny, IntegrityNIDomain state, ProgramPoint pp)
+	public InferredPair<IntegrityNIDomain> evalPushAny(PushAny pushAny, IntegrityNIDomain state, ProgramPoint pp)
 			throws SemanticException {
 		return new InferredPair<>(this, LOW, state(state, pp));
 	}
 
 	@Override
-	protected InferredPair<IntegrityNIDomain> evalTypeConv(BinaryExpression conv, IntegrityNIDomain left,
+	public InferredPair<IntegrityNIDomain> evalTypeConv(BinaryExpression conv, IntegrityNIDomain left,
 			IntegrityNIDomain right, IntegrityNIDomain state, ProgramPoint pp) throws SemanticException {
 		if (left == LOW || right == LOW)
 			return new InferredPair<>(this, LOW, state(state, pp));
@@ -219,7 +219,7 @@ public class IntegrityNIDomain extends BaseInferredValue<IntegrityNIDomain> {
 	}
 
 	@Override
-	protected InferredPair<IntegrityNIDomain> evalTypeCast(BinaryExpression cast, IntegrityNIDomain left,
+	public InferredPair<IntegrityNIDomain> evalTypeCast(BinaryExpression cast, IntegrityNIDomain left,
 			IntegrityNIDomain right, IntegrityNIDomain state, ProgramPoint pp) throws SemanticException {
 		if (left == LOW || right == LOW)
 			return new InferredPair<>(this, LOW, state(state, pp));
@@ -232,7 +232,7 @@ public class IntegrityNIDomain extends BaseInferredValue<IntegrityNIDomain> {
 
 	@Override
 	public boolean tracksIdentifiers(Identifier id) {
-		for (Type t : id.getRuntimeTypes())
+		for (Type t : id.getRuntimeTypes(null))
 			if (!(t.isInMemoryType()))
 				return true;
 		return false;
@@ -244,17 +244,17 @@ public class IntegrityNIDomain extends BaseInferredValue<IntegrityNIDomain> {
 	}
 
 	@Override
-	protected IntegrityNIDomain lubAux(IntegrityNIDomain other) throws SemanticException {
+	public IntegrityNIDomain lubAux(IntegrityNIDomain other) throws SemanticException {
 		return TOP; // should never happen
 	}
 
 	@Override
-	protected IntegrityNIDomain wideningAux(IntegrityNIDomain other) throws SemanticException {
+	public IntegrityNIDomain wideningAux(IntegrityNIDomain other) throws SemanticException {
 		return TOP; // should never happen
 	}
 
 	@Override
-	protected boolean lessOrEqualAux(IntegrityNIDomain other) throws SemanticException {
+	public boolean lessOrEqualAux(IntegrityNIDomain other) throws SemanticException {
 		return false; // should never happen
 	}
 

@@ -30,7 +30,7 @@ public class MichelsonNil extends it.unive.lisa.program.cfg.statement.NaryExpres
 			ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
 			throws SemanticException {
 
-		return state.smallStepSemantics(new Constant(getStaticType(), new Object(), getLocation()), this);
+		return state.smallStepSemantics(new Constant(getStaticType(), "EMPTY_LIST", getLocation()), this);
 	}
 
 }

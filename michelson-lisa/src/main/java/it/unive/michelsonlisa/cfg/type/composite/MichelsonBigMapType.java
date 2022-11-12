@@ -1,6 +1,7 @@
 package it.unive.michelsonlisa.cfg.type.composite;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -9,6 +10,7 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.InMemoryType;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
 import it.unive.michelsonlisa.cfg.type.interfaces.MichelsonComparableType;
 import it.unive.michelsonlisa.cfg.type.interfaces.MichelsonDuplicableType;
@@ -126,8 +128,8 @@ public class MichelsonBigMapType implements InMemoryType, MichelsonType, Michels
 	}
 
 	@Override
-	public Collection<Type> allInstances() {
-		Collection<Type> instances = new HashSet<>();
+	public Set<Type> allInstances(TypeSystem types) {
+		Set<Type> instances = new HashSet<>();
 		for (MichelsonType in : mapTypes)
 			instances.add(in);
 		return instances;

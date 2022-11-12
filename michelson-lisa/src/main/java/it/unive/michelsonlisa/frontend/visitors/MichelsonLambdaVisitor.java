@@ -18,8 +18,8 @@ import org.apache.commons.lang3.tuple.Triple;
 
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.controlFlow.ControlFlowStructure;
 import it.unive.lisa.program.cfg.controlFlow.IfThenElse;
 import it.unive.lisa.program.cfg.controlFlow.Loop;
@@ -204,7 +204,7 @@ public class MichelsonLambdaVisitor extends MichelsonParserBaseVisitor<Object> {
 
 	protected final CFG cfg;
 
-	protected final CFGDescriptor descriptor;
+	protected final CodeMemberDescriptor descriptor;
 	
 	protected final ArrayList<MichelsonStack<VariableRef>> symbolicStacks = new ArrayList<>();
 	
@@ -220,7 +220,7 @@ public class MichelsonLambdaVisitor extends MichelsonParserBaseVisitor<Object> {
 	
 	static final SequentialEdge SEQUENTIAL_SINGLETON = new SequentialEdge();
 	
-	public MichelsonLambdaVisitor(String filepath, CFGDescriptor descriptor, int nLambda) {
+	public MichelsonLambdaVisitor(String filepath, CodeMemberDescriptor descriptor, int nLambda) {
 		this.filepath = filepath;
 		cfs = new LinkedList<>();
 		this.descriptor = descriptor;

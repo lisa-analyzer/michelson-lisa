@@ -13,6 +13,8 @@ import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.NaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.value.Constant;
+import it.unive.michelsonlisa.cfg.type.MichelsonMutezType;
 
 /*
  * Instrumented Empty Structure of List/Map
@@ -28,8 +30,8 @@ public class EmptyStructure extends NaryExpression {
 			InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 			ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
 			throws SemanticException {
-		// TODO Auto-generated method stub
-		return state;
+		
+		return state.smallStepSemantics(new Constant(MichelsonMutezType.INSTANCE, "{}", getLocation()), this);
 	}
 
 }

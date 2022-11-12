@@ -13,15 +13,11 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import it.unive.lisa.program.ClassUnit;
 import it.unive.lisa.program.Program;
-import it.unive.lisa.program.Unit;
-import it.unive.lisa.program.cfg.CFGDescriptor;
-import it.unive.lisa.program.cfg.statement.call.assignment.OrderPreservingAssigningStrategy;
-import it.unive.lisa.program.cfg.statement.call.assignment.ParameterAssigningStrategy;
-import it.unive.lisa.program.cfg.statement.call.resolution.ParameterMatchingStrategy;
-import it.unive.lisa.program.cfg.statement.call.resolution.RuntimeTypesMatchingStrategy;
-import it.unive.lisa.program.cfg.statement.call.traversal.HierarcyTraversalStrategy;
-import it.unive.lisa.program.cfg.statement.call.traversal.SingleInheritanceTraversalStrategy;
+import it.unive.lisa.program.ProgramUnit;
+import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.michelsonlisa.antlr.MichelsonLexer;
 import it.unive.michelsonlisa.antlr.MichelsonParser;
 import it.unive.michelsonlisa.antlr.MichelsonParser.CodeContext;
@@ -45,29 +41,7 @@ public class MichelsonFrontEnd  {
 	 * Michelson program file path.
 	 */
 	private final String filePath;
-
-	private final Program program;
-
-	/**
-	 * The parameter assigning strategy for calls
-	 */
-	public static final ParameterAssigningStrategy PARAMETER_ASSIGN_STRATEGY = OrderPreservingAssigningStrategy.INSTANCE;
-
-	/**
-	 * The strategy of traversing super-unit to search for target call
-	 * implementation
-	 */
-	public static final HierarcyTraversalStrategy HIERARCY_TRAVERSAL_STRATEGY = SingleInheritanceTraversalStrategy.INSTANCE;
-
-	/**
-	 * The parameter matching strategy for matching function calls
-	 */
-	public static final ParameterMatchingStrategy FUNCTION_MATCHING_STRATEGY = RuntimeTypesMatchingStrategy.INSTANCE;
-
-	/**
-	 * The parameter matching strategy for matching method calls
-	 */
-	public static final ParameterMatchingStrategy METHOD_MATCHING_STRATEGY = RuntimeTypesMatchingStrategy.INSTANCE;
+	
 
 	/**
 	 * Builds an instance of @MichelsonToCFG for a given Michelson program given at the
@@ -77,7 +51,6 @@ public class MichelsonFrontEnd  {
 	 */
 	private MichelsonFrontEnd(String filePath) {
 		this.filePath = filePath;
-		this.program = new Program();
 	}
 
 	/**
@@ -117,7 +90,7 @@ public class MichelsonFrontEnd  {
 		
 		long parsingTime = System.currentTimeMillis();
 		
-		Program result = visitMichelsonFile(parser.contract());
+		Program program = visitMichelsonFile(parser.contract());
 
 		log.info("PARSING TIME: " + (parsingTime - start) + " CFG time: " + (System.currentTimeMillis() - parsingTime));
 
@@ -125,23 +98,27 @@ public class MichelsonFrontEnd  {
 		
 		//registerMichelsonTypes(program);
 
-		return result;
+		return program;
 	}
 
 	private Program visitMichelsonFile(ContractContext file) {
-
-		Program response  = new Program();
+		Program program  = new Program(new MichelsonLanguageFeatures(), new MichelsonTypeSystem());
 		ParameterContext parameter = file.parameter();
 		StorageContext storage = file.storage();
 		CodeContext code = file.code();
 		
+		ProgramUnit unit = new ClassUnit(MichelsonFileUtils.locationOf(getFilePath(), code), program, "", false);
 
-		MichelsonCodeMemberVisitor visitor = new MichelsonCodeMemberVisitor(getFilePath(), new CFGDescriptor(MichelsonFileUtils.locationOf(getFilePath(), code), new Unit("") {}, false, "code"));
+		program.addUnit(unit);
 		
-		response.addCFG(visitor.visitCodeMember(parameter, storage, code));
-
+		MichelsonCodeMemberVisitor visitor = new MichelsonCodeMemberVisitor(getFilePath(), new CodeMemberDescriptor(MichelsonFileUtils.locationOf(getFilePath(), code), unit, false, "code"));
+		
+		CFG cfg = visitor.visitCodeMember(parameter, storage, code);
+		program.addEntryPoint(cfg);
+		unit.addCodeMember(cfg);
+		
 		visitor.printMapEntryPoints();
 		
-		return response;
+		return program;
 	}
 }

@@ -34,6 +34,16 @@ public class MichelsonPair extends NaryExpression implements StackProducer, Stac
 			InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 			ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
 			throws SemanticException {
-		return state;
+		AnalysisState<A, H, V, T> result = state.bottom();
+		for (ExpressionSet<SymbolicExpression> exprs : params)
+			for(SymbolicExpression e :exprs) {
+				try {
+					result = result.lub(state.smallStepSemantics(e, this));
+				} catch (SemanticException e1) {
+					e1.printStackTrace();
+				}
+			}	
+		
+		return result;
 	}
 }

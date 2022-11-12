@@ -9,6 +9,7 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.InMemoryType;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
 import it.unive.michelsonlisa.cfg.type.interfaces.MichelsonBigMapValueType;
 import it.unive.michelsonlisa.cfg.type.interfaces.MichelsonComparableType;
@@ -129,8 +130,8 @@ public class MichelsonMapType implements InMemoryType, MichelsonType, MichelsonP
 	}
 
 	@Override
-	public Collection<Type> allInstances() {
-		Collection<Type> instances = new HashSet<>();
+	public Set<Type> allInstances(TypeSystem types) {
+		Set<Type> instances = new HashSet<>();
 		for (MichelsonType in : mapTypes)
 			instances.add(in);
 		return instances;

@@ -18,10 +18,9 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 
 import it.unive.lisa.program.SourceCodeLocation;
-import it.unive.lisa.program.Unit;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.controlFlow.ControlFlowStructure;
 import it.unive.lisa.program.cfg.controlFlow.IfThenElse;
 import it.unive.lisa.program.cfg.controlFlow.Loop;
@@ -207,7 +206,7 @@ public class MichelsonCodeMemberVisitor extends MichelsonParserBaseVisitor<Objec
 
 	protected final CFG cfg;
 
-	protected final CFGDescriptor descriptor;
+	public final CodeMemberDescriptor descriptor;
 	
 	protected final ArrayList<MichelsonStack<VariableRef>> symbolicStacks = new ArrayList<>();
 	
@@ -231,7 +230,7 @@ public class MichelsonCodeMemberVisitor extends MichelsonParserBaseVisitor<Objec
 	
 	static final SequentialEdge SEQUENTIAL_SINGLETON = new SequentialEdge();
 	
-	public MichelsonCodeMemberVisitor(String filepath, CFGDescriptor descriptor) {
+	public MichelsonCodeMemberVisitor(String filepath, CodeMemberDescriptor descriptor) {
 		this.filepath = filepath;
 		cfs = new LinkedList<>();
 		this.descriptor = descriptor;
@@ -2702,8 +2701,7 @@ public class MichelsonCodeMemberVisitor extends MichelsonParserBaseVisitor<Objec
 		ParameterContext parameter = contract.parameter();
 		StorageContext storage = contract.storage();
 		CodeContext code = contract.code();
-		
-		MichelsonCodeMemberVisitor contractVisitor = new MichelsonCodeMemberVisitor(filepath, new CFGDescriptor(MichelsonFileUtils.locationOf(filepath, contract), new Unit("") {}, false, "CREATE_CONTRACT_"+counterCreateContract));
+		MichelsonCodeMemberVisitor contractVisitor = new MichelsonCodeMemberVisitor(filepath, new CodeMemberDescriptor(MichelsonFileUtils.locationOf(filepath, contract), descriptor.getUnit(), false, "CREATE_CONTRACT_"+counterCreateContract));
 		CFG contractCfg = contractVisitor.visitCodeMember(parameter, storage, code);	
 		mapCreateContract.put(create, contractCfg);
 		

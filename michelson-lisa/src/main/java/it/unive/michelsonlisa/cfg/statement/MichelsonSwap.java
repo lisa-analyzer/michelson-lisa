@@ -26,7 +26,6 @@ public class MichelsonSwap extends NaryExpression {
 			InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 			ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
 			throws SemanticException {
-		// TODO Auto-generated method stub
 		return state;
 	}
 }

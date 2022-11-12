@@ -41,13 +41,13 @@ public class MichelsonOr extends it.unive.lisa.program.cfg.statement.BinaryExpre
 	}
 
 	@Override
-	protected <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
+	public <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
 			InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 			SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 			throws SemanticException {
 		AnalysisState<A, H, V, T> result = state.top();
-		for (Type leftType : left.getRuntimeTypes())
-			for (Type rightType : right.getRuntimeTypes())
+		for (Type leftType : left.getRuntimeTypes(null))
+			for (Type rightType : right.getRuntimeTypes(null))
 				if ((leftType.isUntyped() || (leftType.isNumericType() && leftType.asNumericType().isIntegral())) &&
 						(rightType.isUntyped()
 								|| (rightType.isNumericType() && rightType.asNumericType().isIntegral()))) {

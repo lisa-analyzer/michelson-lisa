@@ -38,12 +38,6 @@ public class TaintChecker implements
 		
 	}
 
-	@Override
-	public boolean visitCompilationUnit(
-			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>, MonolithicHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>> tool,
-			CompilationUnit unit) {
-		return true;
-	}
 
 	@Override
 	public void visitGlobal(
@@ -70,9 +64,13 @@ public class TaintChecker implements
 					MonolithicHeap, ValueEnvironment<TaintDomain>,
 					TypeEnvironment<InferredTypes>> result : tool.getResultOf(transferToken.getCFG())) {
 				VariableRef ref = (VariableRef) transferToken.getSubExpressions()[2];
-				if (result.getAnalysisStateAfter(transferToken).getState().getValueState().getState(ref.getVariable()).isTainted())		
+				TaintDomain state = result.getAnalysisStateAfter(transferToken).getState().getValueState().getState(ref.getVariable());
+				if (state.isTainted())		
 					tool.warnOn(node, "The value passed for the " 
 							+ " parameter of this transfer token is tainted");
+				else if (state.isTop())		
+						tool.warnOn(node, "The value passed for the " 
+								+ " parameter of this transfer token might be tainted");
 			}
 
 		}
@@ -85,6 +83,13 @@ public class TaintChecker implements
 	public boolean visit(
 			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>, MonolithicHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>> tool,
 			CFG graph, Edge edge) {
+		return true;
+	}
+
+	@Override
+	public boolean visitUnit(
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>, MonolithicHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>> tool,
+			Unit unit) {
 		return true;
 	}
 

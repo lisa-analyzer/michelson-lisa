@@ -119,9 +119,9 @@ public abstract class MichelsonAnalysisTestExecutor {
 				fail("Cannot delete working directory '" + workdir + "': " + e.getMessage());
 			}
 		}
-		configuration.setWorkdir(workdir.toString());
+		configuration.workdir = workdir.toString();
 
-		configuration.setJsonOutput(true);
+		configuration.serializeResults = true;
 
 		LiSA lisa = new LiSA(configuration);
 		try {

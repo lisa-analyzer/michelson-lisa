@@ -30,9 +30,17 @@ public class MichelsonLambda extends it.unive.lisa.program.cfg.statement.NaryExp
 			InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 			ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
 			throws SemanticException {
-		// TODO Auto-generated method stub
-		return state;
+		AnalysisState<A, H, V, T> result = state.bottom();
+		for (ExpressionSet<SymbolicExpression> exprs : params)
+			for(SymbolicExpression e :exprs) {
+				try {
+					result = result.lub(state.smallStepSemantics(e, this));
+				} catch (SemanticException e1) {
+					e1.printStackTrace();
+				}
+			}	
+		
+		return result;
 	}
-
 
 }

@@ -81,30 +81,30 @@ public class MichelsonLiSA {
 		
 		LiSAConfiguration conf = new LiSAConfiguration();
 
-		conf.setWorkdir(outputDir);
-		conf.setJsonOutput(true);
+		conf.workdir =outputDir;
+		conf.jsonOutput = true;
 		
-		conf.setDumpAnalysis(cmd.hasOption(dump_opt) ? GraphType.HTML_WITH_SUBNODES : GraphType.NONE);
+		conf.analysisGraphs = cmd.hasOption(dump_opt) ? GraphType.HTML_WITH_SUBNODES : GraphType.NONE;
 		
 		AnnotationLoader annotationLoader = null;
 		
 		switch(analysisChoice) {
 	
 			case "sign":
-				conf.setAbstractState(new SimpleAbstractState<>(
+				conf.abstractState = new SimpleAbstractState<>(
 						new MonolithicHeap(),
 						new ValueEnvironment<>(new Sign()),
-						new TypeEnvironment<>(new InferredTypes())));
+						new TypeEnvironment<>(new InferredTypes()));
 				break;
 			
 			case "ucci": 
 				if(!containSinks(filePath))
 					exit(conf);
-				conf.setAbstractState(new SimpleAbstractState<>(
+				conf.abstractState = new SimpleAbstractState<>(
 						new MonolithicHeap(),
 						new ValueEnvironment<>(new TaintDomain()),
-						new TypeEnvironment<>(new InferredTypes())));
-				conf.addSemanticCheck(new TaintChecker());
+						new TypeEnvironment<>(new InferredTypes()));
+				conf.semanticChecks.add(new TaintChecker());
 				
 				annotationLoader = new AnnotationLoader(new CrossContractInvokingAnnotationSet());
 				break;
@@ -155,9 +155,9 @@ public class MichelsonLiSA {
 
 	private static void exit(LiSAConfiguration conf) {
 		
-		if(conf.isJsonOutput()) {
+		if(conf.jsonOutput) {
 			LOG.info("Dumping reported warnings to 'report.json'");
-			FileManager fileManager = new FileManager(conf.getWorkdir());
+			FileManager fileManager = new FileManager(conf.workdir);
 			
 			JsonReport report = new JsonReport(new HashSet<>(), fileManager.createdFiles());
 			try {

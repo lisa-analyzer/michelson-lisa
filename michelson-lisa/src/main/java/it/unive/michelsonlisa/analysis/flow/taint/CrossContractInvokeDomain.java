@@ -125,25 +125,25 @@ public class CrossContractInvokeDomain extends BaseNonRelationalValueDomain<Cros
 	}
 
 	@Override
-	protected CrossContractInvokeDomain evalNullConstant(ProgramPoint pp) throws SemanticException {
+	public CrossContractInvokeDomain evalNullConstant(ProgramPoint pp) throws SemanticException {
 		return CLEAN;
 	}
 
 	@Override
-	protected CrossContractInvokeDomain evalNonNullConstant(Constant constant, ProgramPoint pp) throws SemanticException {
+	public CrossContractInvokeDomain evalNonNullConstant(Constant constant, ProgramPoint pp) throws SemanticException {
 		if (constant instanceof Tainted)
 			return TAINTED;
 		return CLEAN;
 	}
 
 	@Override
-	protected CrossContractInvokeDomain evalUnaryExpression(UnaryOperator operator, CrossContractInvokeDomain arg, ProgramPoint pp)
+	public CrossContractInvokeDomain evalUnaryExpression(UnaryOperator operator, CrossContractInvokeDomain arg, ProgramPoint pp)
 			throws SemanticException {
 		return arg;
 	}
 
 	@Override
-	protected CrossContractInvokeDomain evalBinaryExpression(BinaryOperator operator, CrossContractInvokeDomain left, CrossContractInvokeDomain right,
+	public CrossContractInvokeDomain evalBinaryExpression(BinaryOperator operator, CrossContractInvokeDomain left, CrossContractInvokeDomain right,
 			ProgramPoint pp) throws SemanticException {
 		
 		if (left == TAINTED || right == TAINTED)
@@ -156,7 +156,7 @@ public class CrossContractInvokeDomain extends BaseNonRelationalValueDomain<Cros
 	}
 
 	@Override
-	protected CrossContractInvokeDomain evalTernaryExpression(TernaryOperator operator, CrossContractInvokeDomain left, CrossContractInvokeDomain middle,
+	public CrossContractInvokeDomain evalTernaryExpression(TernaryOperator operator, CrossContractInvokeDomain left, CrossContractInvokeDomain middle,
 			CrossContractInvokeDomain right, ProgramPoint pp) throws SemanticException {
 		if (left == TAINTED || right == TAINTED || middle == TAINTED)
 			return TAINTED;
@@ -168,13 +168,13 @@ public class CrossContractInvokeDomain extends BaseNonRelationalValueDomain<Cros
 	}
 
 	@Override
-	protected CrossContractInvokeDomain evalPushAny(PushAny pushAny, ProgramPoint pp) throws SemanticException {
+	public CrossContractInvokeDomain evalPushAny(PushAny pushAny, ProgramPoint pp) throws SemanticException {
  		return TAINTED;
 	}
 
 	@Override
 	public boolean tracksIdentifiers(Identifier id) {
-		for (Type t : id.getRuntimeTypes())
+		for (Type t : id.getRuntimeTypes(null))
 			if (!(t.isInMemoryType()))
 				return true;
 		return false;
@@ -186,17 +186,17 @@ public class CrossContractInvokeDomain extends BaseNonRelationalValueDomain<Cros
 	}
 
 	@Override
-	protected CrossContractInvokeDomain lubAux(CrossContractInvokeDomain other) throws SemanticException {
+	public CrossContractInvokeDomain lubAux(CrossContractInvokeDomain other) throws SemanticException {
 		return TOP; // should never happen
 	}
 
 	@Override
-	protected CrossContractInvokeDomain wideningAux(CrossContractInvokeDomain other) throws SemanticException {
+	public CrossContractInvokeDomain wideningAux(CrossContractInvokeDomain other) throws SemanticException {
 		return TOP; // should never happen
 	}
 
 	@Override
-	protected boolean lessOrEqualAux(CrossContractInvokeDomain other) throws SemanticException {
+	public boolean lessOrEqualAux(CrossContractInvokeDomain other) throws SemanticException {
 		return false; // should never happen
 	}
 

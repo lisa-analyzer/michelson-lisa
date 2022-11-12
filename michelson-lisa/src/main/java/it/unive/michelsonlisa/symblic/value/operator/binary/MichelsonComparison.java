@@ -1,12 +1,13 @@
 package it.unive.michelsonlisa.symblic.value.operator.binary;
 
-import it.unive.lisa.caches.Caches;
+import java.util.Set;
+
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.operator.ComparisonOperator;
 import it.unive.lisa.symbolic.value.operator.NegatableOperator;
 import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
 import it.unive.lisa.type.Type;
-import it.unive.lisa.util.collections.externalSet.ExternalSet;
+import it.unive.lisa.type.TypeSystem;
 import it.unive.michelsonlisa.cfg.type.MichelsonIntType;
 
 /**
@@ -34,12 +35,12 @@ public class MichelsonComparison implements ComparisonOperator, BinaryOperator {
 	}
 
 	@Override
-	public ExternalSet<Type> typeInference(ExternalSet<Type> left, ExternalSet<Type> right) {
-		return Caches.types().mkSingletonSet(MichelsonIntType.INSTANCE);
+	public NegatableOperator opposite() {
+		return null;
 	}
 
 	@Override
-	public NegatableOperator opposite() {
-		return null;
+	public Set<Type> typeInference(TypeSystem types, Set<Type> left, Set<Type> right) {
+		return Set.of(types.getIntegerType());
 	}
 }

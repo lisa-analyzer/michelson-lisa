@@ -2,11 +2,13 @@ package it.unive.michelsonlisa.cfg.type;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Set;
 
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
 import it.unive.michelsonlisa.cfg.expression.literal.MichelsonBooleanData;
 import it.unive.michelsonlisa.cfg.type.interfaces.MichelsonType;
@@ -60,7 +62,7 @@ public class MichelsonChestType implements MichelsonType {
 	}
 
 	@Override
-	public Collection<Type> allInstances() {
+	public Set<Type> allInstances(TypeSystem types) {
 		return Collections.singleton(this);
 	}
 }

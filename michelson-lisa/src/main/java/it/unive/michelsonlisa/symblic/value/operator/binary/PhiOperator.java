@@ -1,10 +1,12 @@
 package it.unive.michelsonlisa.symblic.value.operator.binary;
 
-import it.unive.lisa.caches.Caches;
+import java.util.Set;
+
 import it.unive.lisa.symbolic.value.operator.AdditionOperator;
 import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
 import it.unive.lisa.type.NumericType;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.util.collections.externalSet.ExternalSet;
 
 public class PhiOperator implements AdditionOperator, BinaryOperator {
@@ -23,12 +25,12 @@ public class PhiOperator implements AdditionOperator, BinaryOperator {
 	}
 
 	@Override
-	public ExternalSet<Type> typeInference(ExternalSet<Type> left, ExternalSet<Type> right) {
-		if (left.noneMatch(Type::isNumericType) || right.noneMatch(Type::isNumericType))
-			return Caches.types().mkEmptySet();
-		ExternalSet<Type> set = NumericType.commonNumericalType(left, right);
+	public Set<Type> typeInference(TypeSystem types, Set<Type> left, Set<Type> right) {
+		if (left.stream().noneMatch(Type::isNumericType) || right.stream().noneMatch(Type::isNumericType))
+				return Set.of();
+		Set<Type> set = NumericType.commonNumericalType(left, right);
 		if (set.isEmpty())
-			return Caches.types().mkEmptySet();
+			return Set.of();
 		return set;
 	}
 }

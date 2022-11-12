@@ -1,13 +1,13 @@
 package it.unive.michelsonlisa.symblic.value.operator.unary;
 
-import it.unive.lisa.caches.Caches;
+import java.util.Set;
+
 import it.unive.lisa.symbolic.value.operator.ComparisonOperator;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.type.BooleanType;
 import it.unive.lisa.type.NumericType;
 import it.unive.lisa.type.Type;
-import it.unive.lisa.type.common.BoolType;
-import it.unive.lisa.util.collections.externalSet.ExternalSet;
+import it.unive.lisa.type.TypeSystem;
 
 /**
  * Given an expression that both evaluate to numeric values, a
@@ -40,9 +40,7 @@ public class MichelsonComparisonEq implements ComparisonOperator, UnaryOperator 
 	}
 
 	@Override
-	public ExternalSet<Type> typeInference(ExternalSet<Type> argument) {
-		if (argument.noneMatch(Type::isNumericType))
-			return Caches.types().mkEmptySet();
-		return Caches.types().mkSingletonSet(BoolType.INSTANCE);
+	public Set<Type> typeInference(TypeSystem types, Set<Type> argument) {
+		return Set.of(types.getBooleanType());
 	}
 }

@@ -12,6 +12,7 @@ import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.value.Constant;
 import it.unive.michelsonlisa.cfg.expression.literal.MichelsonNaturalData;
 import it.unive.michelsonlisa.cfg.statement.interfaces.StackConsumer;
 import it.unive.michelsonlisa.cfg.statement.interfaces.StackProducer;
@@ -19,16 +20,17 @@ import it.unive.michelsonlisa.cfg.type.composite.MichelsonSaplingStateType;
 
 public class MichelsonSaplingEmptyState extends UnaryExpression implements StackConsumer, StackProducer {
 
+	MichelsonSaplingStateType type;
 	public MichelsonSaplingEmptyState(CFG cfg, String sourceFile, int line, int col, MichelsonNaturalData nat) {
 		super(cfg, new SourceCodeLocation(sourceFile, line, col), "SAPLING_EMPTY_STATE", new MichelsonSaplingStateType(nat), nat);
+		type = new MichelsonSaplingStateType(nat);
 	}
 
 	@Override
-	protected <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
+	public <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
 			InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 			SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
-		// TODO Auto-generated method stub
-		return state;
+		return state.smallStepSemantics(new Constant(type, "EMPY_STATE", getLocation()), this);
 	}
 
 }

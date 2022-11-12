@@ -1,37 +1,40 @@
 package it.unive.michelsonlisa.cfg.statement;
 
-import it.unive.lisa.caches.Caches;
+import java.util.HashSet;
+import java.util.Set;
+
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
-import it.unive.lisa.util.collections.externalSet.ExternalSet;
 
 public interface MichelsonBinaryNumericalOperation {
 
-	public default ExternalSet<Type> resultType(SymbolicExpression left, SymbolicExpression right) {
-		if (left.getRuntimeTypes().noneMatch(Type::isNumericType)
-				&& right.getRuntimeTypes().noneMatch(Type::isNumericType))
+	public default Set<Type> resultType(SymbolicExpression left, SymbolicExpression right) {
+		if (left.getRuntimeTypes(null).stream().noneMatch(Type::isNumericType)
+				&& right.getRuntimeTypes(null).stream().noneMatch(Type::isNumericType))
 			// if none have numeric types in them, we cannot really compute the
 			// result
-			return Caches.types().mkSingletonSet(Untyped.INSTANCE);
+			return Set.of(Untyped.INSTANCE);
 
-		ExternalSet<Type> result = Caches.types().mkEmptySet();
-		for (Type t1 : left.getRuntimeTypes().filter(type -> type.isNumericType() || type.isUntyped()))
-			for (Type t2 : right.getRuntimeTypes().filter(type -> type.isNumericType() || type.isUntyped()))
-				if (t1.isUntyped() && t2.isUntyped())
-					// we do not really consider this case,
-					// it will fall back into the last corner case before return
-					continue;
-				else if (t1.isUntyped())
-					result.add(t2);
-				else if (t2.isUntyped())
-					result.add(t1);
-				else if (t1.canBeAssignedTo(t2))
-					result.add(t2);
-				else if (t2.canBeAssignedTo(t1))
-					result.add(t1);
-				else
-					result.add(Untyped.INSTANCE);
+		Set<Type> result = new HashSet<>();
+		for (Type t1 : left.getRuntimeTypes(null))
+			if(t1.isNumericType() || t1.isUntyped())
+				for (Type t2 : right.getRuntimeTypes(null))
+					if(t2.isNumericType() || t2.isUntyped())
+						if (t1.isUntyped() && t2.isUntyped())
+							// we do not really consider this case,
+							// it will fall back into the last corner case before return
+							continue;
+						else if (t1.isUntyped())
+							result.add(t2);
+						else if (t2.isUntyped())
+							result.add(t1);
+						else if (t1.canBeAssignedTo(t2))
+							result.add(t2);
+						else if (t2.canBeAssignedTo(t1))
+							result.add(t1);
+						else
+							result.add(Untyped.INSTANCE);
 		if (result.isEmpty())
 			result.add(Untyped.INSTANCE);
 		return result;
