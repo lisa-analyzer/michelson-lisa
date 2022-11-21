@@ -1,0 +1,42 @@
+{ parameter unit ;
+  storage (pair (address %creditor) (nat %payamount)) ;
+  code { PUSH mutez 0 ;
+         AMOUNT ;
+         COMPARE ;
+         NEQ ;
+         IF { PUSH string "This contract do not accept token" ; FAILWITH }
+            { PUSH unit Unit } ;
+         DIG 1 ;
+         DUP ;
+         DUG 2 ;
+         CDR ;
+         PUSH address "KT1DdshqQRd8MSK4P57fyMtjQBuL6fVTpmgP" ;
+         CONTRACT (or (pair %approve address nat) (pair %transfer (pair address address) nat)) ;
+         IF_NONE
+           { PUSH string "Contract not found." ; FAILWITH }
+           { DUP ; DIP { DROP } } ;
+         DIG 1 ;
+         DUP ;
+         DUG 2 ;
+         LEFT (pair (pair address address) nat) ;
+         DIG 1 ;
+         DUP ;
+         DUG 2 ;
+         PUSH mutez 0 ;
+         DIG 2 ;
+         DUP ;
+         DUG 3 ;
+         TRANSFER_TOKENS ;
+         NIL operation ;
+         DIG 1 ;
+         DUP ;
+         DUG 2 ;
+         CONS ;
+         DIG 4 ;
+         DUP ;
+         DUG 5 ;
+         DIG 1 ;
+         DUP ;
+         DUG 2 ;
+         PAIR ;
+         DIP { DROP 7 } } }

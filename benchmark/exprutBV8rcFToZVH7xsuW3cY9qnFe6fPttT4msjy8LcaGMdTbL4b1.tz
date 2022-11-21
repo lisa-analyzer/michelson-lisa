@@ -1,0 +1,40 @@
+{ parameter (or (nat %balanceInquiry) (unit %exec)) ;
+  storage nat ;
+  code { DUP ;
+         CAR ;
+         IF_LEFT
+           { DUP ; NIL operation ; PAIR ; DIP { DROP } }
+           { NIL operation ;
+             PUSH address "KT1Nt4mkc3p5gqykuBbFyWiz7d7nmJNhkT8V" ;
+             CONTRACT %getBalance (contract nat) ;
+             IF_NONE
+               { PUSH string "Not a contract" ; FAILWITH }
+               { DUP ; DIP { DROP } } ;
+             SELF ;
+             ADDRESS ;
+             CONTRACT %balanceInquiry nat ;
+             IF_NONE
+               { PUSH string "Not a contract" ; FAILWITH }
+               { DUP ; DIP { DROP } } ;
+             DIG 1 ;
+             DUP ;
+             DUG 2 ;
+             PUSH mutez 0 ;
+             DIG 2 ;
+             DUP ;
+             DUG 3 ;
+             TRANSFER_TOKENS ;
+             DIG 5 ;
+             DUP ;
+             DUG 6 ;
+             CDR ;
+             DIG 4 ;
+             DUP ;
+             DUG 5 ;
+             DIG 2 ;
+             DUP ;
+             DUG 3 ;
+             CONS ;
+             PAIR ;
+             DIP { DROP 5 } } ;
+         DIP { DROP } } }

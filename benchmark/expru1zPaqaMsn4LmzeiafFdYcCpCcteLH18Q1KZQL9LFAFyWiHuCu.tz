@@ -1,0 +1,50 @@
+{ parameter (pair address address) ;
+  storage unit ;
+  code { DUP ;
+         CAR ;
+         NIL operation ;
+         DIG 1 ;
+         DUP ;
+         DUG 2 ;
+         CAR ;
+         CONTRACT %receive address ;
+         IF_NONE
+           { PUSH string "bad address for get_entrypoint (%receive)" ; FAILWITH }
+           {} ;
+         DUP ;
+         AMOUNT ;
+         DIG 4 ;
+         DUP ;
+         DUG 5 ;
+         CDR ;
+         TRANSFER_TOKENS ;
+         DIG 3 ;
+         DUP ;
+         DUG 4 ;
+         CAR ;
+         CONTRACT %set unit ;
+         IF_NONE
+           { PUSH string "bad address for get_entrypoint (%set)" ; FAILWITH }
+           {} ;
+         DUP ;
+         PUSH mutez 0 ;
+         UNIT ;
+         TRANSFER_TOKENS ;
+         NIL operation ;
+         DIG 1 ;
+         DUP ;
+         DUG 2 ;
+         CONS ;
+         DIG 3 ;
+         DUP ;
+         DUG 4 ;
+         CONS ;
+         DIG 7 ;
+         DUP ;
+         DUG 8 ;
+         CDR ;
+         DIG 1 ;
+         DUP ;
+         DUG 2 ;
+         PAIR ;
+         DIP { DROP 8 } } }

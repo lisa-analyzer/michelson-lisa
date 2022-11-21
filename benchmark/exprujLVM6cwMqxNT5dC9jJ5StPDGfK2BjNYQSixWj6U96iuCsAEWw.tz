@@ -1,0 +1,67 @@
+{ storage
+    (pair (big_map %LambdaData string (lambda address (contract int)))
+          (pair (big_map %bigMapData bytes bytes) (int %storedValue))) ;
+  parameter
+    (or (unit %buildLambda)
+        (or (pair %replaceInOther (address %contractAddress) (int %value))
+            (pair %replaceInOtherBis (address %contractAddress) (int %value)))) ;
+  code { DUP ;
+         CDR ;
+         SWAP ;
+         CAR ;
+         IF_LEFT
+           { { SWAP ;
+               DUP ;
+               DUG 2 ;
+               DUP ;
+               CDR ;
+               SWAP ;
+               CAR ;
+               LAMBDA
+                 address
+                 (contract int)
+                 { { DUP ;
+                     CONTRACT %setValue int ;
+                     IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                     SWAP ;
+                     DROP } } ;
+               DIG 4 ;
+               DROP ;
+               DIG 3 ;
+               DROP ;
+               SOME ;
+               PUSH string "callSetValue" ;
+               UPDATE ;
+               PAIR ;
+               NIL operation } }
+           { IF_LEFT
+               { { DUP ;
+                   CAR ;
+                   CONTRACT %setValueBis int ;
+                   NIL operation ;
+                   SWAP ;
+                   IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                   PUSH mutez 0 ;
+                   DIG 3 ;
+                   CDR ;
+                   TRANSFER_TOKENS ;
+                   CONS } }
+               { { NIL operation ;
+                   DIG 2 ;
+                   DUP ;
+                   DUG 3 ;
+                   CAR ;
+                   PUSH string "callSetValue" ;
+                   GET ;
+                   IF_NONE { { PUSH string "Get-item:56" ; FAILWITH } } {} ;
+                   DIG 2 ;
+                   DUP ;
+                   DUG 3 ;
+                   CAR ;
+                   EXEC ;
+                   PUSH mutez 0 ;
+                   DIG 3 ;
+                   CDR ;
+                   TRANSFER_TOKENS ;
+                   CONS } } } ;
+         PAIR } }

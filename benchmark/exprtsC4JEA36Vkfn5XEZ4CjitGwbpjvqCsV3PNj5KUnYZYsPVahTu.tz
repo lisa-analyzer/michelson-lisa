@@ -1,0 +1,69 @@
+{ parameter
+    (or :sum (pair %modify address mutez) (or :sum (unit %deposit) (mutez %withdraw))) ;
+  storage (big_map address mutez) ;
+  code { {} ;
+         { DUP ; CDR ; DIP { CAR } } ;
+         { { DIG 1 ; DUP ; DUG 2 } ;
+           IF_LEFT
+             { { DUP ; CAR } ;
+               { { DIG 1 ; DUP ; DUG 2 } ; CDR } ;
+               { { PUSH mutez 0 ; { DIG 1 ; DUP ; DUG 2 } ; COMPARE ; EQ } ;
+                 IF { PUSH (option mutez) None } { DUP ; SOME } } ;
+               { { DIG 4 ; DUP ; DUG 5 } ;
+                 { DIG 1 ; DUP ; DUG 2 } ;
+                 { DIG 4 ; DUP ; DUG 5 } ;
+                 UPDATE } ;
+               NIL operation ;
+               PAIR ;
+               DIP { DROP 4 } }
+             { DUP ;
+               IF_LEFT
+                 { { PUSH unit Unit ; DROP ; SENDER } ;
+                   { PUSH unit Unit ; DROP ; AMOUNT } ;
+                   { { { DIG 4 ; DUP ; DUG 5 } ; { DIG 2 ; DUP ; DUG 3 } ; GET } ;
+                     DUP ;
+                     IF_NONE
+                       { { DIG 1 ; DUP ; DUG 2 } }
+                       { { { DIG 2 ; DUP ; DUG 3 } ; { DIG 1 ; DUP ; DUG 2 } ; ADD } ;
+                         DIP { DROP } } ;
+                     DIP { DROP } } ;
+                   { { DIG 5 ; DUP ; DUG 6 } ;
+                     { DIG 1 ; DUP ; DUG 2 } ;
+                     SOME ;
+                     { DIG 4 ; DUP ; DUG 5 } ;
+                     UPDATE } ;
+                   NIL operation ;
+                   PAIR ;
+                   DIP { DROP 4 } }
+                 { { PUSH mutez 0 ; { PUSH unit Unit ; DROP ; AMOUNT } ; COMPARE ; EQ } ;
+                   { IF {} { { UNIT ; FAILWITH } } } ;
+                   UNIT ;
+                   DROP ;
+                   { PUSH unit Unit ; DROP ; SENDER } ;
+                   { { { DIG 3 ; DUP ; DUG 4 } ; { DIG 1 ; DUP ; DUG 2 } ; GET } ;
+                     DUP ;
+                     IF_NONE { PUSH mutez 0 } { DUP ; DIP { DROP } } ;
+                     DIP { DROP } } ;
+                   { { DIG 2 ; DUP ; DUG 3 } ; { DIG 1 ; DUP ; DUG 2 } ; SUB } ;
+                   { { { DIG 2 ; DUP ; DUG 3 } ; CONTRACT unit } ;
+                     IF_NONE { PUSH string "Option.get" ; FAILWITH } {} } ;
+                   { { { SELF ; ADDRESS } ; CONTRACT %modify (pair address mutez) } ;
+                     IF_NONE { PUSH string "Option.get" ; FAILWITH } {} } ;
+                   { DIG 7 ; DUP ; DUG 8 } ;
+                   NIL operation ;
+                   { { DIG 2 ; DUP ; DUG 3 } ;
+                     PUSH mutez 0 ;
+                     { DIG 6 ; DUP ; DUG 7 } ;
+                     { DIG 9 ; DUP ; DUG 10 } ;
+                     PAIR ;
+                     TRANSFER_TOKENS } ;
+                   CONS ;
+                   { { DIG 3 ; DUP ; DUG 4 } ;
+                     { DIG 8 ; DUP ; DUG 9 } ;
+                     PUSH unit Unit ;
+                     TRANSFER_TOKENS } ;
+                   CONS ;
+                   PAIR ;
+                   DIP { DROP 6 } } ;
+               DIP { DROP } } } ;
+         DIP { DROP 2 } } }

@@ -1,0 +1,76 @@
+{ parameter (or (pair %getPrice string address) (nat %setPrice)) ;
+  storage nat ;
+  code { NIL operation ;
+         DIG 1 ;
+         DUP ;
+         DUG 2 ;
+         CDR ;
+         DIG 2 ;
+         DUP ;
+         DUG 3 ;
+         CAR ;
+         IF_LEFT
+           { DIG 1 ;
+             DUP ;
+             DUG 2 ;
+             DIG 1 ;
+             DUP ;
+             DUG 2 ;
+             PAIR ;
+             SELF ;
+             ADDRESS ;
+             CONTRACT %setPrice nat ;
+             IF_NONE
+               { PUSH string "Not a contract" ; FAILWITH }
+               { DUP ; DIP { DROP } } ;
+             DIG 1 ;
+             DUP ;
+             DUG 2 ;
+             CAR ;
+             CAR ;
+             PAIR ;
+             DIG 1 ;
+             DUP ;
+             DUG 2 ;
+             CAR ;
+             CDR ;
+             CONTRACT %getPrice (pair (string %assetSymbol) (contract %callback nat)) ;
+             IF_NONE
+               { PUSH string "Entrypoint not found." ; FAILWITH }
+               { DUP ; DIP { DROP } } ;
+             DIG 2 ;
+             DUP ;
+             DUG 3 ;
+             CDR ;
+             NIL operation ;
+             DIG 2 ;
+             DUP ;
+             DUG 3 ;
+             PUSH mutez 0 ;
+             DIG 5 ;
+             DUP ;
+             DUG 6 ;
+             TRANSFER_TOKENS ;
+             CONS ;
+             PAIR ;
+             DIP { DROP 4 } }
+           { DIG 1 ;
+             DUP ;
+             DUG 2 ;
+             DIG 1 ;
+             DUP ;
+             DUG 2 ;
+             PAIR ;
+             DUP ;
+             CDR ;
+             DIG 1 ;
+             DUP ;
+             DUG 2 ;
+             CAR ;
+             DIP { DROP } ;
+             DIG 4 ;
+             DUP ;
+             DUG 5 ;
+             PAIR ;
+             DIP { DROP 2 } } ;
+         DIP { DROP 3 } } }

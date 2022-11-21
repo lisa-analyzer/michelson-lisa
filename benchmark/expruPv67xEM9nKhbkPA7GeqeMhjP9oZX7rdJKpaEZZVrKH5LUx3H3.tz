@@ -1,0 +1,185 @@
+{ storage
+    (pair (big_map %entrypoints string (option (lambda (pair (int %x) (int %y)) int)))
+          (int %value)) ;
+  parameter
+    (or (pair %callEP (string %entrypointName) (int %y))
+        (or (unit %setEntrypoints)
+            (pair %setInEPInOtherContract (string %epName) (address %target)))) ;
+  code { DUP ;
+         CDR ;
+         SWAP ;
+         CAR ;
+         IF_LEFT
+           { { SWAP ;
+               DUP ;
+               DUG 2 ;
+               CAR ;
+               DIG 2 ;
+               DUP ;
+               DUG 3 ;
+               CAR ;
+               DIG 2 ;
+               DUP ;
+               DUG 3 ;
+               CAR ;
+               GET ;
+               IF_NONE { { PUSH string "Get-item:52" ; FAILWITH } } {} ;
+               IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+               DIG 2 ;
+               CDR ;
+               DIG 3 ;
+               CDR ;
+               PAIR %x %y ;
+               EXEC ;
+               SWAP ;
+               PAIR ;
+               NIL operation } }
+           { IF_LEFT
+               { { SWAP ;
+                   DUP ;
+                   DUG 2 ;
+                   DUP ;
+                   CDR ;
+                   SWAP ;
+                   CAR ;
+                   LAMBDA
+                     (pair (int %x) (int %y))
+                     int
+                     { { DUP ;
+                         CAR ;
+                         PUSH int 0 ;
+                         SWAP ;
+                         COMPARE ;
+                         GE ;
+                         IF { {} } { { PUSH string "x must be greater than 0" ; FAILWITH } } ;
+                         DUP ;
+                         CDR ;
+                         PUSH int 0 ;
+                         SWAP ;
+                         COMPARE ;
+                         GE ;
+                         IF { {} } { { PUSH string "y must be greater than 0" ; FAILWITH } } ;
+                         DUP ;
+                         CDR ;
+                         SWAP ;
+                         CAR ;
+                         ADD } } ;
+                   DIG 4 ;
+                   DROP ;
+                   SOME ;
+                   SOME ;
+                   PUSH string "add" ;
+                   UPDATE ;
+                   PAIR ;
+                   SWAP ;
+                   SWAP ;
+                   DUP ;
+                   DUG 2 ;
+                   DUP ;
+                   CDR ;
+                   SWAP ;
+                   CAR ;
+                   LAMBDA
+                     (pair (int %x) (int %y))
+                     int
+                     { { DUP ;
+                         CAR ;
+                         PUSH int 0 ;
+                         SWAP ;
+                         COMPARE ;
+                         GE ;
+                         IF { {} } { { PUSH string "x must be greater than 0" ; FAILWITH } } ;
+                         DUP ;
+                         CDR ;
+                         PUSH int 0 ;
+                         SWAP ;
+                         COMPARE ;
+                         GE ;
+                         IF { {} } { { PUSH string "y must be greater than 0" ; FAILWITH } } ;
+                         DUP ;
+                         CDR ;
+                         SWAP ;
+                         CAR ;
+                         MUL } } ;
+                   DIG 4 ;
+                   DROP ;
+                   SOME ;
+                   SOME ;
+                   PUSH string "multiply" ;
+                   UPDATE ;
+                   PAIR ;
+                   SWAP ;
+                   SWAP ;
+                   DUP ;
+                   DUG 2 ;
+                   DUP ;
+                   CDR ;
+                   SWAP ;
+                   CAR ;
+                   LAMBDA
+                     (pair (int %x) (int %y))
+                     int
+                     { { DUP ;
+                         CAR ;
+                         PUSH int 0 ;
+                         SWAP ;
+                         COMPARE ;
+                         GE ;
+                         IF { {} } { { PUSH string "x must be greater than 0" ; FAILWITH } } ;
+                         DUP ;
+                         CDR ;
+                         PUSH int 0 ;
+                         SWAP ;
+                         COMPARE ;
+                         GE ;
+                         IF { {} } { { PUSH string "y must be greater than 0" ; FAILWITH } } ;
+                         DUP ;
+                         CDR ;
+                         SWAP ;
+                         DUP ;
+                         DUG 2 ;
+                         CAR ;
+                         MUL ;
+                         SWAP ;
+                         DUP ;
+                         DUG 2 ;
+                         CDR ;
+                         DIG 2 ;
+                         CAR ;
+                         MUL ;
+                         MUL } } ;
+                   DIG 4 ;
+                   DROP ;
+                   DIG 3 ;
+                   DROP ;
+                   SOME ;
+                   SOME ;
+                   PUSH string "square" ;
+                   UPDATE ;
+                   PAIR ;
+                   NIL operation } }
+               { { DUP ;
+                   CDR ;
+                   CONTRACT %setEntrypoint
+                     (pair (string %epName) (lambda %epScript (pair (int %x) (int %y)) int)) ;
+                   NIL operation ;
+                   SWAP ;
+                   IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                   PUSH mutez 0 ;
+                   DIG 4 ;
+                   DUP ;
+                   DUG 5 ;
+                   CAR ;
+                   DIG 4 ;
+                   DUP ;
+                   DUG 5 ;
+                   CAR ;
+                   GET ;
+                   IF_NONE { { PUSH string "Get-item:39" ; FAILWITH } } {} ;
+                   IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                   DIG 4 ;
+                   CAR ;
+                   PAIR %epName %epScript ;
+                   TRANSFER_TOKENS ;
+                   CONS } } } ;
+         PAIR } }

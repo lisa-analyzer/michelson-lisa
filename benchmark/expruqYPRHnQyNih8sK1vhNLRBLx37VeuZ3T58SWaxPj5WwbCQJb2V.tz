@@ -1,0 +1,18 @@
+{ parameter address ;
+  storage unit ;
+  code { DUP ;
+         CDR ;
+         SWAP ;
+         CAR ;
+         DUP ;
+         NIL operation ;
+         SWAP ;
+         CONTRACT unit ;
+         { IF_NONE { PUSH unit Unit ; FAILWITH } {} } ;
+         AMOUNT ;
+         PUSH unit Unit ;
+         TRANSFER_TOKENS ;
+         CONS ;
+         SWAP ;
+         DROP ;
+         PAIR } }

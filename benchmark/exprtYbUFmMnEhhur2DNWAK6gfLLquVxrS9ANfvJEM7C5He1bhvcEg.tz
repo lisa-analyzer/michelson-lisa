@@ -1,0 +1,50 @@
+{ parameter
+    (or (list %receive_balance
+           (pair (nat %balance) (pair %request (address %owner) (nat %token_id))))
+        (pair %request_balance
+           (address %at)
+           (list %balance_requests (pair (address %owner) (nat %token_id))))) ;
+  storage (list (pair (nat %balance) (pair %request (address %owner) (nat %token_id)))) ;
+  code { SELF ;
+         ADDRESS ;
+         DIP { DUP } ;
+         SWAP ;
+         CAR ;
+         IF_LEFT
+           { DUP ; NIL operation ; PAIR ; DIP { DROP } }
+           { DUP ;
+             DIP { DIP 2 { DUP } ; DIG 2 ; CDR } ;
+             PAIR ;
+             DUP ;
+             CAR ;
+             DUP ;
+             CAR ;
+             CONTRACT %balance_of
+               (pair (list %balance_requests (pair (address %owner) (nat %token_id)))
+                     (contract %balance_view
+                        (list (pair (nat %balance) (pair %request (address %owner) (nat %token_id)))))) ;
+             IF_NONE
+               { PUSH string "bad address for get_entrypoint (%balance_of)" ; FAILWITH }
+               {} ;
+             DIP { DUP } ;
+             SWAP ;
+             CDR ;
+             DIP { DIP 4 { DUP } ;
+                   DIG 4 ;
+                   CONTRACT %receive_balance
+                     (list (pair (nat %balance) (pair %request (address %owner) (nat %token_id)))) ;
+                   IF_NONE
+                     { PUSH string "bad address for get_entrypoint (%receive_balance)" ; FAILWITH }
+                     {} } ;
+             PAIR ;
+             DUP ;
+             DIP { DIP { DUP } ; SWAP ; PUSH mutez 0 } ;
+             TRANSFER_TOKENS ;
+             DUP ;
+             NIL operation ;
+             SWAP ;
+             CONS ;
+             DIP { DIP 4 { DUP } ; DIG 4 ; CDR } ;
+             PAIR ;
+             DIP { DROP 6 } } ;
+         DIP { DROP 2 } } }

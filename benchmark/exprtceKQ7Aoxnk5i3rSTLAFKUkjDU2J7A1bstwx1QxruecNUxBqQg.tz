@@ -1,0 +1,46 @@
+{ storage (pair (address %administrator) (timestamp %end_date)) ;
+  parameter int ;
+  code { DUP ;
+         CDR ;
+         SWAP ;
+         CAR ;
+         SWAP ;
+         DUP ;
+         DUG 2 ;
+         CDR ;
+         NOW ;
+         COMPARE ;
+         LE ;
+         IF { {} }
+            { { PUSH string "WrongCondition: sp.now <= self.data.end_date" ; FAILWITH } } ;
+         DUP ;
+         PUSH mutez 1000000 ;
+         SWAP ;
+         ISNAT ;
+         IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+         MUL ;
+         AMOUNT ;
+         COMPARE ;
+         EQ ;
+         IF { {} }
+            { { PUSH string "WrongCondition: sp.amount == sp.tez(sp.as_nat(params.amount))" ;
+                FAILWITH } } ;
+         NIL operation ;
+         PUSH address "KT1KbbLuK92z6WSvHPximhjMRwBjKnkEvYp1" ;
+         CONTRACT %mint (pair (address %address) (mutez %amount)) ;
+         IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+         PUSH mutez 0 ;
+         PUSH mutez 1000000 ;
+         DIG 4 ;
+         DUP ;
+         DUG 5 ;
+         ISNAT ;
+         IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+         MUL ;
+         SENDER ;
+         PAIR %address %amount ;
+         TRANSFER_TOKENS ;
+         CONS ;
+         SWAP ;
+         DROP ;
+         PAIR } }

@@ -1,0 +1,88 @@
+{ parameter
+    (or (or (pair %getBalanceOf address (list address)) (address %getTokenMetadata))
+        (or (list %receiveBalanceOf
+               (pair (pair %request (address %owner) (nat %token_id)) (nat %balance)))
+            (address %receiveTokenMetadataAddress))) ;
+  storage (pair (nat %balance) (address %token_metadata_address)) ;
+  code { DUP ;
+         CDR ;
+         SWAP ;
+         CAR ;
+         IF_LEFT
+           { IF_LEFT
+               { PAIR ;
+                 DUP ;
+                 CAR ;
+                 CDR ;
+                 SWAP ;
+                 DUP ;
+                 DUG 2 ;
+                 CAR ;
+                 CAR ;
+                 CONTRACT %balance_of
+                   (pair (list %requests (pair (address %owner) (nat %token_id)))
+                         (contract %callback
+                            (list (pair (pair %request (address %owner) (nat %token_id)) (nat %balance))))) ;
+                 IF_NONE { PUSH string "ContractNotFound" ; FAILWITH } {} ;
+                 SELF ;
+                 ADDRESS ;
+                 CONTRACT %receiveBalanceOf
+                   (list (pair (pair %request (address %owner) (nat %token_id)) (nat %balance))) ;
+                 IF_NONE { PUSH string "Error" ; FAILWITH } {} ;
+                 DIG 2 ;
+                 DUP ;
+                 DUG 3 ;
+                 MAP { PUSH nat 0 ; SWAP ; PAIR } ;
+                 SWAP ;
+                 DUP ;
+                 DUG 2 ;
+                 PAIR ;
+                 CAR ;
+                 DIG 3 ;
+                 MAP { PUSH nat 0 ; SWAP ; PAIR } ;
+                 DIG 2 ;
+                 PAIR ;
+                 CDR ;
+                 PAIR ;
+                 DIG 2 ;
+                 CDR ;
+                 NIL operation ;
+                 DIG 3 ;
+                 PUSH mutez 0 ;
+                 DIG 4 ;
+                 TRANSFER_TOKENS ;
+                 CONS ;
+                 PAIR }
+               { PAIR ;
+                 DUP ;
+                 CAR ;
+                 CONTRACT %token_metadata_registry (contract address) ;
+                 IF_NONE { PUSH string "FA2NotFound" ; FAILWITH } {} ;
+                 SELF ;
+                 ADDRESS ;
+                 CONTRACT %receiveTokenMetadataAddress address ;
+                 IF_NONE { PUSH string "ContractNotFound" ; FAILWITH } {} ;
+                 DIG 2 ;
+                 CDR ;
+                 NIL operation ;
+                 DIG 3 ;
+                 PUSH mutez 0 ;
+                 DIG 4 ;
+                 TRANSFER_TOKENS ;
+                 CONS ;
+                 PAIR } }
+           { IF_LEFT
+               { PAIR ;
+                 DUP ;
+                 CDR ;
+                 PUSH nat 0 ;
+                 DIG 2 ;
+                 CAR ;
+                 ITER { CDR ; ADD } ;
+                 SWAP ;
+                 CDR ;
+                 SWAP ;
+                 PAIR ;
+                 NIL operation ;
+                 PAIR }
+               { SWAP ; CAR ; PAIR ; NIL operation ; PAIR } } } }

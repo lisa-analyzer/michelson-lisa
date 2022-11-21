@@ -1,0 +1,137 @@
+{ parameter
+    (pair :param
+       (nat %pctr)
+       (or :action %action
+          (unit %Deposit)
+          (pair :action.Withdraw %Withdraw (mutez %amount) (signature %sg)))) ;
+  storage (pair :store (pair (nat %ctr) (mutez %bal)) (pair (key %manager) (nat %rnonce))) ;
+  code { {} ;
+         { DUP ; CDR ; DIP { CAR } } ;
+         { { { DIG 1 ; DUP ; DUG 2 } ; CAR } ;
+           { { DIG 2 ; DUP ; DUG 3 } ; CDR } ;
+           { { DIG 2 ; DUP ; DUG 3 } ; CAR } ;
+           { { DIG 3 ; DUP ; DUG 4 } ; CDR } ;
+           { { DIG 1 ; DUP ; DUG 2 } ; CAR } ;
+           { { DIG 2 ; DUP ; DUG 3 } ; CDR } ;
+           { { DIG 2 ; DUP ; DUG 3 } ; CAR } ;
+           { { DIG 3 ; DUP ; DUG 4 } ; CDR } ;
+           { DIG 3 ; DUP ; DUG 4 } ;
+           { DIG 8 ; DUP ; DUG 9 } ;
+           COMPARE ;
+           NEQ ;
+           IF { { DIG 7 ; DUP ; DUG 8 } ;
+                { DIG 4 ; DUP ; DUG 5 } ;
+                PAIR ;
+                PUSH string "counter inconsistency" ;
+                PAIR ;
+                FAILWITH }
+              { { DIG 6 ; DUP ; DUG 7 } ;
+                IF_LEFT
+                  { { { DIG 9 ; DUP ; DUG 10 } ; CAR } ;
+                    { DUP ; CAR } ;
+                    { DIG 11 ; DUP ; DUG 12 } ;
+                    CDR ;
+                    { DIG 12 ; DUP ; DUG 13 } ;
+                    CAR ;
+                    CDR ;
+                    PUSH nat 1 ;
+                    { DIG 3 ; DUP ; DUG 4 } ;
+                    ADD ;
+                    PAIR ;
+                    PAIR ;
+                    DIP { DROP 2 } ;
+                    CDR ;
+                    PUSH unit Unit ;
+                    DROP ;
+                    AMOUNT ;
+                    { DIG 5 ; DUP ; DUG 6 } ;
+                    ADD ;
+                    { { DIG 11 ; DUP ; DUG 12 } ; CAR } ;
+                    { DUP ; CAR } ;
+                    { DIG 13 ; DUP ; DUG 14 } ;
+                    CDR ;
+                    { DIG 14 ; DUP ; DUG 15 } ;
+                    CAR ;
+                    CDR ;
+                    PUSH nat 1 ;
+                    { DIG 3 ; DUP ; DUG 4 } ;
+                    ADD ;
+                    PAIR ;
+                    PAIR ;
+                    DIP { DROP 2 } ;
+                    CAR ;
+                    CAR ;
+                    PAIR ;
+                    PAIR ;
+                    NIL operation ;
+                    PAIR ;
+                    DIP { DROP } }
+                  { { DUP ; CAR } ;
+                    { { DIG 1 ; DUP ; DUG 2 } ; CDR } ;
+                    { { { DIG 1 ; DUP ; DUG 2 } ;
+                        { DIG 11 ; DUP ; DUG 12 } ;
+                        PAIR ;
+                        { DIG 4 ; DUP ; DUG 5 } ;
+                        PAIR } ;
+                      { DUP ; PACK } ;
+                      DUP ;
+                      { DIG 3 ; DUP ; DUG 4 } ;
+                      { DIG 8 ; DUP ; DUG 9 } ;
+                      CHECK_SIGNATURE ;
+                      IF { PUSH (or :checksig_result (unit %SigOK) (unit %SigBad)) (Left Unit) }
+                         { PUSH (or :checksig_result (unit %SigOK) (unit %SigBad)) (Right Unit) } ;
+                      DIP { DROP 2 } } ;
+                    DUP ;
+                    IF_LEFT
+                      { { { DIG 13 ; DUP ; DUG 14 } ; CAR } ;
+                        { DUP ; CAR } ;
+                        { DIG 15 ; DUP ; DUG 16 } ;
+                        CDR ;
+                        { DIG 16 ; DUP ; DUG 17 } ;
+                        CAR ;
+                        CDR ;
+                        PUSH nat 1 ;
+                        { DIG 3 ; DUP ; DUG 4 } ;
+                        ADD ;
+                        PAIR ;
+                        PAIR ;
+                        DIP { DROP 2 } ;
+                        CDR ;
+                        { DIG 4 ; DUP ; DUG 5 } ;
+                        { DIG 9 ; DUP ; DUG 10 } ;
+                        SUB ;
+                        { { DIG 15 ; DUP ; DUG 16 } ; CAR } ;
+                        { DUP ; CAR } ;
+                        { DIG 17 ; DUP ; DUG 18 } ;
+                        CDR ;
+                        { DIG 18 ; DUP ; DUG 19 } ;
+                        CAR ;
+                        CDR ;
+                        PUSH nat 1 ;
+                        { DIG 3 ; DUP ; DUG 4 } ;
+                        ADD ;
+                        PAIR ;
+                        PAIR ;
+                        DIP { DROP 2 } ;
+                        CAR ;
+                        CAR ;
+                        PAIR ;
+                        PAIR ;
+                        NIL operation ;
+                        { PUSH unit Unit ; DROP ; SOURCE } ;
+                        { { DUP ; CONTRACT unit } ;
+                          DUP ;
+                          IF_NONE { PUSH string "arienai" ; FAILWITH } { DUP ; DIP { DROP } } ;
+                          DIP { DROP } } ;
+                        DUP ;
+                        { DIG 8 ; DUP ; DUG 9 } ;
+                        PUSH unit Unit ;
+                        TRANSFER_TOKENS ;
+                        DIP { DROP 2 } ;
+                        CONS ;
+                        PAIR ;
+                        DIP { DROP } }
+                      { PUSH string "bad signature" ; FAILWITH } ;
+                    DIP { DROP 4 } } } ;
+           DIP { DROP 8 } } ;
+         DIP { DROP 2 } } }

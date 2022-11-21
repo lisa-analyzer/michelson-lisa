@@ -1,0 +1,79 @@
+{ parameter
+    (or (pair %proxy_admin_update (address %contract) (address %owner))
+        (pair %update_reverse_record
+           (pair (address %addr) (option %name bytes))
+           (address %owner))) ;
+  storage (pair (address %contract) (address %owner)) ;
+  code { DUP ;
+         CDR ;
+         DIG 1 ;
+         DUP ;
+         DUG 2 ;
+         CAR ;
+         IF_LEFT
+           { DIG 1 ;
+             DUP ;
+             DUG 2 ;
+             DIG 1 ;
+             DUP ;
+             DUG 2 ;
+             PAIR ;
+             DUP ;
+             CDR ;
+             CDR ;
+             SENDER ;
+             COMPARE ;
+             EQ ;
+             IF { DUP ; CAR } { PUSH string "NOT_AUTHORIZED" ; FAILWITH } ;
+             DIP { DROP } ;
+             NIL operation ;
+             PAIR ;
+             DIP { DROP } }
+           { DIG 1 ;
+             DUP ;
+             DUG 2 ;
+             DIG 2 ;
+             DUP ;
+             DUG 3 ;
+             CAR ;
+             DIG 2 ;
+             DUP ;
+             DUG 3 ;
+             PACK ;
+             PUSH string "update_reverse_record" ;
+             PAIR ;
+             PAIR ;
+             DUP ;
+             CDR ;
+             CONTRACT %execute
+               (pair (pair (string %action_name) (address %original_sender)) (bytes %payload)) ;
+             IF_NONE
+               { PUSH string "INVALID_CONTRACT" ; FAILWITH }
+               { DIG 1 ;
+                 DUP ;
+                 DUG 2 ;
+                 CAR ;
+                 CDR ;
+                 SENDER ;
+                 DIG 3 ;
+                 DUP ;
+                 DUG 4 ;
+                 CAR ;
+                 CAR ;
+                 PAIR ;
+                 PAIR ;
+                 NIL operation ;
+                 DIG 2 ;
+                 DUP ;
+                 DUG 3 ;
+                 PUSH mutez 0 ;
+                 DIG 3 ;
+                 DUP ;
+                 DUG 4 ;
+                 TRANSFER_TOKENS ;
+                 CONS ;
+                 DIP { DROP 2 } } ;
+             DIP { DROP } ;
+             PAIR ;
+             DIP { DROP } } ;
+         DIP { DROP 2 } } }

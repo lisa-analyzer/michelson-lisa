@@ -1,0 +1,26 @@
+{ parameter (contract nat) ;
+  storage nat ;
+  code { DUP ;
+         CDR ;
+         NIL operation ;
+         DIG 2 ;
+         DUP ;
+         DUG 3 ;
+         CAR ;
+         PUSH mutez 0 ;
+         DIG 3 ;
+         DUP ;
+         DUG 4 ;
+         TRANSFER_TOKENS ;
+         DIG 2 ;
+         DUP ;
+         DUG 3 ;
+         DIG 2 ;
+         DUP ;
+         DUG 3 ;
+         DIG 2 ;
+         DUP ;
+         DUG 3 ;
+         CONS ;
+         PAIR ;
+         DIP { DROP 4 } } }

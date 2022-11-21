@@ -1,0 +1,130 @@
+{ parameter
+    (or (or (address %claim) (option %delegate key_hash))
+        (or (nat %interest) (unit %withdraw))) ;
+  storage
+    (pair (pair (address %admin) (pair (address %fa12) (bool %immutable)))
+          (pair (address %interested_party) (pair (nat %tk_amount) (mutez %tz_amount)))) ;
+  code { DUP ;
+         CDR ;
+         SWAP ;
+         CAR ;
+         IF_LEFT
+           { IF_LEFT
+               { SWAP ;
+                 DUP ;
+                 DUG 2 ;
+                 { CDR ; CAR } ;
+                 SENDER ;
+                 COMPARE ;
+                 EQ ;
+                 IF {}
+                    { PUSH string "WrongCondition: sp.sender == self.data.interested_party" ;
+                      FAILWITH } ;
+                 NIL operation ;
+                 DIG 2 ;
+                 DUP ;
+                 DUG 3 ;
+                 { CAR ; CDR ; CAR } ;
+                 CONTRACT %transfer (pair (address %fro) (pair (address %to) (nat %value))) ;
+                 { IF_NONE { PUSH unit Unit ; FAILWITH } {} } ;
+                 PUSH mutez 0 ;
+                 DIG 4 ;
+                 DUP ;
+                 DUG 5 ;
+                 { CDR ; CDR ; CAR } ;
+                 DIG 4 ;
+                 PAIR %to %value ;
+                 DIG 4 ;
+                 DUP ;
+                 DUG 5 ;
+                 { CAR ; CAR } ;
+                 PAIR %fro ;
+                 TRANSFER_TOKENS ;
+                 CONS }
+               { SWAP ;
+                 DUP ;
+                 DUG 2 ;
+                 { CAR ; CAR } ;
+                 SENDER ;
+                 COMPARE ;
+                 EQ ;
+                 IF {}
+                    { PUSH string "WrongCondition: sp.sender == self.data.admin" ; FAILWITH } ;
+                 SET_DELEGATE ;
+                 NIL operation ;
+                 SWAP ;
+                 CONS } }
+           { IF_LEFT
+               { SWAP ;
+                 DUP ;
+                 DUG 2 ;
+                 { CDR ; CDR ; CDR } ;
+                 AMOUNT ;
+                 COMPARE ;
+                 GE ;
+                 IF {}
+                    { PUSH string "WrongCondition: sp.amount >= self.data.tz_amount" ; FAILWITH } ;
+                 DUP ;
+                 PUSH mutez 1000000 ;
+                 MUL ;
+                 AMOUNT ;
+                 COMPARE ;
+                 EQ ;
+                 IF {}
+                    { PUSH string "WrongCondition: sp.amount == sp.tez ( params ) " ; FAILWITH } ;
+                 PUSH bool False ;
+                 DIG 2 ;
+                 DUP ;
+                 DUG 3 ;
+                 { CAR ; CDR ; CDR } ;
+                 COMPARE ;
+                 EQ ;
+                 IF {}
+                    { PUSH string "WrongCondition: self.data.immutable == False" ; FAILWITH } ;
+                 DROP ;
+                 DUP ;
+                 CDR ;
+                 SWAP ;
+                 CAR ;
+                 DUP ;
+                 CAR ;
+                 SWAP ;
+                 { CDR ; CAR } ;
+                 PUSH bool True ;
+                 SWAP ;
+                 PAIR ;
+                 SWAP ;
+                 PAIR ;
+                 PAIR ;
+                 DUP ;
+                 CAR ;
+                 SWAP ;
+                 { CDR ; CDR } ;
+                 SENDER ;
+                 PAIR ;
+                 SWAP ;
+                 PAIR ;
+                 NIL operation }
+               { SWAP ;
+                 DUP ;
+                 DUG 2 ;
+                 { CAR ; CAR } ;
+                 SENDER ;
+                 COMPARE ;
+                 EQ ;
+                 IF {}
+                    { PUSH string "WrongCondition: sp.sender == self.data.admin" ; FAILWITH } ;
+                 NIL operation ;
+                 DIG 2 ;
+                 DUP ;
+                 DUG 3 ;
+                 { CAR ; CAR } ;
+                 CONTRACT unit ;
+                 { IF_NONE { PUSH unit Unit ; FAILWITH } {} } ;
+                 BALANCE ;
+                 DIG 3 ;
+                 DROP ;
+                 PUSH unit Unit ;
+                 TRANSFER_TOKENS ;
+                 CONS } } ;
+         PAIR } }

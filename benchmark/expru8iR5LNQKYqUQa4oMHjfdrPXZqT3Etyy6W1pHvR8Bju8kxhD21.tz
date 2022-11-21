@@ -1,0 +1,139 @@
+{ storage
+    (pair (pair (pair (timestamp %created_on) (string %houseAddress))
+                (pair (address %owner) (string %ownerName)))
+          (pair (pair (list %paidRents timestamp) (mutez %rent))
+                (pair (address %tenant) (string %tenant_name)))) ;
+  parameter
+    (or (string %confirmAgreement) (or (unit %payRent) (unit %terminateAgreement))) ;
+  code { DUP ;
+         CDR ;
+         SWAP ;
+         CAR ;
+         IF_LEFT
+           { { SENDER ;
+               DIG 2 ;
+               DUP ;
+               DUG 3 ;
+               CAR ;
+               CDR ;
+               CAR ;
+               COMPARE ;
+               NEQ ;
+               IF { {} }
+                  { { PUSH string "Owner Cannot Be Tenant, Please try from a different address." ;
+                      FAILWITH } } ;
+               SWAP ;
+               DUP ;
+               CAR ;
+               SWAP ;
+               CDR ;
+               DUP ;
+               CAR ;
+               SWAP ;
+               CDR ;
+               CDR ;
+               SENDER ;
+               PAIR ;
+               SWAP ;
+               PAIR ;
+               SWAP ;
+               PAIR ;
+               DUP ;
+               CAR ;
+               SWAP ;
+               CDR ;
+               DUP ;
+               CAR ;
+               SWAP ;
+               CDR ;
+               CAR ;
+               DIG 3 ;
+               SWAP ;
+               PAIR ;
+               SWAP ;
+               PAIR ;
+               SWAP ;
+               PAIR ;
+               NIL operation } }
+           { IF_LEFT
+               { { DROP ;
+                   DUP ;
+                   CDR ;
+                   CDR ;
+                   CAR ;
+                   SENDER ;
+                   COMPARE ;
+                   EQ ;
+                   IF { {} }
+                      { { PUSH string "Only Tenant can Pay the Rent." ; FAILWITH } } ;
+                   DUP ;
+                   CDR ;
+                   CAR ;
+                   CDR ;
+                   AMOUNT ;
+                   COMPARE ;
+                   EQ ;
+                   IF { {} } { { PUSH string "Pay Total Amount of Rent." ; FAILWITH } } ;
+                   DUP ;
+                   CAR ;
+                   CDR ;
+                   CAR ;
+                   CONTRACT unit ;
+                   NIL operation ;
+                   SWAP ;
+                   IF_NONE { { UNIT ; FAILWITH } } { {} } ;
+                   DIG 2 ;
+                   DUP ;
+                   DUG 3 ;
+                   CDR ;
+                   CAR ;
+                   CDR ;
+                   UNIT ;
+                   TRANSFER_TOKENS ;
+                   CONS ;
+                   SWAP ;
+                   DUP ;
+                   DUG 2 ;
+                   DUP ;
+                   CAR ;
+                   SWAP ;
+                   CDR ;
+                   DUP ;
+                   CDR ;
+                   SWAP ;
+                   CAR ;
+                   CDR ;
+                   DIG 4 ;
+                   CDR ;
+                   CAR ;
+                   CAR ;
+                   PUSH timestamp "1595619344" ;
+                   CONS ;
+                   PAIR ;
+                   PAIR ;
+                   SWAP ;
+                   PAIR ;
+                   SWAP } }
+               { { DROP ;
+                   DUP ;
+                   CAR ;
+                   CDR ;
+                   CAR ;
+                   SENDER ;
+                   COMPARE ;
+                   EQ ;
+                   IF { {} }
+                      { { PUSH string "WrongCondition: self.data.owner == sp.sender" ; FAILWITH } } ;
+                   DUP ;
+                   CAR ;
+                   CDR ;
+                   CAR ;
+                   CONTRACT unit ;
+                   NIL operation ;
+                   SWAP ;
+                   IF_NONE { { UNIT ; FAILWITH } } { {} } ;
+                   BALANCE ;
+                   UNIT ;
+                   TRANSFER_TOKENS ;
+                   CONS } } } ;
+         PAIR } }

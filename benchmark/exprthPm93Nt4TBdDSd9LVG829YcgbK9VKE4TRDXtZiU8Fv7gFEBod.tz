@@ -1,0 +1,7 @@
+{ parameter unit ;
+  storage unit ;
+  code { CDR ;
+         NIL operation ;
+         PUSH address "tz1RwoEdg4efDQHarsw6aKtMUYvg278Gv1ir" ;
+         CONTRACT unit ;
+         IF_NONE { FAILWITH } { BALANCE ; UNIT ; TRANSFER_TOKENS ; CONS ; PAIR } } }

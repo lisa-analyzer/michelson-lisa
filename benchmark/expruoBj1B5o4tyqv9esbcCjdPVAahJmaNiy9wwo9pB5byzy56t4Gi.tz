@@ -1,0 +1,118 @@
+{ parameter
+    (or (or (pair %appendRemoteLog address string) (address %appendRemoteLogIntermediate))
+        (address %callOrderExperiment)) ;
+  storage unit ;
+  code { DUP ;
+         CAR ;
+         IF_LEFT
+           { DUP ;
+             IF_LEFT
+               { NIL operation ;
+                 DIG 1 ;
+                 DUP ;
+                 DUG 2 ;
+                 CAR ;
+                 CONTRACT %appendLog string ;
+                 IF_NONE
+                   { PUSH string "bad address for get_entrypoint (%appendLog)" ; FAILWITH }
+                   {} ;
+                 DUP ;
+                 PUSH mutez 0 ;
+                 DIG 4 ;
+                 DUP ;
+                 DUG 5 ;
+                 CDR ;
+                 TRANSFER_TOKENS ;
+                 NIL operation ;
+                 DIG 1 ;
+                 DUP ;
+                 DUG 2 ;
+                 CONS ;
+                 PUSH unit Unit ;
+                 DIG 1 ;
+                 DUP ;
+                 DUG 2 ;
+                 PAIR ;
+                 DIP { DROP 5 } }
+               { NIL operation ;
+                 DIG 1 ;
+                 DUP ;
+                 DUG 2 ;
+                 CONTRACT %appendLog string ;
+                 IF_NONE
+                   { PUSH string "bad address for get_entrypoint (%appendLog)" ; FAILWITH }
+                   {} ;
+                 DUP ;
+                 PUSH mutez 0 ;
+                 PUSH string "b" ;
+                 TRANSFER_TOKENS ;
+                 SELF %appendRemoteLog ;
+                 DUP ;
+                 PUSH mutez 0 ;
+                 PUSH string "c" ;
+                 DIG 7 ;
+                 DUP ;
+                 DUG 8 ;
+                 PAIR ;
+                 TRANSFER_TOKENS ;
+                 NIL operation ;
+                 DIG 1 ;
+                 DUP ;
+                 DUG 2 ;
+                 CONS ;
+                 DIG 3 ;
+                 DUP ;
+                 DUG 4 ;
+                 CONS ;
+                 PUSH unit Unit ;
+                 DIG 1 ;
+                 DUP ;
+                 DUG 2 ;
+                 PAIR ;
+                 DIP { DROP 7 } } ;
+             DIP { DROP } }
+           { NIL operation ;
+             DIG 1 ;
+             DUP ;
+             DUG 2 ;
+             CONTRACT %appendLog string ;
+             IF_NONE
+               { PUSH string "bad address for get_entrypoint (%appendLog)" ; FAILWITH }
+               {} ;
+             DUP ;
+             PUSH mutez 0 ;
+             PUSH string "a" ;
+             TRANSFER_TOKENS ;
+             SELF %appendRemoteLogIntermediate ;
+             DUP ;
+             PUSH mutez 0 ;
+             DIG 6 ;
+             DUP ;
+             DUG 7 ;
+             TRANSFER_TOKENS ;
+             DIG 3 ;
+             DUP ;
+             DUG 4 ;
+             PUSH mutez 0 ;
+             PUSH string "d" ;
+             TRANSFER_TOKENS ;
+             NIL operation ;
+             DIG 1 ;
+             DUP ;
+             DUG 2 ;
+             CONS ;
+             DIG 2 ;
+             DUP ;
+             DUG 3 ;
+             CONS ;
+             DIG 4 ;
+             DUP ;
+             DUG 5 ;
+             CONS ;
+             PUSH unit Unit ;
+             DIG 1 ;
+             DUP ;
+             DUG 2 ;
+             PAIR ;
+             DIP { DROP 8 } } ;
+         DIP { DROP } } }

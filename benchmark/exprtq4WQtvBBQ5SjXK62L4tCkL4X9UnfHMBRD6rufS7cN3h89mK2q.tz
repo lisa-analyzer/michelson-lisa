@@ -1,0 +1,84 @@
+{ parameter
+    (or (pair %check_address (address %addr) (bytes %name))
+        (pair %proxy_admin_update (address %contract) (address %owner))) ;
+  storage (pair (address %contract) (address %owner)) ;
+  code { DUP ;
+         CDR ;
+         DIG 1 ;
+         DUP ;
+         DUG 2 ;
+         CAR ;
+         IF_LEFT
+           { DIG 1 ;
+             DUP ;
+             DUG 2 ;
+             PUSH mutez 0 ;
+             DIG 3 ;
+             DUP ;
+             DUG 4 ;
+             CAR ;
+             PAIR ;
+             DIG 2 ;
+             DUP ;
+             DUG 3 ;
+             PACK ;
+             PUSH string "CheckAddress" ;
+             PAIR ;
+             PAIR ;
+             DUP ;
+             CDR ;
+             CAR ;
+             CONTRACT %execute
+               (pair (pair (string %action_name) (address %original_sender)) (bytes %payload)) ;
+             IF_NONE
+               { PUSH string "INVALID_CONTRACT" ; FAILWITH }
+               { DIG 1 ;
+                 DUP ;
+                 DUG 2 ;
+                 CAR ;
+                 CDR ;
+                 SENDER ;
+                 DIG 3 ;
+                 DUP ;
+                 DUG 4 ;
+                 CAR ;
+                 CAR ;
+                 PAIR ;
+                 PAIR ;
+                 NIL operation ;
+                 DIG 2 ;
+                 DUP ;
+                 DUG 3 ;
+                 DIG 4 ;
+                 DUP ;
+                 DUG 5 ;
+                 CDR ;
+                 CDR ;
+                 DIG 3 ;
+                 DUP ;
+                 DUG 4 ;
+                 TRANSFER_TOKENS ;
+                 CONS ;
+                 DIP { DROP 2 } } ;
+             DIP { DROP } ;
+             PAIR ;
+             DIP { DROP } }
+           { DIG 1 ;
+             DUP ;
+             DUG 2 ;
+             DIG 1 ;
+             DUP ;
+             DUG 2 ;
+             PAIR ;
+             DUP ;
+             CDR ;
+             CDR ;
+             SENDER ;
+             COMPARE ;
+             EQ ;
+             IF { DUP ; CAR } { PUSH string "NOT_AUTHORIZED" ; FAILWITH } ;
+             DIP { DROP } ;
+             NIL operation ;
+             PAIR ;
+             DIP { DROP } } ;
+         DIP { DROP 2 } } }

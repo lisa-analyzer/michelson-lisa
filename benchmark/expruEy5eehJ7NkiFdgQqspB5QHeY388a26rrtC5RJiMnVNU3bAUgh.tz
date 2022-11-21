@@ -1,0 +1,28 @@
+{ parameter unit ;
+  storage bool ;
+  code { {} ;
+         { DUP ; CDR ; DIP { CAR } } ;
+         { DUP ;
+           IF { PUSH bool False ;
+                NIL operation ;
+                { { { PUSH address "KT1MtdoaDA3dQTZdfTHw85yc9JjKYvTSm78U" ;
+                      CONTRACT %deposit unit } ;
+                    IF_NONE { PUSH string "Option.get" ; FAILWITH } {} } ;
+                  PUSH mutez 100 ;
+                  PUSH unit Unit ;
+                  TRANSFER_TOKENS } ;
+                CONS ;
+                PAIR }
+              { { PUSH mutez 1000 ; { PUSH unit Unit ; DROP ; BALANCE } ; COMPARE ; GT } ;
+                IF { PUSH bool False ; NIL operation ; PAIR }
+                   { PUSH bool False ;
+                     NIL operation ;
+                     { { { PUSH address "KT1MtdoaDA3dQTZdfTHw85yc9JjKYvTSm78U" ;
+                           CONTRACT %withdraw mutez } ;
+                         IF_NONE { PUSH string "Option.get" ; FAILWITH } {} } ;
+                       PUSH mutez 0 ;
+                       PUSH mutez 100 ;
+                       TRANSFER_TOKENS } ;
+                     CONS ;
+                     PAIR } } } ;
+         DIP { DROP 2 } } }

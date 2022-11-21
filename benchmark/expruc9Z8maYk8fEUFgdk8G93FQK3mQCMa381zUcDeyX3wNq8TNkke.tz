@@ -1,0 +1,58 @@
+{ parameter (or (unit %getFoo) (int %setFoo)) ;
+  storage int ;
+  code { NIL operation ;
+         DIG 1 ;
+         DUP ;
+         DUG 2 ;
+         CDR ;
+         DIG 2 ;
+         DUP ;
+         DUG 3 ;
+         CAR ;
+         IF_LEFT
+           { SELF ;
+             ADDRESS ;
+             CONTRACT %setFoo int ;
+             IF_NONE
+               { PUSH string "Not a contract" ; FAILWITH }
+               { DUP ; DIP { DROP } } ;
+             PUSH address "KT1TYv6hZbP49w3ynnd2C6D3sv8DoW26yDYe" ;
+             CONTRACT %getBar (contract int) ;
+             IF_NONE
+               { PUSH string "Entrypoint not found." ; FAILWITH }
+               { DUP ; DIP { DROP } } ;
+             DIG 3 ;
+             DUP ;
+             DUG 4 ;
+             NIL operation ;
+             DIG 2 ;
+             DUP ;
+             DUG 3 ;
+             PUSH mutez 0 ;
+             DIG 5 ;
+             DUP ;
+             DUG 6 ;
+             TRANSFER_TOKENS ;
+             CONS ;
+             PAIR ;
+             DIP { DROP 3 } }
+           { DIG 1 ;
+             DUP ;
+             DUG 2 ;
+             DIG 1 ;
+             DUP ;
+             DUG 2 ;
+             PAIR ;
+             DUP ;
+             CDR ;
+             DIG 1 ;
+             DUP ;
+             DUG 2 ;
+             CAR ;
+             DIP { DROP } ;
+             DIG 4 ;
+             DUP ;
+             DUG 5 ;
+             PAIR ;
+             DIP { DROP 2 } } ;
+         DIP { DROP 3 } } }

@@ -1,0 +1,8 @@
+{ parameter (list address) ;
+  storage (list address) ;
+  code { DUP ;
+         CAR ;
+         DIP { CDR ; NIL operation } ;
+         ITER { CONTRACT unit ;
+                IF_NONE {} { PUSH mutez 1 ; UNIT ; TRANSFER_TOKENS ; CONS } } ;
+         PAIR } }

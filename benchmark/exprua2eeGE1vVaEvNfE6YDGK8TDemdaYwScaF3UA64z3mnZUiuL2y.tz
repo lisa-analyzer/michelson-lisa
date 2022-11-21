@@ -1,0 +1,346 @@
+{ parameter
+    (or (or (pair %receiveDexStorage
+               (pair (pair (pair (big_map %allowed address bool) (key_hash %delegated))
+                           (pair (address %factoryAddress) (nat %feeRate)))
+                     (pair (pair (nat %invariant) (key_hash %nextDelegated))
+                           (pair (big_map %shares address nat) (nat %tezPool))))
+               (pair (pair (pair (address %tokenAddress) (nat %tokenPool))
+                           (pair (nat %totalShares) (nat %veto)))
+                     (pair (pair (big_map %vetoVoters address nat) (big_map %vetos key_hash bool))
+                           (pair (big_map %voters
+                                    address
+                                    (pair (map %allowances address bool) (option %candidate key_hash)))
+                                 (big_map %votes key_hash nat)))))
+            (address %setMain))
+        (pair %use (pair (pair nat nat) (pair nat address)) (pair (pair address bool) key_hash))) ;
+  storage
+    (pair (address %main)
+          (pair %tmp (pair (pair nat nat) (pair nat address)) (pair (pair address bool) key_hash))) ;
+  code { DUP ;
+         CDR ;
+         DIG 1 ;
+         DUP ;
+         DUG 2 ;
+         CAR ;
+         IF_LEFT
+           { DUP ;
+             IF_LEFT
+               { DIG 2 ;
+                 DUP ;
+                 DUG 3 ;
+                 DIG 1 ;
+                 DUP ;
+                 DUG 2 ;
+                 DIG 4 ;
+                 DUP ;
+                 DUG 5 ;
+                 CDR ;
+                 CAR ;
+                 CAR ;
+                 CAR ;
+                 DIG 5 ;
+                 DUP ;
+                 DUG 6 ;
+                 CAR ;
+                 PAIR ;
+                 PAIR ;
+                 DUP ;
+                 CAR ;
+                 CAR ;
+                 DIG 1 ;
+                 DUP ;
+                 DUG 2 ;
+                 CAR ;
+                 CDR ;
+                 DIG 2 ;
+                 DUP ;
+                 DUG 3 ;
+                 CDR ;
+                 PUSH nat 0 ;
+                 DIG 1 ;
+                 DUP ;
+                 DUG 2 ;
+                 CAR ;
+                 CDR ;
+                 CAR ;
+                 CAR ;
+                 COMPARE ;
+                 NEQ ;
+                 IF { PUSH string "Wrong invariant" ; FAILWITH } { PUSH unit Unit } ;
+                 PUSH nat 0 ;
+                 DIG 2 ;
+                 DUP ;
+                 DUG 3 ;
+                 CDR ;
+                 CAR ;
+                 CDR ;
+                 CAR ;
+                 COMPARE ;
+                 NEQ ;
+                 IF { PUSH string "Wrong totalShares" ; FAILWITH } { PUSH unit Unit } ;
+                 PUSH mutez 1 ;
+                 AMOUNT ;
+                 COMPARE ;
+                 LT ;
+                 IF { PUSH string "Wrong amount" ; FAILWITH } { PUSH unit Unit } ;
+                 PUSH nat 10 ;
+                 DIG 5 ;
+                 DUP ;
+                 DUG 6 ;
+                 COMPARE ;
+                 LT ;
+                 IF { PUSH string "Wrong tokenAmount" ; FAILWITH } { PUSH unit Unit } ;
+                 PUSH mutez 500000000000000 ;
+                 AMOUNT ;
+                 COMPARE ;
+                 GT ;
+                 IF { PUSH string "Wrong amount" ; FAILWITH } { PUSH unit Unit } ;
+                 DIG 5 ;
+                 DUP ;
+                 DUG 6 ;
+                 DIG 7 ;
+                 DUP ;
+                 DUG 8 ;
+                 DIP { DUP ;
+                       CAR ;
+                       SWAP ;
+                       CDR ;
+                       DUP ;
+                       CDR ;
+                       SWAP ;
+                       CAR ;
+                       DUP ;
+                       CDR ;
+                       SWAP ;
+                       CAR ;
+                       CAR } ;
+                 SWAP ;
+                 PAIR ;
+                 PAIR ;
+                 PAIR ;
+                 SWAP ;
+                 PAIR ;
+                 PUSH mutez 1 ;
+                 AMOUNT ;
+                 EDIV ;
+                 IF_NONE { PUSH string "DIV by 0" ; FAILWITH } {} ;
+                 CAR ;
+                 DIP { DUP ;
+                       CDR ;
+                       SWAP ;
+                       CAR ;
+                       DUP ;
+                       CAR ;
+                       SWAP ;
+                       CDR ;
+                       DUP ;
+                       CAR ;
+                       SWAP ;
+                       CDR ;
+                       CAR } ;
+                 SWAP ;
+                 PAIR ;
+                 SWAP ;
+                 PAIR ;
+                 SWAP ;
+                 PAIR ;
+                 PAIR ;
+                 DUP ;
+                 DIG 1 ;
+                 DUP ;
+                 DUG 2 ;
+                 CDR ;
+                 CAR ;
+                 CAR ;
+                 CDR ;
+                 DIG 2 ;
+                 DUP ;
+                 DUG 3 ;
+                 CAR ;
+                 CDR ;
+                 CDR ;
+                 CDR ;
+                 MUL ;
+                 DIP { DUP ;
+                       CDR ;
+                       SWAP ;
+                       CAR ;
+                       DUP ;
+                       CAR ;
+                       SWAP ;
+                       CDR ;
+                       DUP ;
+                       CDR ;
+                       SWAP ;
+                       CAR ;
+                       CDR } ;
+                 PAIR ;
+                 PAIR ;
+                 SWAP ;
+                 PAIR ;
+                 PAIR ;
+                 DUP ;
+                 DIG 1 ;
+                 DUP ;
+                 DUG 2 ;
+                 CAR ;
+                 CDR ;
+                 CDR ;
+                 CAR ;
+                 PUSH nat 1000 ;
+                 SOME ;
+                 SENDER ;
+                 UPDATE ;
+                 DIP { DUP ;
+                       CDR ;
+                       SWAP ;
+                       CAR ;
+                       DUP ;
+                       CAR ;
+                       SWAP ;
+                       CDR ;
+                       DUP ;
+                       CAR ;
+                       SWAP ;
+                       CDR ;
+                       CDR } ;
+                 PAIR ;
+                 SWAP ;
+                 PAIR ;
+                 SWAP ;
+                 PAIR ;
+                 PAIR ;
+                 DUP ;
+                 DUP ;
+                 CAR ;
+                 SWAP ;
+                 CDR ;
+                 DUP ;
+                 CDR ;
+                 SWAP ;
+                 CAR ;
+                 DUP ;
+                 CAR ;
+                 SWAP ;
+                 CDR ;
+                 CDR ;
+                 PUSH nat 1000 ;
+                 PAIR ;
+                 SWAP ;
+                 PAIR ;
+                 PAIR ;
+                 SWAP ;
+                 PAIR ;
+                 NIL operation ;
+                 DIG 12 ;
+                 DUP ;
+                 DUG 13 ;
+                 CONTRACT
+                   (or (or (unit %default) (unit %getStorage))
+                       (pair %updateStorage
+                          (pair (pair (pair (big_map %allowed address bool) (key_hash %delegated))
+                                      (pair (address %factoryAddress) (nat %feeRate)))
+                                (pair (pair (nat %invariant) (key_hash %nextDelegated))
+                                      (pair (big_map %shares address nat) (nat %tezPool))))
+                          (pair (pair (pair (address %tokenAddress) (nat %tokenPool))
+                                      (pair (nat %totalShares) (nat %veto)))
+                                (pair (pair (big_map %vetoVoters address nat) (big_map %vetos key_hash bool))
+                                      (pair (big_map %voters
+                                               address
+                                               (pair (map %allowances address bool) (option %candidate key_hash)))
+                                            (big_map %votes key_hash nat)))))) ;
+                 IF_NONE { PUSH string "bad address for get_contract" ; FAILWITH } {} ;
+                 PUSH mutez 0 ;
+                 DIG 3 ;
+                 DUP ;
+                 DUG 4 ;
+                 RIGHT (or unit unit) ;
+                 TRANSFER_TOKENS ;
+                 CONS ;
+                 DIG 1 ;
+                 DUP ;
+                 DUG 2 ;
+                 CDR ;
+                 CAR ;
+                 CAR ;
+                 CAR ;
+                 CONTRACT
+                   (or (or (or (pair %approve address nat) (nat %burn))
+                           (or (pair %getAllowance (pair address address) (contract nat))
+                               (pair %getBalance address (contract nat))))
+                       (or (or (pair %getTotalSupply unit (contract nat)) (nat %mint))
+                           (pair %transfer (pair address address) nat))) ;
+                 IF_NONE { PUSH string "bad address for get_contract" ; FAILWITH } {} ;
+                 PUSH mutez 0 ;
+                 DIG 13 ;
+                 DUP ;
+                 DUG 14 ;
+                 DIG 15 ;
+                 DUP ;
+                 DUG 16 ;
+                 SENDER ;
+                 PAIR ;
+                 PAIR ;
+                 RIGHT (or (pair unit (contract nat)) nat) ;
+                 RIGHT
+                   (or (or (pair address nat) nat)
+                       (or (pair (pair address address) (contract nat)) (pair address (contract nat)))) ;
+                 TRANSFER_TOKENS ;
+                 CONS ;
+                 DIP { DROP 13 } ;
+                 PAIR ;
+                 DIP { DROP } }
+               { DIG 2 ;
+                 DUP ;
+                 DUG 3 ;
+                 CDR ;
+                 DIG 1 ;
+                 DUP ;
+                 DUG 2 ;
+                 PAIR ;
+                 NIL operation ;
+                 PAIR ;
+                 DIP { DROP } } ;
+             DIP { DROP } }
+           { DUP ;
+             DIG 2 ;
+             DUP ;
+             DUG 3 ;
+             CAR ;
+             PAIR ;
+             NIL operation ;
+             PUSH address "KT1T9JaNPAfQ2asWaRNVMDCU9zPvFntbZfwJ" ;
+             CONTRACT
+               (or (or (unit %default) (unit %getStorage))
+                   (pair %updateStorage
+                      (pair (pair (pair (big_map %allowed address bool) (key_hash %delegated))
+                                  (pair (address %factoryAddress) (nat %feeRate)))
+                            (pair (pair (nat %invariant) (key_hash %nextDelegated))
+                                  (pair (big_map %shares address nat) (nat %tezPool))))
+                      (pair (pair (pair (address %tokenAddress) (nat %tokenPool))
+                                  (pair (nat %totalShares) (nat %veto)))
+                            (pair (pair (big_map %vetoVoters address nat) (big_map %vetos key_hash bool))
+                                  (pair (big_map %voters
+                                           address
+                                           (pair (map %allowances address bool) (option %candidate key_hash)))
+                                        (big_map %votes key_hash nat)))))) ;
+             IF_NONE { PUSH string "bad address for get_contract" ; FAILWITH } {} ;
+             AMOUNT ;
+             UNIT ;
+             RIGHT unit ;
+             LEFT (pair (pair (pair (pair (big_map %allowed address bool) (key_hash %delegated))
+                                    (pair (address %factoryAddress) (nat %feeRate)))
+                              (pair (pair (nat %invariant) (key_hash %nextDelegated))
+                                    (pair (big_map %shares address nat) (nat %tezPool))))
+                        (pair (pair (pair (address %tokenAddress) (nat %tokenPool))
+                                    (pair (nat %totalShares) (nat %veto)))
+                              (pair (pair (big_map %vetoVoters address nat) (big_map %vetos key_hash bool))
+                                    (pair (big_map %voters
+                                             address
+                                             (pair (map %allowances address bool) (option %candidate key_hash)))
+                                          (big_map %votes key_hash nat))))) ;
+             TRANSFER_TOKENS ;
+             CONS ;
+             PAIR ;
+             DIP { DROP } } ;
+         DIP { DROP 2 } } }

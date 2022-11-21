@@ -1,0 +1,41 @@
+{ parameter (or (address %addCreditor) (unit %proxyApproval)) ;
+  storage (pair (address %creditor) (nat %payamount)) ;
+  code { DUP ;
+         CDR ;
+         DIG 1 ;
+         DUP ;
+         DUG 2 ;
+         CAR ;
+         IF_LEFT
+           { DIG 1 ; DUP ; DUG 2 ; NIL operation ; PAIR ; DIP { DROP } }
+           { PUSH address "KT1DdshqQRd8MSK4P57fyMtjQBuL6fVTpmgP" ;
+             CONTRACT (or (pair %approve address nat) (pair %transfer (pair address address) nat)) ;
+             IF_NONE
+               { PUSH string "Contract not found." ; FAILWITH }
+               { DUP ; DIP { DROP } } ;
+             DIG 2 ;
+             DUP ;
+             DUG 3 ;
+             LEFT (pair (pair address address) nat) ;
+             DIG 1 ;
+             DUP ;
+             DUG 2 ;
+             PUSH mutez 0 ;
+             DIG 2 ;
+             DUP ;
+             DUG 3 ;
+             TRANSFER_TOKENS ;
+             NIL operation ;
+             DIG 1 ;
+             DUP ;
+             DUG 2 ;
+             CONS ;
+             DIG 5 ;
+             DUP ;
+             DUG 6 ;
+             DIG 1 ;
+             DUP ;
+             DUG 2 ;
+             PAIR ;
+             DIP { DROP 5 } } ;
+         DIP { DROP 2 } } }

@@ -1,0 +1,22 @@
+{ parameter (pair (mutez %amount) (address %to)) ;
+  storage unit ;
+  code { DUP ;
+         CDR ;
+         SWAP ;
+         CAR ;
+         DUP ;
+         CDR ;
+         NIL operation ;
+         SWAP ;
+         CONTRACT unit ;
+         { IF_NONE { PUSH unit Unit ; FAILWITH } {} } ;
+         DIG 2 ;
+         DUP ;
+         DUG 3 ;
+         CAR ;
+         PUSH unit Unit ;
+         TRANSFER_TOKENS ;
+         CONS ;
+         SWAP ;
+         DROP ;
+         PAIR } }

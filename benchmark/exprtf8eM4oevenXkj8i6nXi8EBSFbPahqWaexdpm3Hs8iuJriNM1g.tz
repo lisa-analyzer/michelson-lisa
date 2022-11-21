@@ -1,0 +1,38 @@
+{ storage unit ;
+  parameter (or (unit %bounce) (unit %bounce2)) ;
+  code { DUP ;
+         CDR ;
+         SWAP ;
+         CAR ;
+         IF_LEFT
+           { { DROP ;
+               NIL operation ;
+               SOURCE ;
+               CONTRACT unit ;
+               IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+               AMOUNT ;
+               PUSH unit Unit ;
+               TRANSFER_TOKENS ;
+               CONS } }
+           { { DROP ;
+               NIL operation ;
+               SOURCE ;
+               CONTRACT unit ;
+               IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+               PUSH mutez 1000000 ;
+               PUSH unit Unit ;
+               TRANSFER_TOKENS ;
+               CONS ;
+               SOURCE ;
+               CONTRACT unit ;
+               IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+               PUSH mutez 1000000 ;
+               AMOUNT ;
+               SUB ;
+               PUSH unit Unit ;
+               TRANSFER_TOKENS ;
+               CONS } } ;
+         NIL operation ;
+         SWAP ;
+         ITER { CONS } ;
+         PAIR } }

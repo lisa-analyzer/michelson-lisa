@@ -1,0 +1,17 @@
+{ parameter unit ;
+  storage unit ;
+  code { {} ;
+         { DUP ; CDR ; DIP { CAR } } ;
+         { { PUSH mutez 1000 ; { PUSH unit Unit ; DROP ; BALANCE } ; COMPARE ; GT } ;
+           IF { PUSH unit Unit ; NIL operation ; PAIR }
+              { PUSH unit Unit ;
+                NIL operation ;
+                { { { PUSH address "KT1MtdoaDA3dQTZdfTHw85yc9JjKYvTSm78U" ;
+                      CONTRACT %withdraw mutez } ;
+                    IF_NONE { PUSH string "Option.get" ; FAILWITH } {} } ;
+                  PUSH mutez 0 ;
+                  PUSH mutez 100 ;
+                  TRANSFER_TOKENS } ;
+                CONS ;
+                PAIR } } ;
+         DIP { DROP 2 } } }

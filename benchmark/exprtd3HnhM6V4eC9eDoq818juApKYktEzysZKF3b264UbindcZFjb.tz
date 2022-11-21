@@ -1,0 +1,20 @@
+{ parameter (pair int int) ;
+  storage int ;
+  code { {} ;
+         { DUP ; CDR ; DIP { CAR } } ;
+         { { { DIG 1 ; DUP ; DUG 2 } ; CAR } ;
+           { { DIG 2 ; DUP ; DUG 3 } ; CDR } ;
+           { PUSH int 0 ; { DIG 2 ; DUP ; DUG 3 } ; COMPARE ; EQ } ;
+           IF { DUP ; NIL operation ; PAIR }
+              { { DIG 2 ; DUP ; DUG 3 } ;
+                NIL operation ;
+                { SELF ;
+                  PUSH mutez 0 ;
+                  { { DIG 5 ; DUP ; DUG 6 } ; { DIG 5 ; DUP ; DUG 6 } ; MUL } ;
+                  { PUSH int 1 ; { DIG 7 ; DUP ; DUG 8 } ; SUB } ;
+                  PAIR ;
+                  TRANSFER_TOKENS } ;
+                CONS ;
+                PAIR } ;
+           DIP { DROP 2 } } ;
+         DIP { DROP 2 } } }

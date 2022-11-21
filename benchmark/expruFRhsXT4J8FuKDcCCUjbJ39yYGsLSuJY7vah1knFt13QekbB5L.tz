@@ -1,0 +1,58 @@
+{ parameter
+    (or (unit %contribute)
+        (pair %init (address %admin) (pair (address %oracle) (address %protocol)))) ;
+  storage (pair (address %admin) (pair (address %oracle) (address %protocol))) ;
+  code { DUP ;
+         CDR ;
+         SWAP ;
+         CAR ;
+         IF_LEFT
+           { DROP ;
+             DUP ;
+             CAR ;
+             SENDER ;
+             COMPARE ;
+             NEQ ;
+             IF {}
+                { PUSH string "WrongCondition: sp.sender != self.data.admin" ; FAILWITH } ;
+             PUSH mutez 5000000 ;
+             AMOUNT ;
+             COMPARE ;
+             GT ;
+             IF {} { PUSH string "WrongCondition: sp.amount > sp.tez(5)" ; FAILWITH } ;
+             DUP ;
+             { CDR ; CDR } ;
+             CONTRACT %mint (pair (address %to_) (mutez %value)) ;
+             NIL operation ;
+             SWAP ;
+             { IF_NONE { PUSH int 27 ; FAILWITH } {} } ;
+             PUSH mutez 0 ;
+             AMOUNT ;
+             SENDER ;
+             PAIR %to_ %value ;
+             TRANSFER_TOKENS ;
+             CONS }
+           { SWAP ;
+             { CDR ; CAR } ;
+             SWAP ;
+             DUP ;
+             DUG 2 ;
+             { CDR ; CDR } ;
+             SWAP ;
+             PAIR ;
+             SWAP ;
+             DUP ;
+             DUG 2 ;
+             CAR ;
+             PAIR ;
+             DUP ;
+             CAR ;
+             SWAP ;
+             { CDR ; CDR } ;
+             DIG 2 ;
+             { CDR ; CAR } ;
+             PAIR ;
+             SWAP ;
+             PAIR ;
+             NIL operation } ;
+         PAIR } }

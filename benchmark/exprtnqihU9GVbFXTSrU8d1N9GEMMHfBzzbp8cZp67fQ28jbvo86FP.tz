@@ -1,0 +1,12 @@
+{ parameter unit ;
+  storage unit ;
+  code { CDR ;
+         NIL operation ;
+         SENDER ;
+         CONTRACT unit ;
+         { IF_NONE { PUSH unit Unit ; FAILWITH } {} } ;
+         AMOUNT ;
+         PUSH unit Unit ;
+         TRANSFER_TOKENS ;
+         CONS ;
+         PAIR } }

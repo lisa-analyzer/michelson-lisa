@@ -1,0 +1,34 @@
+{ parameter unit ;
+  storage address ;
+  code { DUP ;
+         CDR ;
+         AMOUNT ;
+         PUSH nat 2 ;
+         BALANCE ;
+         MUL ;
+         COMPARE ;
+         LE ;
+         IF { PUSH unit Unit } { PUSH string "Assertion" ; FAILWITH } ;
+         DIG 1 ;
+         DUP ;
+         DUG 2 ;
+         CONTRACT unit ;
+         IF_NONE
+           { PUSH string "invalid contract" ; FAILWITH }
+           { DUP ; DIP { DROP } } ;
+         AMOUNT ;
+         UNIT ;
+         TRANSFER_TOKENS ;
+         DIG 2 ;
+         DUP ;
+         DUG 3 ;
+         DROP ;
+         SENDER ;
+         DUP ;
+         NIL operation ;
+         DIG 3 ;
+         DUP ;
+         DUG 4 ;
+         CONS ;
+         PAIR ;
+         DIP { DROP 5 } } }

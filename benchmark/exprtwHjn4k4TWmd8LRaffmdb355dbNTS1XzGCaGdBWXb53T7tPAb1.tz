@@ -1,0 +1,57 @@
+{ parameter nat ;
+  storage (map nat (pair (nat %current_stock) (mutez %max_price))) ;
+  code { DUP ;
+         CAR ;
+         DIP { DUP } ;
+         SWAP ;
+         CDR ;
+         DIP { DUP } ;
+         SWAP ;
+         DIP { DUP } ;
+         GET ;
+         IF_NONE
+           { PUSH string "Unknown kind of taco." ; FAILWITH }
+           { DUP ; DIP { DROP } } ;
+         DUP ;
+         CDR ;
+         DIP { DUP ; CAR } ;
+         EDIV ;
+         IF_NONE { PUSH string "DIV by 0" ; FAILWITH } {} ;
+         CAR ;
+         DUP ;
+         AMOUNT ;
+         COMPARE ;
+         GE ;
+         IF { PUSH string "Sorry, the given amount is less than the current taco price" ;
+              FAILWITH }
+            { PUSH unit Unit } ;
+         DIP 2 { DUP } ;
+         DIG 2 ;
+         DIP 3 { DUP } ;
+         DIG 3 ;
+         CAR ;
+         PUSH nat 1 ;
+         SWAP ;
+         SUB ;
+         ABS ;
+         SWAP ;
+         CDR ;
+         SWAP ;
+         PAIR ;
+         PUSH address "tz1QHtcbpoieKbZx1E4pTDhHLqgWB7Q4YR9T" ;
+         CONTRACT unit ;
+         IF_NONE { PUSH string "bad address for get_contract" ; FAILWITH } {} ;
+         DUP ;
+         AMOUNT ;
+         UNIT ;
+         TRANSFER_TOKENS ;
+         DUP ;
+         NIL operation ;
+         SWAP ;
+         CONS ;
+         DIP { DIP 7 { DUP } ;
+               DIG 7 ;
+               DIP { DIP 2 { DUP } ; DIG 2 ; SOME ; DIP { DIP 6 { DUP } ; DIG 6 } } ;
+               UPDATE } ;
+         PAIR ;
+         DIP { DROP 9 } } }

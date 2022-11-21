@@ -1,0 +1,18 @@
+{ parameter unit ;
+  storage unit ;
+  code { DROP ;
+         PUSH mutez 30 ;
+         BALANCE ;
+         { COMPARE ;
+           EQ ;
+           IF { NIL operation ;
+                SENDER ;
+                CONTRACT address ;
+                { IF_NONE { { UNIT ; FAILWITH } } {} } ;
+                PUSH mutez 5 ;
+                SOURCE ;
+                TRANSFER_TOKENS ;
+                CONS }
+              { BALANCE ; FAILWITH } } ;
+         DIP { UNIT } ;
+         PAIR } }

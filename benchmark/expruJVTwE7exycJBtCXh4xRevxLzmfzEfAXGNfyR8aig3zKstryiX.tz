@@ -1,0 +1,186 @@
+{ parameter
+    (or (or (unit %setLocked) (pair %getSource unit (contract (address :source))))
+        (or (list %appendReceivers (pair (address :to) (nat :value)))
+            (pair %getReceiversBatch nat (contract (list (pair (address :to) (nat :value))))))) ;
+  storage
+    (pair (pair address (pair bool address))
+          (pair (big_map nat (pair address nat)) (pair nat nat))) ;
+  code { CAST (pair (or (or unit (pair unit (contract address)))
+                        (or (list (pair address nat)) (pair nat (contract (list (pair address nat))))))
+                    (pair (pair address (pair bool address))
+                          (pair (big_map nat (pair address nat)) (pair nat nat)))) ;
+         NIL operation ;
+         SWAP ;
+         DUP ;
+         CAR ;
+         DIP { CDR } ;
+         DUP ;
+         IF_LEFT
+           { IF_LEFT
+               { SENDER ;
+                 DIP 3 { DUP } ;
+                 DIG 3 ;
+                 CAR ;
+                 CAR ;
+                 COMPARE ;
+                 EQ ;
+                 IF {} { UNIT ; PUSH string "SenderIsNotOriginator" ; PAIR ; FAILWITH } ;
+                 DIP 2 { DUP } ;
+                 DIG 2 ;
+                 CAR ;
+                 CDR ;
+                 CAR ;
+                 DUP ;
+                 IF { UNIT ; PUSH string "DlLocked" ; PAIR ; FAILWITH } { PUSH bool True } ;
+                 DUP ;
+                 DUG 4 ;
+                 DIP 4
+                     { DIP { DUP ; DIP { CDR } ; CAR } ;
+                       DIP { DUP ; DIP { CAR } ; CDR } ;
+                       DIP { DUP ; DIP { CDR } ; CAR } ;
+                       SWAP ;
+                       DROP ;
+                       PAIR ;
+                       SWAP ;
+                       PAIR ;
+                       PAIR } ;
+                 DROP 3 }
+               { DIP 2 { DUP } ;
+                 DIG 2 ;
+                 CAR ;
+                 CDR ;
+                 CAR ;
+                 IF {} { UNIT ; PUSH string "DlNotLocked" ; PAIR ; FAILWITH } ;
+                 DUP ;
+                 CDR ;
+                 AMOUNT ;
+                 DIP 4 { DUP } ;
+                 DIG 4 ;
+                 CAR ;
+                 CDR ;
+                 CDR ;
+                 TRANSFER_TOKENS ;
+                 DUG 3 ;
+                 DIP 3 { CONS } ;
+                 DROP } }
+           { IF_LEFT
+               { DIP 2 { DUP } ;
+                 DIG 2 ;
+                 CAR ;
+                 CDR ;
+                 CAR ;
+                 DUP ;
+                 IF { UNIT ; PUSH string "DlLocked" ; PAIR ; FAILWITH } {} ;
+                 DROP ;
+                 SENDER ;
+                 DIP 3 { DUP } ;
+                 DIG 3 ;
+                 CAR ;
+                 CAR ;
+                 COMPARE ;
+                 EQ ;
+                 IF {} { UNIT ; PUSH string "SenderIsNotOriginator" ; PAIR ; FAILWITH } ;
+                 DIP 2 { DUP } ;
+                 DIG 2 ;
+                 CDR ;
+                 CDR ;
+                 CAR ;
+                 DIP { DUP } ;
+                 SWAP ;
+                 ITER { DIP 4 { DUP } ;
+                        DIG 4 ;
+                        CDR ;
+                        CAR ;
+                        DIP { DUP } ;
+                        SWAP ;
+                        SOME ;
+                        DIP 3 { DUP } ;
+                        DIG 3 ;
+                        UPDATE ;
+                        DUG 4 ;
+                        DIP 4
+                            { DIP { DUP ; DIP { CAR } ; CDR } ;
+                              DIP { DUP ; DIP { CDR } ; CAR } ;
+                              SWAP ;
+                              DROP ;
+                              PAIR ;
+                              SWAP ;
+                              PAIR } ;
+                        PUSH nat 1 ;
+                        SWAP ;
+                        DROP ;
+                        ADD } ;
+                 DUP ;
+                 DUG 3 ;
+                 DIP 3
+                     { DIP { DUP ; DIP { CAR } ; CDR } ;
+                       DIP { DUP ; DIP { CAR } ; CDR } ;
+                       DIP { DUP ; DIP { CDR } ; CAR } ;
+                       SWAP ;
+                       DROP ;
+                       PAIR ;
+                       SWAP ;
+                       PAIR ;
+                       SWAP ;
+                       PAIR } ;
+                 DROP 2 }
+               { DIP 2 { DUP } ;
+                 DIG 2 ;
+                 CAR ;
+                 CDR ;
+                 CAR ;
+                 IF {} { UNIT ; PUSH string "DlNotLocked" ; PAIR ; FAILWITH } ;
+                 DIP 2 { DUP } ;
+                 DIG 2 ;
+                 CDR ;
+                 CAR ;
+                 NIL (pair address nat) ;
+                 DIP 2 { DUP } ;
+                 DIG 2 ;
+                 CAR ;
+                 DIP 5 { DUP } ;
+                 DIG 5 ;
+                 CDR ;
+                 CDR ;
+                 CDR ;
+                 DUP ;
+                 DIP 2 { DUP } ;
+                 DIG 2 ;
+                 COMPARE ;
+                 LT ;
+                 LOOP { DIP 3 { DUP } ;
+                        DIG 3 ;
+                        DIP 2 { DUP } ;
+                        DIG 2 ;
+                        GET ;
+                        IF_NONE
+                          { DUP ; DIP 2 { DROP } ; DUG 1 }
+                          { DIP 3 { DUP } ;
+                            DIG 3 ;
+                            DIP { DUP } ;
+                            SWAP ;
+                            CONS ;
+                            DIP 4 { DROP } ;
+                            DUG 3 ;
+                            PUSH nat 1 ;
+                            DUG 2 ;
+                            DIP 2 { ADD } ;
+                            DROP } ;
+                        DUP ;
+                        DIP 2 { DUP } ;
+                        DIG 2 ;
+                        COMPARE ;
+                        LT } ;
+                 DIP 4 { DUP } ;
+                 DIG 4 ;
+                 CDR ;
+                 AMOUNT ;
+                 DIP 4 { DUP } ;
+                 DIG 4 ;
+                 TRANSFER_TOKENS ;
+                 DUG 7 ;
+                 DIP 7 { CONS } ;
+                 DROP 5 } } ;
+         DROP ;
+         SWAP ;
+         PAIR } }

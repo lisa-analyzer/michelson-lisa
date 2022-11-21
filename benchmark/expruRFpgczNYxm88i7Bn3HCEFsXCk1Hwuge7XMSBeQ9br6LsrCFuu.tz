@@ -1,0 +1,915 @@
+{ storage
+    (pair (pair (address %admin) (address %issuer))
+          (pair (big_map %msg nat string)
+                (pair (big_map %users address nat)
+                      (big_map %whitelists nat (pair (set %allowed_whitelists nat) (bool %unrestricted)))))) ;
+  parameter
+    (or (or (or (pair %addUser (address %new_user) (option %new_user_whitelist nat))
+                (or (address %assertReceiver) (list %assertReceivers address)))
+            (or (pair %assertTransfer (address %from_) (address %to_))
+                (or (list %assertTransfers (pair (address %from_) (address %to_))) (address %getAdmin))))
+        (or (or (address %getIssuer)
+                (or (pair %getUser (address %contractAddress) (address %user))
+                    (pair %getWhitelist (address %contractAddress) (nat %whitelistID))))
+            (or (address %setAdmin)
+                (or (address %setIssuer)
+                    (pair %setWhitelistOutbound
+                       (nat %new_id_whitelist)
+                       (option %new_outbound_whitelists
+                          (pair (set %allowed_whitelists nat) (bool %unrestricted)))))))) ;
+  code { LAMBDA
+           (pair (pair (pair (address %admin) (address %issuer))
+                       (pair (big_map %msg nat string)
+                             (pair (big_map %users address nat)
+                                   (big_map %whitelists nat (pair (set %allowed_whitelists nat) (bool %unrestricted))))))
+                 nat)
+           string
+           { { DUP ;
+               CAR ;
+               CDR ;
+               CAR ;
+               SWAP ;
+               CDR ;
+               GET ;
+               IF_NONE { PUSH string "" } {} } } ;
+         SWAP ;
+         CAST (pair (or (or (or (pair address (option nat)) (or address (list address)))
+                            (or (pair address address) (or (list (pair address address)) address)))
+                        (or (or address (or (pair address address) (pair address nat)))
+                            (or address (or address (pair nat (option (pair (set nat) bool)))))))
+                    (pair (pair address address)
+                          (pair (big_map nat string) (pair (big_map address nat) (big_map nat (pair (set nat) bool)))))) ;
+         DUP ;
+         CDR ;
+         SWAP ;
+         CAR ;
+         IF_LEFT
+           { IF_LEFT
+               { { IF_LEFT
+                     { { SWAP ;
+                         DUP ;
+                         DUG 2 ;
+                         CAR ;
+                         CAR ;
+                         SENDER ;
+                         COMPARE ;
+                         EQ ;
+                         IF { {} }
+                            { { DIG 2 ; PUSH nat 0 ; DIG 3 ; PAIR ; EXEC ; FAILWITH } } ;
+                         DUP ;
+                         CAR ;
+                         DIG 2 ;
+                         DUP ;
+                         DUG 3 ;
+                         CAR ;
+                         CDR ;
+                         COMPARE ;
+                         NEQ ;
+                         IF { {} }
+                            { { DIG 2 ; PUSH nat 1 ; DIG 3 ; PAIR ; EXEC ; FAILWITH } } ;
+                         DUP ;
+                         CDR ;
+                         IF_NONE { PUSH bool False } { { DROP ; PUSH bool True } } ;
+                         IF { { SWAP ;
+                                DUP ;
+                                CAR ;
+                                SWAP ;
+                                CDR ;
+                                DUP ;
+                                CAR ;
+                                SWAP ;
+                                CDR ;
+                                DUP ;
+                                CDR ;
+                                SWAP ;
+                                CAR ;
+                                DIG 4 ;
+                                DUP ;
+                                DUG 5 ;
+                                CDR ;
+                                IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                                SOME ;
+                                DIG 5 ;
+                                DUP ;
+                                DUG 6 ;
+                                CAR ;
+                                UPDATE ;
+                                PAIR ;
+                                SWAP ;
+                                PAIR ;
+                                SWAP ;
+                                PAIR ;
+                                SWAP } }
+                            { { SWAP ;
+                                DUP ;
+                                CAR ;
+                                SWAP ;
+                                CDR ;
+                                DUP ;
+                                CAR ;
+                                SWAP ;
+                                CDR ;
+                                DUP ;
+                                CDR ;
+                                SWAP ;
+                                CAR ;
+                                NONE nat ;
+                                DIG 5 ;
+                                DUP ;
+                                DUG 6 ;
+                                CAR ;
+                                UPDATE ;
+                                PAIR ;
+                                SWAP ;
+                                PAIR ;
+                                SWAP ;
+                                PAIR ;
+                                SWAP } } ;
+                         DROP } }
+                     { IF_LEFT
+                         { { SWAP ;
+                             DUP ;
+                             DUG 2 ;
+                             CAR ;
+                             CDR ;
+                             SWAP ;
+                             DUP ;
+                             DUG 2 ;
+                             COMPARE ;
+                             EQ ;
+                             IF { {} }
+                                { { SWAP ;
+                                    DUP ;
+                                    DUG 2 ;
+                                    CDR ;
+                                    CDR ;
+                                    CAR ;
+                                    SWAP ;
+                                    DUP ;
+                                    DUG 2 ;
+                                    MEM ;
+                                    IF { {} }
+                                       { { DIG 2 ; PUSH nat 2 ; DIG 3 ; PAIR ; EXEC ; FAILWITH } } ;
+                                    SWAP ;
+                                    DUP ;
+                                    DUG 2 ;
+                                    CDR ;
+                                    CDR ;
+                                    CDR ;
+                                    DIG 2 ;
+                                    DUP ;
+                                    DUG 3 ;
+                                    CDR ;
+                                    CDR ;
+                                    CAR ;
+                                    DIG 2 ;
+                                    DUP ;
+                                    DUG 3 ;
+                                    GET ;
+                                    IF_NONE { { PUSH string "Get-item:249" ; FAILWITH } } {} ;
+                                    MEM ;
+                                    IF { {} }
+                                       { { DIG 2 ; PUSH nat 3 ; DIG 3 ; PAIR ; EXEC ; FAILWITH } } ;
+                                    SWAP ;
+                                    DUP ;
+                                    DUG 2 ;
+                                    CDR ;
+                                    CDR ;
+                                    CDR ;
+                                    DIG 2 ;
+                                    DUP ;
+                                    DUG 3 ;
+                                    CDR ;
+                                    CDR ;
+                                    CAR ;
+                                    DIG 2 ;
+                                    DUP ;
+                                    DUG 3 ;
+                                    GET ;
+                                    IF_NONE { { PUSH string "Get-item:249" ; FAILWITH } } {} ;
+                                    GET ;
+                                    IF_NONE { { PUSH string "Get-item:45" ; FAILWITH } } {} ;
+                                    CDR ;
+                                    IF { {} }
+                                       { { DIG 2 ; PUSH nat 4 ; DIG 3 ; PAIR ; EXEC ; FAILWITH } } } } ;
+                             DROP } }
+                         { { DUP ;
+                             ITER { DIG 2 ;
+                                    DUP ;
+                                    DUG 3 ;
+                                    CAR ;
+                                    CDR ;
+                                    SWAP ;
+                                    DUP ;
+                                    DUG 2 ;
+                                    COMPARE ;
+                                    EQ ;
+                                    IF { {} }
+                                       { { DIG 2 ;
+                                           DUP ;
+                                           DUG 3 ;
+                                           CDR ;
+                                           CDR ;
+                                           CAR ;
+                                           SWAP ;
+                                           DUP ;
+                                           DUG 2 ;
+                                           MEM ;
+                                           IF { {} }
+                                              { { DIG 3 ; PUSH nat 2 ; DIG 4 ; PAIR ; EXEC ; FAILWITH } } ;
+                                           DIG 2 ;
+                                           DUP ;
+                                           DUG 3 ;
+                                           CDR ;
+                                           CDR ;
+                                           CDR ;
+                                           DIG 3 ;
+                                           DUP ;
+                                           DUG 4 ;
+                                           CDR ;
+                                           CDR ;
+                                           CAR ;
+                                           DIG 2 ;
+                                           DUP ;
+                                           DUG 3 ;
+                                           GET ;
+                                           IF_NONE { { PUSH string "Get-item:256" ; FAILWITH } } {} ;
+                                           MEM ;
+                                           IF { {} }
+                                              { { DIG 3 ; PUSH nat 3 ; DIG 4 ; PAIR ; EXEC ; FAILWITH } } ;
+                                           DIG 2 ;
+                                           DUP ;
+                                           DUG 3 ;
+                                           CDR ;
+                                           CDR ;
+                                           CDR ;
+                                           DIG 3 ;
+                                           DUP ;
+                                           DUG 4 ;
+                                           CDR ;
+                                           CDR ;
+                                           CAR ;
+                                           DIG 2 ;
+                                           DUP ;
+                                           DUG 3 ;
+                                           GET ;
+                                           IF_NONE { { PUSH string "Get-item:256" ; FAILWITH } } {} ;
+                                           GET ;
+                                           IF_NONE { { PUSH string "Get-item:45" ; FAILWITH } } {} ;
+                                           CDR ;
+                                           IF { {} }
+                                              { { DIG 3 ; PUSH nat 4 ; DIG 4 ; PAIR ; EXEC ; FAILWITH } } } } ;
+                                    DROP } ;
+                             DROP } } } ;
+                   NIL operation } }
+               { IF_LEFT
+                   { { SWAP ;
+                       DUP ;
+                       DUG 2 ;
+                       CAR ;
+                       CDR ;
+                       SWAP ;
+                       DUP ;
+                       DUG 2 ;
+                       CAR ;
+                       COMPARE ;
+                       EQ ;
+                       IF { { SWAP ;
+                              DUP ;
+                              DUG 2 ;
+                              CDR ;
+                              CDR ;
+                              CAR ;
+                              SWAP ;
+                              DUP ;
+                              DUG 2 ;
+                              CDR ;
+                              MEM ;
+                              IF { {} }
+                                 { { DIG 2 ; PUSH nat 2 ; DIG 3 ; PAIR ; EXEC ; FAILWITH } } ;
+                              SWAP ;
+                              DUP ;
+                              DUG 2 ;
+                              CDR ;
+                              CDR ;
+                              CDR ;
+                              DIG 2 ;
+                              DUP ;
+                              DUG 3 ;
+                              CDR ;
+                              CDR ;
+                              CAR ;
+                              DIG 2 ;
+                              DUP ;
+                              DUG 3 ;
+                              CDR ;
+                              GET ;
+                              IF_NONE { { PUSH string "Get-item:81" ; FAILWITH } } {} ;
+                              MEM ;
+                              IF { {} }
+                                 { { DIG 2 ; PUSH nat 3 ; DIG 3 ; PAIR ; EXEC ; FAILWITH } } ;
+                              SWAP ;
+                              DUP ;
+                              DUG 2 ;
+                              CDR ;
+                              CDR ;
+                              CDR ;
+                              DIG 2 ;
+                              DUP ;
+                              DUG 3 ;
+                              CDR ;
+                              CDR ;
+                              CAR ;
+                              DIG 2 ;
+                              DUP ;
+                              DUG 3 ;
+                              CDR ;
+                              GET ;
+                              IF_NONE { { PUSH string "Get-item:81" ; FAILWITH } } {} ;
+                              GET ;
+                              IF_NONE { { PUSH string "Get-item:45" ; FAILWITH } } {} ;
+                              CDR ;
+                              IF { {} }
+                                 { { DIG 2 ; PUSH nat 4 ; DIG 3 ; PAIR ; EXEC ; FAILWITH } } } }
+                          { { SWAP ;
+                              DUP ;
+                              DUG 2 ;
+                              CDR ;
+                              CDR ;
+                              CAR ;
+                              SWAP ;
+                              DUP ;
+                              DUG 2 ;
+                              CAR ;
+                              MEM ;
+                              IF { {} }
+                                 { { DIG 2 ; PUSH nat 2 ; DIG 3 ; PAIR ; EXEC ; FAILWITH } } ;
+                              SWAP ;
+                              DUP ;
+                              DUG 2 ;
+                              CDR ;
+                              CDR ;
+                              CAR ;
+                              SWAP ;
+                              DUP ;
+                              DUG 2 ;
+                              CDR ;
+                              MEM ;
+                              IF { {} }
+                                 { { DIG 2 ; PUSH nat 2 ; DIG 3 ; PAIR ; EXEC ; FAILWITH } } ;
+                              SWAP ;
+                              DUP ;
+                              DUG 2 ;
+                              CDR ;
+                              CDR ;
+                              CDR ;
+                              DIG 2 ;
+                              DUP ;
+                              DUG 3 ;
+                              CDR ;
+                              CDR ;
+                              CAR ;
+                              DIG 2 ;
+                              DUP ;
+                              DUG 3 ;
+                              CAR ;
+                              GET ;
+                              IF_NONE { { PUSH string "Get-item:80" ; FAILWITH } } {} ;
+                              MEM ;
+                              IF { {} }
+                                 { { DIG 2 ; PUSH nat 3 ; DIG 3 ; PAIR ; EXEC ; FAILWITH } } ;
+                              SWAP ;
+                              DUP ;
+                              DUG 2 ;
+                              CDR ;
+                              CDR ;
+                              CDR ;
+                              DIG 2 ;
+                              DUP ;
+                              DUG 3 ;
+                              CDR ;
+                              CDR ;
+                              CAR ;
+                              DIG 2 ;
+                              DUP ;
+                              DUG 3 ;
+                              CAR ;
+                              GET ;
+                              IF_NONE { { PUSH string "Get-item:80" ; FAILWITH } } {} ;
+                              GET ;
+                              IF_NONE { { PUSH string "Get-item:45" ; FAILWITH } } {} ;
+                              CDR ;
+                              IF { {} }
+                                 { { DIG 2 ; PUSH nat 4 ; DIG 3 ; PAIR ; EXEC ; FAILWITH } } ;
+                              SWAP ;
+                              DUP ;
+                              DUG 2 ;
+                              CDR ;
+                              CDR ;
+                              CDR ;
+                              DIG 2 ;
+                              DUP ;
+                              DUG 3 ;
+                              CDR ;
+                              CDR ;
+                              CAR ;
+                              DIG 2 ;
+                              DUP ;
+                              DUG 3 ;
+                              CDR ;
+                              GET ;
+                              IF_NONE { { PUSH string "Get-item:81" ; FAILWITH } } {} ;
+                              MEM ;
+                              IF { {} }
+                                 { { DIG 2 ; PUSH nat 3 ; DIG 3 ; PAIR ; EXEC ; FAILWITH } } ;
+                              SWAP ;
+                              DUP ;
+                              DUG 2 ;
+                              CDR ;
+                              CDR ;
+                              CDR ;
+                              DIG 2 ;
+                              DUP ;
+                              DUG 3 ;
+                              CDR ;
+                              CDR ;
+                              CAR ;
+                              DIG 2 ;
+                              DUP ;
+                              DUG 3 ;
+                              CDR ;
+                              GET ;
+                              IF_NONE { { PUSH string "Get-item:81" ; FAILWITH } } {} ;
+                              GET ;
+                              IF_NONE { { PUSH string "Get-item:45" ; FAILWITH } } {} ;
+                              CDR ;
+                              IF { {} }
+                                 { { DIG 2 ; PUSH nat 4 ; DIG 3 ; PAIR ; EXEC ; FAILWITH } } ;
+                              SWAP ;
+                              DUP ;
+                              DUG 2 ;
+                              CDR ;
+                              CDR ;
+                              CDR ;
+                              DIG 2 ;
+                              DUP ;
+                              DUG 3 ;
+                              CDR ;
+                              CDR ;
+                              CAR ;
+                              DIG 2 ;
+                              DUP ;
+                              DUG 3 ;
+                              CAR ;
+                              GET ;
+                              IF_NONE { { PUSH string "Get-item:80" ; FAILWITH } } {} ;
+                              GET ;
+                              IF_NONE { { PUSH string "Get-item:45" ; FAILWITH } } {} ;
+                              CAR ;
+                              DIG 2 ;
+                              DUP ;
+                              DUG 3 ;
+                              CDR ;
+                              CDR ;
+                              CAR ;
+                              DIG 2 ;
+                              DUP ;
+                              DUG 3 ;
+                              CDR ;
+                              GET ;
+                              IF_NONE { { PUSH string "Get-item:81" ; FAILWITH } } {} ;
+                              MEM ;
+                              IF { {} }
+                                 { { DIG 2 ; PUSH nat 5 ; DIG 3 ; PAIR ; EXEC ; FAILWITH } } } } ;
+                       DROP ;
+                       NIL operation } }
+                   { IF_LEFT
+                       { { DUP ;
+                           ITER { DIG 2 ;
+                                  DUP ;
+                                  DUG 3 ;
+                                  CAR ;
+                                  CDR ;
+                                  SWAP ;
+                                  DUP ;
+                                  DUG 2 ;
+                                  CAR ;
+                                  COMPARE ;
+                                  EQ ;
+                                  IF { { DIG 2 ;
+                                         DUP ;
+                                         DUG 3 ;
+                                         CDR ;
+                                         CDR ;
+                                         CAR ;
+                                         SWAP ;
+                                         DUP ;
+                                         DUG 2 ;
+                                         CDR ;
+                                         MEM ;
+                                         IF { {} }
+                                            { { DIG 3 ; PUSH nat 2 ; DIG 4 ; PAIR ; EXEC ; FAILWITH } } ;
+                                         DIG 2 ;
+                                         DUP ;
+                                         DUG 3 ;
+                                         CDR ;
+                                         CDR ;
+                                         CDR ;
+                                         DIG 3 ;
+                                         DUP ;
+                                         DUG 4 ;
+                                         CDR ;
+                                         CDR ;
+                                         CAR ;
+                                         DIG 2 ;
+                                         DUP ;
+                                         DUG 3 ;
+                                         CDR ;
+                                         GET ;
+                                         IF_NONE { { PUSH string "Get-item:81" ; FAILWITH } } {} ;
+                                         MEM ;
+                                         IF { {} }
+                                            { { DIG 3 ; PUSH nat 3 ; DIG 4 ; PAIR ; EXEC ; FAILWITH } } ;
+                                         DIG 2 ;
+                                         DUP ;
+                                         DUG 3 ;
+                                         CDR ;
+                                         CDR ;
+                                         CDR ;
+                                         DIG 3 ;
+                                         DUP ;
+                                         DUG 4 ;
+                                         CDR ;
+                                         CDR ;
+                                         CAR ;
+                                         DIG 2 ;
+                                         DUP ;
+                                         DUG 3 ;
+                                         CDR ;
+                                         GET ;
+                                         IF_NONE { { PUSH string "Get-item:81" ; FAILWITH } } {} ;
+                                         GET ;
+                                         IF_NONE { { PUSH string "Get-item:45" ; FAILWITH } } {} ;
+                                         CDR ;
+                                         IF { {} }
+                                            { { DIG 3 ; PUSH nat 4 ; DIG 4 ; PAIR ; EXEC ; FAILWITH } } } }
+                                     { { DIG 2 ;
+                                         DUP ;
+                                         DUG 3 ;
+                                         CDR ;
+                                         CDR ;
+                                         CAR ;
+                                         SWAP ;
+                                         DUP ;
+                                         DUG 2 ;
+                                         CAR ;
+                                         MEM ;
+                                         IF { {} }
+                                            { { DIG 3 ; PUSH nat 2 ; DIG 4 ; PAIR ; EXEC ; FAILWITH } } ;
+                                         DIG 2 ;
+                                         DUP ;
+                                         DUG 3 ;
+                                         CDR ;
+                                         CDR ;
+                                         CAR ;
+                                         SWAP ;
+                                         DUP ;
+                                         DUG 2 ;
+                                         CDR ;
+                                         MEM ;
+                                         IF { {} }
+                                            { { DIG 3 ; PUSH nat 2 ; DIG 4 ; PAIR ; EXEC ; FAILWITH } } ;
+                                         DIG 2 ;
+                                         DUP ;
+                                         DUG 3 ;
+                                         CDR ;
+                                         CDR ;
+                                         CDR ;
+                                         DIG 3 ;
+                                         DUP ;
+                                         DUG 4 ;
+                                         CDR ;
+                                         CDR ;
+                                         CAR ;
+                                         DIG 2 ;
+                                         DUP ;
+                                         DUG 3 ;
+                                         CAR ;
+                                         GET ;
+                                         IF_NONE { { PUSH string "Get-item:80" ; FAILWITH } } {} ;
+                                         MEM ;
+                                         IF { {} }
+                                            { { DIG 3 ; PUSH nat 3 ; DIG 4 ; PAIR ; EXEC ; FAILWITH } } ;
+                                         DIG 2 ;
+                                         DUP ;
+                                         DUG 3 ;
+                                         CDR ;
+                                         CDR ;
+                                         CDR ;
+                                         DIG 3 ;
+                                         DUP ;
+                                         DUG 4 ;
+                                         CDR ;
+                                         CDR ;
+                                         CAR ;
+                                         DIG 2 ;
+                                         DUP ;
+                                         DUG 3 ;
+                                         CAR ;
+                                         GET ;
+                                         IF_NONE { { PUSH string "Get-item:80" ; FAILWITH } } {} ;
+                                         GET ;
+                                         IF_NONE { { PUSH string "Get-item:45" ; FAILWITH } } {} ;
+                                         CDR ;
+                                         IF { {} }
+                                            { { DIG 3 ; PUSH nat 4 ; DIG 4 ; PAIR ; EXEC ; FAILWITH } } ;
+                                         DIG 2 ;
+                                         DUP ;
+                                         DUG 3 ;
+                                         CDR ;
+                                         CDR ;
+                                         CDR ;
+                                         DIG 3 ;
+                                         DUP ;
+                                         DUG 4 ;
+                                         CDR ;
+                                         CDR ;
+                                         CAR ;
+                                         DIG 2 ;
+                                         DUP ;
+                                         DUG 3 ;
+                                         CDR ;
+                                         GET ;
+                                         IF_NONE { { PUSH string "Get-item:81" ; FAILWITH } } {} ;
+                                         MEM ;
+                                         IF { {} }
+                                            { { DIG 3 ; PUSH nat 3 ; DIG 4 ; PAIR ; EXEC ; FAILWITH } } ;
+                                         DIG 2 ;
+                                         DUP ;
+                                         DUG 3 ;
+                                         CDR ;
+                                         CDR ;
+                                         CDR ;
+                                         DIG 3 ;
+                                         DUP ;
+                                         DUG 4 ;
+                                         CDR ;
+                                         CDR ;
+                                         CAR ;
+                                         DIG 2 ;
+                                         DUP ;
+                                         DUG 3 ;
+                                         CDR ;
+                                         GET ;
+                                         IF_NONE { { PUSH string "Get-item:81" ; FAILWITH } } {} ;
+                                         GET ;
+                                         IF_NONE { { PUSH string "Get-item:45" ; FAILWITH } } {} ;
+                                         CDR ;
+                                         IF { {} }
+                                            { { DIG 3 ; PUSH nat 4 ; DIG 4 ; PAIR ; EXEC ; FAILWITH } } ;
+                                         DIG 2 ;
+                                         DUP ;
+                                         DUG 3 ;
+                                         CDR ;
+                                         CDR ;
+                                         CDR ;
+                                         DIG 3 ;
+                                         DUP ;
+                                         DUG 4 ;
+                                         CDR ;
+                                         CDR ;
+                                         CAR ;
+                                         DIG 2 ;
+                                         DUP ;
+                                         DUG 3 ;
+                                         CAR ;
+                                         GET ;
+                                         IF_NONE { { PUSH string "Get-item:80" ; FAILWITH } } {} ;
+                                         GET ;
+                                         IF_NONE { { PUSH string "Get-item:45" ; FAILWITH } } {} ;
+                                         CAR ;
+                                         DIG 3 ;
+                                         DUP ;
+                                         DUG 4 ;
+                                         CDR ;
+                                         CDR ;
+                                         CAR ;
+                                         DIG 2 ;
+                                         DUP ;
+                                         DUG 3 ;
+                                         CDR ;
+                                         GET ;
+                                         IF_NONE { { PUSH string "Get-item:81" ; FAILWITH } } {} ;
+                                         MEM ;
+                                         IF { {} }
+                                            { { DIG 3 ; PUSH nat 5 ; DIG 4 ; PAIR ; EXEC ; FAILWITH } } } } ;
+                                  DROP } ;
+                           DROP ;
+                           NIL operation } }
+                       { { CONTRACT address ;
+                           NIL operation ;
+                           SWAP ;
+                           IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                           PUSH mutez 0 ;
+                           DIG 3 ;
+                           DUP ;
+                           DUG 4 ;
+                           CAR ;
+                           CAR ;
+                           TRANSFER_TOKENS ;
+                           CONS } } } } }
+           { IF_LEFT
+               { IF_LEFT
+                   { { CONTRACT address ;
+                       NIL operation ;
+                       SWAP ;
+                       IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                       PUSH mutez 0 ;
+                       DIG 3 ;
+                       DUP ;
+                       DUG 4 ;
+                       CAR ;
+                       CDR ;
+                       TRANSFER_TOKENS ;
+                       CONS } }
+                   { IF_LEFT
+                       { { SWAP ;
+                           DUP ;
+                           DUG 2 ;
+                           CDR ;
+                           CDR ;
+                           CAR ;
+                           SWAP ;
+                           DUP ;
+                           DUG 2 ;
+                           CDR ;
+                           MEM ;
+                           IF { {} }
+                              { { DIG 2 ; PUSH nat 6 ; DIG 3 ; PAIR ; EXEC ; FAILWITH } } ;
+                           DUP ;
+                           CAR ;
+                           CONTRACT nat ;
+                           NIL operation ;
+                           SWAP ;
+                           IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                           PUSH mutez 0 ;
+                           DIG 4 ;
+                           DUP ;
+                           DUG 5 ;
+                           CDR ;
+                           CDR ;
+                           CAR ;
+                           DIG 4 ;
+                           CDR ;
+                           GET ;
+                           IF_NONE { { PUSH string "Get-item:24" ; FAILWITH } } {} ;
+                           TRANSFER_TOKENS ;
+                           CONS } }
+                       { { SWAP ;
+                           DUP ;
+                           DUG 2 ;
+                           CDR ;
+                           CDR ;
+                           CDR ;
+                           SWAP ;
+                           DUP ;
+                           DUG 2 ;
+                           CDR ;
+                           MEM ;
+                           IF { {} }
+                              { { DIG 2 ; PUSH nat 7 ; DIG 3 ; PAIR ; EXEC ; FAILWITH } } ;
+                           DUP ;
+                           CAR ;
+                           CONTRACT (pair (set %allowed_whitelists nat) (bool %unrestricted)) ;
+                           NIL operation ;
+                           SWAP ;
+                           IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                           PUSH mutez 0 ;
+                           DIG 4 ;
+                           DUP ;
+                           DUG 5 ;
+                           CDR ;
+                           CDR ;
+                           CDR ;
+                           DIG 4 ;
+                           CDR ;
+                           GET ;
+                           IF_NONE { { PUSH string "Get-item:24" ; FAILWITH } } {} ;
+                           TRANSFER_TOKENS ;
+                           CONS } } } }
+               { { IF_LEFT
+                     { { SWAP ;
+                         DUP ;
+                         DUG 2 ;
+                         CAR ;
+                         CAR ;
+                         SENDER ;
+                         COMPARE ;
+                         EQ ;
+                         IF { {} }
+                            { { DIG 2 ; PUSH nat 0 ; DIG 3 ; PAIR ; EXEC ; FAILWITH } } ;
+                         SWAP ;
+                         DUP ;
+                         CDR ;
+                         SWAP ;
+                         CAR ;
+                         CDR ;
+                         DIG 2 ;
+                         PAIR ;
+                         PAIR } }
+                     { IF_LEFT
+                         { { SWAP ;
+                             DUP ;
+                             DUG 2 ;
+                             CAR ;
+                             CAR ;
+                             SENDER ;
+                             COMPARE ;
+                             EQ ;
+                             IF { {} }
+                                { { DIG 2 ; PUSH nat 0 ; DIG 3 ; PAIR ; EXEC ; FAILWITH } } ;
+                             SWAP ;
+                             DUP ;
+                             CDR ;
+                             SWAP ;
+                             CAR ;
+                             CAR ;
+                             DIG 2 ;
+                             SWAP ;
+                             PAIR ;
+                             PAIR } }
+                         { { SWAP ;
+                             DUP ;
+                             DUG 2 ;
+                             CAR ;
+                             CAR ;
+                             SENDER ;
+                             COMPARE ;
+                             EQ ;
+                             IF { {} }
+                                { { DIG 2 ; PUSH nat 0 ; DIG 3 ; PAIR ; EXEC ; FAILWITH } } ;
+                             DUP ;
+                             CDR ;
+                             IF_NONE { PUSH bool False } { { DROP ; PUSH bool True } } ;
+                             IF { { SWAP ;
+                                    DUP ;
+                                    CAR ;
+                                    SWAP ;
+                                    CDR ;
+                                    DUP ;
+                                    CAR ;
+                                    SWAP ;
+                                    CDR ;
+                                    DUP ;
+                                    CAR ;
+                                    SWAP ;
+                                    CDR ;
+                                    DIG 4 ;
+                                    DUP ;
+                                    DUG 5 ;
+                                    CDR ;
+                                    IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                                    SOME ;
+                                    DIG 5 ;
+                                    DUP ;
+                                    DUG 6 ;
+                                    CAR ;
+                                    UPDATE ;
+                                    SWAP ;
+                                    PAIR ;
+                                    SWAP ;
+                                    PAIR ;
+                                    SWAP ;
+                                    PAIR ;
+                                    SWAP } }
+                                { { SWAP ;
+                                    DUP ;
+                                    CAR ;
+                                    SWAP ;
+                                    CDR ;
+                                    DUP ;
+                                    CAR ;
+                                    SWAP ;
+                                    CDR ;
+                                    DUP ;
+                                    CAR ;
+                                    SWAP ;
+                                    CDR ;
+                                    NONE (pair (set %allowed_whitelists nat) (bool %unrestricted)) ;
+                                    DIG 5 ;
+                                    DUP ;
+                                    DUG 6 ;
+                                    CAR ;
+                                    UPDATE ;
+                                    SWAP ;
+                                    PAIR ;
+                                    SWAP ;
+                                    PAIR ;
+                                    SWAP ;
+                                    PAIR ;
+                                    SWAP } } ;
+                             DROP } } } ;
+                   NIL operation } } } ;
+         DIG 2 ;
+         DROP ;
+         PAIR } }

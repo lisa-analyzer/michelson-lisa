@@ -1,0 +1,60 @@
+{ parameter
+    (pair signature (pair nat (or (or (pair timestamp nat) address) (or address key)))) ;
+  storage (pair nat (pair key address)) ;
+  code { DUP ;
+         CAR ;
+         DIP { CDR } ;
+         DIP { DUP ; DUP ; CAR ; DIP { CDR } ; SWAP ; CAR } ;
+         DUP ;
+         DIP { SWAP ;
+               DIP { DUP ; CAR ; DIP { CDR } ; DIP { PACK } } ;
+               CHECK_SIGNATURE ;
+               IF {} { PUSH string "invalid signature" ; FAILWITH } } ;
+         CDR ;
+         DUP ;
+         CAR ;
+         DIP { CDR } ;
+         SWAP ;
+         DIP { COMPARE ; EQ ; IF {} { PUSH string "unequal counters" ; FAILWITH } } ;
+         DIP { DUP ; CAR ; DIP { CDR } ; PUSH nat 1 ; ADD ; PAIR } ;
+         IF_LEFT
+           { IF_LEFT
+               { DIP { DUP ; CDR ; CDR } ;
+                 LEFT address ;
+                 RIGHT (pair unit (contract (pair timestamp nat))) ;
+                 DIP { CONTRACT (or (pair unit (contract (pair timestamp nat))) (or (pair timestamp nat) address)) ;
+                       IF_NONE { PUSH string "not Oracle" ; FAILWITH } {} ;
+                       PUSH mutez 0 } ;
+                 TRANSFER_TOKENS ;
+                 DIP { NIL operation } ;
+                 CONS ;
+                 PAIR }
+               { DIP { DUP ; CDR ; CDR } ;
+                 RIGHT (pair timestamp nat) ;
+                 RIGHT (pair unit (contract (pair timestamp nat))) ;
+                 DIP { CONTRACT (or (pair unit (contract (pair timestamp nat))) (or (pair timestamp nat) address)) ;
+                       IF_NONE { PUSH string "not Oracle" ; FAILWITH } {} ;
+                       PUSH mutez 0 } ;
+                 TRANSFER_TOKENS ;
+                 DIP { NIL operation } ;
+                 CONS ;
+                 PAIR } }
+           { IF_LEFT
+               { SWAP ;
+                 DUP ;
+                 CAR ;
+                 DIP { CDR } ;
+                 DIP { CAR } ;
+                 DIP { PAIR } ;
+                 PAIR ;
+                 NIL operation ;
+                 PAIR }
+               { SWAP ;
+                 DUP ;
+                 CAR ;
+                 DIP { CDR } ;
+                 DIP { CDR ; SWAP } ;
+                 DIP { PAIR } ;
+                 PAIR ;
+                 NIL operation ;
+                 PAIR } } } }

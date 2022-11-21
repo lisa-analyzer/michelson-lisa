@@ -1,0 +1,34 @@
+{ storage (pair (int %buy) (int %sell)) ;
+  parameter
+    (or (pair %receiveDataFromOrO (int %buy) (int %sell))
+        (pair %requestDataFromOrO (string %currency) (address %oracleAddress))) ;
+  code { DUP ;
+         CDR ;
+         SWAP ;
+         CAR ;
+         IF_LEFT
+           { { SWAP ;
+               CDR ;
+               SWAP ;
+               DUP ;
+               DUG 2 ;
+               CAR ;
+               PAIR ;
+               SWAP ;
+               CDR ;
+               SWAP ;
+               CAR ;
+               PAIR ;
+               NIL operation } }
+           { { DUP ;
+               CDR ;
+               CONTRACT %getDataFromOrO string ;
+               NIL operation ;
+               SWAP ;
+               IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+               PUSH mutez 5000 ;
+               DIG 3 ;
+               CAR ;
+               TRANSFER_TOKENS ;
+               CONS } } ;
+         PAIR } }

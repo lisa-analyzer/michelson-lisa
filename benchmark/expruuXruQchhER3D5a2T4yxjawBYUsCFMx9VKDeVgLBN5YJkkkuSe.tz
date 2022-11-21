@@ -1,0 +1,178 @@
+{ parameter
+    (or (or (pair %approveApplication (address %applicant) (string %bountyId))
+            (pair %issueBounty (string %bountyId) (int %deadline)))
+        (string %refundBounty)) ;
+  storage
+    (map string
+         (pair (pair (mutez %balance) (string %bountyId))
+               (pair (int %deadline) (address %issuer)))) ;
+  code { LAMBDA
+           address
+           (contract unit)
+           { CONTRACT unit ;
+             IF_NONE { PUSH string "Not a contract" ; FAILWITH } {} } ;
+         LAMBDA
+           (pair (pair string address) (map string (pair (pair mutez string) (pair int address))))
+           (pair (pair mutez string) (pair int address))
+           { DUP ;
+             CDR ;
+             SWAP ;
+             DUP ;
+             DUG 2 ;
+             CAR ;
+             CAR ;
+             GET ;
+             IF_NONE
+               { DROP ; PUSH string "Can't find bounty" ; FAILWITH }
+               { SWAP ;
+                 CAR ;
+                 CDR ;
+                 SWAP ;
+                 DUP ;
+                 DUG 2 ;
+                 CDR ;
+                 CDR ;
+                 COMPARE ;
+                 NEQ ;
+                 IF { DROP ; PUSH string "Wrong issuer" ; FAILWITH } {} } } ;
+         DIG 2 ;
+         DUP ;
+         DUG 3 ;
+         CDR ;
+         DIG 3 ;
+         CAR ;
+         IF_LEFT
+           { IF_LEFT
+               { DUP ;
+                 DUG 2 ;
+                 CAR ;
+                 DIG 2 ;
+                 CDR ;
+                 PAIR ;
+                 PAIR ;
+                 DUP ;
+                 CAR ;
+                 CAR ;
+                 SWAP ;
+                 DUP ;
+                 DUG 2 ;
+                 CDR ;
+                 DUP ;
+                 SOURCE ;
+                 DIG 3 ;
+                 DUP ;
+                 DUG 4 ;
+                 PAIR ;
+                 PAIR ;
+                 DIG 4 ;
+                 SWAP ;
+                 EXEC ;
+                 SWAP ;
+                 NONE (pair (pair mutez string) (pair int address)) ;
+                 DIG 3 ;
+                 UPDATE ;
+                 DIG 2 ;
+                 CAR ;
+                 CDR ;
+                 DIG 3 ;
+                 SWAP ;
+                 EXEC ;
+                 DIG 2 ;
+                 CAR ;
+                 CAR ;
+                 UNIT ;
+                 TRANSFER_TOKENS ;
+                 SWAP ;
+                 NIL operation ;
+                 DIG 2 ;
+                 CONS ;
+                 PAIR }
+               { DIG 2 ;
+                 DROP ;
+                 DIG 2 ;
+                 DROP ;
+                 SWAP ;
+                 SOURCE ;
+                 PAIR ;
+                 SWAP ;
+                 PAIR ;
+                 DUP ;
+                 CAR ;
+                 CAR ;
+                 SWAP ;
+                 DUP ;
+                 DUG 2 ;
+                 CDR ;
+                 CDR ;
+                 PUSH mutez 0 ;
+                 AMOUNT ;
+                 COMPARE ;
+                 LE ;
+                 IF { DROP 3 ; PUSH string "Amount needs to be positive" ; FAILWITH }
+                    { DUP ;
+                      DIG 2 ;
+                      DUP ;
+                      DUG 3 ;
+                      GET ;
+                      IF_NONE
+                        { DIG 2 ;
+                          DUP ;
+                          DUG 3 ;
+                          CDR ;
+                          CAR ;
+                          DIG 3 ;
+                          CAR ;
+                          CDR ;
+                          PAIR ;
+                          DIG 2 ;
+                          DUP ;
+                          DUG 3 ;
+                          AMOUNT ;
+                          PAIR ;
+                          PAIR ;
+                          SOME ;
+                          DIG 2 ;
+                          UPDATE ;
+                          NIL operation ;
+                          PAIR }
+                        { SWAP ;
+                          DROP ;
+                          SWAP ;
+                          DROP ;
+                          SWAP ;
+                          DROP 2 ;
+                          PUSH string "Bounty exists" ;
+                          FAILWITH } } } }
+           { SWAP ;
+             DUP ;
+             SOURCE ;
+             DIG 3 ;
+             DUP ;
+             DUG 4 ;
+             PAIR ;
+             PAIR ;
+             DIG 3 ;
+             SWAP ;
+             EXEC ;
+             SWAP ;
+             NONE (pair (pair mutez string) (pair int address)) ;
+             DIG 3 ;
+             UPDATE ;
+             SWAP ;
+             DUP ;
+             DUG 2 ;
+             CDR ;
+             CDR ;
+             DIG 3 ;
+             SWAP ;
+             EXEC ;
+             DIG 2 ;
+             CAR ;
+             CAR ;
+             UNIT ;
+             TRANSFER_TOKENS ;
+             SWAP ;
+             NIL operation ;
+             DIG 2 ;
+             CONS ;
+             PAIR } } }

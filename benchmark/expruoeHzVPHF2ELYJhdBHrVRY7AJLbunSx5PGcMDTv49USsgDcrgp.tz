@@ -1,0 +1,103 @@
+{ parameter
+    (or (unit %getPrice)
+        (pair %setPrice (pair (nat %price) (address %senderAddress)) (string %symbol))) ;
+  storage (pair (pair (address %oracleAddress) (nat %price)) (string %symbol)) ;
+  code { NIL operation ;
+         DIG 1 ;
+         DUP ;
+         DUG 2 ;
+         CDR ;
+         DIG 2 ;
+         DUP ;
+         DUG 3 ;
+         CAR ;
+         IF_LEFT
+           { DIG 1 ;
+             DUP ;
+             DUG 2 ;
+             CDR ;
+             SELF ;
+             ADDRESS ;
+             CONTRACT %setPrice
+               (pair (pair (nat %price) (address %senderAddress)) (string %symbol)) ;
+             IF_NONE
+               { PUSH string "Not a contract" ; FAILWITH }
+               { DUP ; DIP { DROP } } ;
+             PAIR ;
+             DIG 2 ;
+             DUP ;
+             DUG 3 ;
+             CAR ;
+             CAR ;
+             CONTRACT %getPrice
+               (pair (contract %callback
+                        (pair (pair (nat %price) (address %senderAddress)) (string %symbol)))
+                     (string %symbol)) ;
+             IF_NONE
+               { PUSH string "Entrypoint not found." ; FAILWITH }
+               { DUP ; DIP { DROP } } ;
+             DIG 3 ;
+             DUP ;
+             DUG 4 ;
+             NIL operation ;
+             DIG 2 ;
+             DUP ;
+             DUG 3 ;
+             PUSH mutez 0 ;
+             DIG 5 ;
+             DUP ;
+             DUG 6 ;
+             TRANSFER_TOKENS ;
+             CONS ;
+             PAIR ;
+             DIP { DROP 3 } }
+           { DIG 1 ;
+             DUP ;
+             DUG 2 ;
+             DIG 1 ;
+             DUP ;
+             DUG 2 ;
+             PAIR ;
+             DUP ;
+             CAR ;
+             DIG 1 ;
+             DUP ;
+             DUG 2 ;
+             CDR ;
+             DUP ;
+             CDR ;
+             DIG 2 ;
+             DUP ;
+             DUG 3 ;
+             CDR ;
+             COMPARE ;
+             NEQ ;
+             IF { PUSH string "0" ; FAILWITH } { PUSH unit Unit } ;
+             SELF ;
+             ADDRESS ;
+             DIG 3 ;
+             DUP ;
+             DUG 4 ;
+             CAR ;
+             CDR ;
+             COMPARE ;
+             NEQ ;
+             IF { PUSH string "1" ; FAILWITH } { PUSH unit Unit } ;
+             DIG 2 ;
+             DUP ;
+             DUG 3 ;
+             DIG 4 ;
+             DUP ;
+             DUG 5 ;
+             CAR ;
+             CAR ;
+             DIP { DUP ; CDR ; SWAP ; CAR ; CAR } ;
+             SWAP ;
+             PAIR ;
+             PAIR ;
+             DIG 8 ;
+             DUP ;
+             DUG 9 ;
+             PAIR ;
+             DIP { DROP 6 } } ;
+         DIP { DROP 3 } } }

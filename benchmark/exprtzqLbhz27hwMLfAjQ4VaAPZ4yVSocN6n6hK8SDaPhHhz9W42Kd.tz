@@ -1,0 +1,1072 @@
+{ storage
+    (pair (pair (address %administrator)
+                (big_map %balances
+                   address
+                   (pair (map %approvals address int) (pair (int %balance) (int %nonce)))))
+          (pair (big_map %bigMapData bytes bytes) (int %totalSupply))) ;
+  parameter
+    (or (or (or (pair %approve (int %amount) (pair (address %f) (address %t)))
+                (pair %approveFeeless (bytes %b) (pair (key %k) (signature %s))))
+            (or (pair %burn (address %address) (int %amount))
+                (or (pair %changeAllowance
+                       (pair (int %amount) (string %entryPointName))
+                       (pair (address %f) (address %t)))
+                    (pair %changeAllowanceFeeless
+                       (pair (bytes %b) (string %entryPointName))
+                       (pair (key %k) (signature %s))))))
+        (or (or (pair %mint (address %address) (int %amount))
+                (or (address %resetAllAllowances)
+                    (pair %resetAllowance (address %address) (address %f))))
+            (or (pair %transfer (int %amount) (pair (address %f) (address %t)))
+                (or (pair %transferFeeless (bytes %b) (pair (key %k) (signature %s)))
+                    (map %upgrade bytes bytes))))) ;
+  code { DUP ;
+         CDR ;
+         SWAP ;
+         CAR ;
+         IF_LEFT
+           { IF_LEFT
+               { IF_LEFT
+                   { { SWAP ;
+                       DUP ;
+                       DUG 2 ;
+                       DUP ;
+                       CDR ;
+                       SWAP ;
+                       CAR ;
+                       CAR ;
+                       DIG 3 ;
+                       DUP ;
+                       DUG 4 ;
+                       CDR ;
+                       CAR ;
+                       PUSH bytes 0x05010000000b63616c6c417070726f7665 ;
+                       GET ;
+                       IF_NONE { { PUSH string "Get-item:6" ; FAILWITH } } {} ;
+                       UNPACK
+                         (lambda
+                            (pair (pair (int %amount)
+                                        (pair (big_map %balances
+                                                 address
+                                                 (pair (map %approvals address int) (pair (int %balance) (int %nonce))))
+                                              (big_map %data bytes bytes)))
+                                  (pair (address %f) (pair (address %sender) (address %t))))
+                            (big_map address (pair (map %approvals address int) (pair (int %balance) (int %nonce))))) ;
+                       IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                       DIG 3 ;
+                       DUP ;
+                       DUG 4 ;
+                       CDR ;
+                       CDR ;
+                       SENDER ;
+                       PAIR %sender %t ;
+                       DIG 4 ;
+                       DUP ;
+                       DUG 5 ;
+                       CDR ;
+                       CAR ;
+                       PAIR %f ;
+                       DIG 5 ;
+                       DUP ;
+                       DUG 6 ;
+                       CDR ;
+                       CAR ;
+                       DIG 6 ;
+                       CAR ;
+                       CDR ;
+                       PAIR %balances %data ;
+                       DIG 5 ;
+                       DUP ;
+                       DUG 6 ;
+                       CAR ;
+                       PAIR %amount ;
+                       PAIR ;
+                       EXEC ;
+                       SWAP ;
+                       PAIR ;
+                       PAIR ;
+                       SWAP ;
+                       NIL operation ;
+                       DIG 2 ;
+                       DUP ;
+                       DUG 3 ;
+                       CDR ;
+                       CAR ;
+                       PUSH bytes 0x0501000000186576656e7453696e6b436f6e747261637441646472657373 ;
+                       GET ;
+                       IF_NONE { { PUSH string "Get-item:20" ; FAILWITH } } {} ;
+                       UNPACK address ;
+                       IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                       CONTRACT %approvalEvent
+                         (pair (int %amount) (pair (address %owner) (address %spender))) ;
+                       IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                       PUSH mutez 0 ;
+                       DIG 3 ;
+                       DUP ;
+                       DUG 4 ;
+                       CDR ;
+                       CDR ;
+                       DIG 4 ;
+                       DUP ;
+                       DUG 5 ;
+                       CDR ;
+                       CAR ;
+                       PAIR %owner %spender ;
+                       DIG 4 ;
+                       CAR ;
+                       PAIR %amount ;
+                       TRANSFER_TOKENS ;
+                       CONS } }
+                   { { SWAP ;
+                       DUP ;
+                       DUG 2 ;
+                       DUP ;
+                       CDR ;
+                       SWAP ;
+                       CAR ;
+                       CAR ;
+                       DIG 3 ;
+                       DUP ;
+                       DUG 4 ;
+                       CDR ;
+                       CAR ;
+                       PUSH bytes 0x05010000001263616c6c417070726f76654665656c657373 ;
+                       GET ;
+                       IF_NONE { { PUSH string "Get-item:12" ; FAILWITH } } {} ;
+                       UNPACK
+                         (lambda
+                            (pair (pair (bytes %b)
+                                        (pair (big_map %balances
+                                                 address
+                                                 (pair (map %approvals address int) (pair (int %balance) (int %nonce))))
+                                              (big_map %data bytes bytes)))
+                                  (pair (pair (key %k) (signature %s)) (pair (address %sender) (address %thisAddress))))
+                            (big_map address (pair (map %approvals address int) (pair (int %balance) (int %nonce))))) ;
+                       IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                       SELF ;
+                       ADDRESS ;
+                       SENDER ;
+                       PAIR %sender %thisAddress ;
+                       DIG 4 ;
+                       DUP ;
+                       DUG 5 ;
+                       CDR ;
+                       CDR ;
+                       DIG 5 ;
+                       DUP ;
+                       DUG 6 ;
+                       CDR ;
+                       CAR ;
+                       PAIR %k %s ;
+                       PAIR ;
+                       DIG 5 ;
+                       DUP ;
+                       DUG 6 ;
+                       CDR ;
+                       CAR ;
+                       DIG 6 ;
+                       CAR ;
+                       CDR ;
+                       PAIR %balances %data ;
+                       DIG 5 ;
+                       DUP ;
+                       DUG 6 ;
+                       CAR ;
+                       PAIR %b ;
+                       PAIR ;
+                       EXEC ;
+                       SWAP ;
+                       PAIR ;
+                       PAIR ;
+                       SWAP ;
+                       NIL operation ;
+                       DIG 2 ;
+                       DUP ;
+                       DUG 3 ;
+                       CDR ;
+                       CAR ;
+                       PUSH bytes 0x0501000000186576656e7453696e6b436f6e747261637441646472657373 ;
+                       GET ;
+                       IF_NONE { { PUSH string "Get-item:20" ; FAILWITH } } {} ;
+                       UNPACK address ;
+                       IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                       CONTRACT %approvalEvent
+                         (pair (int %amount) (pair (address %owner) (address %spender))) ;
+                       IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                       PUSH mutez 0 ;
+                       DIG 3 ;
+                       DUP ;
+                       DUG 4 ;
+                       CAR ;
+                       UNPACK (pair int (pair int (pair address (pair address address)))) ;
+                       IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                       CDR ;
+                       CDR ;
+                       CDR ;
+                       CAR ;
+                       DIG 4 ;
+                       DUP ;
+                       DUG 5 ;
+                       CAR ;
+                       UNPACK (pair int (pair int (pair address (pair address address)))) ;
+                       IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                       CDR ;
+                       CDR ;
+                       CAR ;
+                       PAIR %owner %spender ;
+                       DIG 4 ;
+                       CAR ;
+                       UNPACK (pair int (pair int (pair address (pair address address)))) ;
+                       IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                       CAR ;
+                       PAIR %amount ;
+                       TRANSFER_TOKENS ;
+                       CONS } } }
+               { IF_LEFT
+                   { { SWAP ;
+                       DUP ;
+                       DUG 2 ;
+                       DUP ;
+                       CDR ;
+                       SWAP ;
+                       CAR ;
+                       CAR ;
+                       DIG 3 ;
+                       DUP ;
+                       DUG 4 ;
+                       CDR ;
+                       CAR ;
+                       PUSH bytes 0x05010000000863616c6c4275726e ;
+                       GET ;
+                       IF_NONE { { PUSH string "Get-item:4" ; FAILWITH } } {} ;
+                       UNPACK
+                         (lambda
+                            (pair (pair (address %address)
+                                        (pair (int %amount)
+                                              (big_map %balances
+                                                 address
+                                                 (pair (map %approvals address int) (pair (int %balance) (int %nonce))))))
+                                  (pair (big_map %data bytes bytes) (pair (address %sender) (int %totalSupply))))
+                            (pair (big_map %balances
+                                     address
+                                     (pair (map %approvals address int) (pair (int %balance) (int %nonce))))
+                                  (int %totalSupply))) ;
+                       IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                       DIG 4 ;
+                       DUP ;
+                       DUG 5 ;
+                       CDR ;
+                       CDR ;
+                       SENDER ;
+                       PAIR %sender %totalSupply ;
+                       DIG 5 ;
+                       DUP ;
+                       DUG 6 ;
+                       CDR ;
+                       CAR ;
+                       PAIR %data ;
+                       DIG 5 ;
+                       CAR ;
+                       CDR ;
+                       DIG 5 ;
+                       DUP ;
+                       DUG 6 ;
+                       CDR ;
+                       PAIR %amount %balances ;
+                       DIG 5 ;
+                       DUP ;
+                       DUG 6 ;
+                       CAR ;
+                       PAIR %address ;
+                       PAIR ;
+                       EXEC ;
+                       CAR ;
+                       SWAP ;
+                       PAIR ;
+                       PAIR ;
+                       SWAP ;
+                       SWAP ;
+                       DUP ;
+                       DUG 2 ;
+                       DUP ;
+                       CAR ;
+                       SWAP ;
+                       CDR ;
+                       CAR ;
+                       DIG 3 ;
+                       DUP ;
+                       DUG 4 ;
+                       CDR ;
+                       CAR ;
+                       PUSH bytes 0x05010000000863616c6c4275726e ;
+                       GET ;
+                       IF_NONE { { PUSH string "Get-item:4" ; FAILWITH } } {} ;
+                       UNPACK
+                         (lambda
+                            (pair (pair (address %address)
+                                        (pair (int %amount)
+                                              (big_map %balances
+                                                 address
+                                                 (pair (map %approvals address int) (pair (int %balance) (int %nonce))))))
+                                  (pair (big_map %data bytes bytes) (pair (address %sender) (int %totalSupply))))
+                            (pair (big_map %balances
+                                     address
+                                     (pair (map %approvals address int) (pair (int %balance) (int %nonce))))
+                                  (int %totalSupply))) ;
+                       IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                       DIG 4 ;
+                       DUP ;
+                       DUG 5 ;
+                       CDR ;
+                       CDR ;
+                       SENDER ;
+                       PAIR %sender %totalSupply ;
+                       DIG 5 ;
+                       DUP ;
+                       DUG 6 ;
+                       CDR ;
+                       CAR ;
+                       PAIR %data ;
+                       DIG 5 ;
+                       CAR ;
+                       CDR ;
+                       DIG 5 ;
+                       DUP ;
+                       DUG 6 ;
+                       CDR ;
+                       PAIR %amount %balances ;
+                       DIG 5 ;
+                       DUP ;
+                       DUG 6 ;
+                       CAR ;
+                       PAIR %address ;
+                       PAIR ;
+                       EXEC ;
+                       CDR ;
+                       SWAP ;
+                       PAIR ;
+                       SWAP ;
+                       PAIR ;
+                       SWAP ;
+                       NIL operation ;
+                       DIG 2 ;
+                       DUP ;
+                       DUG 3 ;
+                       CDR ;
+                       CAR ;
+                       PUSH bytes 0x0501000000186576656e7453696e6b436f6e747261637441646472657373 ;
+                       GET ;
+                       IF_NONE { { PUSH string "Get-item:20" ; FAILWITH } } {} ;
+                       UNPACK address ;
+                       IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                       CONTRACT %transferEvent
+                         (pair (int %amount) (pair (option %fromAddress address) (option %toAddress address))) ;
+                       IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                       PUSH mutez 0 ;
+                       NONE address ;
+                       DIG 4 ;
+                       DUP ;
+                       DUG 5 ;
+                       CAR ;
+                       SOME ;
+                       PAIR %fromAddress %toAddress ;
+                       DIG 4 ;
+                       CDR ;
+                       PAIR %amount ;
+                       TRANSFER_TOKENS ;
+                       CONS } }
+                   { IF_LEFT
+                       { { SWAP ;
+                           DUP ;
+                           DUG 2 ;
+                           DUP ;
+                           CDR ;
+                           SWAP ;
+                           CAR ;
+                           CAR ;
+                           DIG 3 ;
+                           DUP ;
+                           DUG 4 ;
+                           CDR ;
+                           CAR ;
+                           DIG 3 ;
+                           DUP ;
+                           DUG 4 ;
+                           CAR ;
+                           CDR ;
+                           PACK ;
+                           GET ;
+                           IF_NONE { { PUSH string "Get-item:322" ; FAILWITH } } {} ;
+                           UNPACK
+                             (lambda
+                                (pair (pair (int %amount)
+                                            (pair (big_map %balances
+                                                     address
+                                                     (pair (map %approvals address int) (pair (int %balance) (int %nonce))))
+                                                  (big_map %data bytes bytes)))
+                                      (pair (address %f) (pair (address %sender) (address %t))))
+                                (big_map address (pair (map %approvals address int) (pair (int %balance) (int %nonce))))) ;
+                           IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                           DIG 3 ;
+                           DUP ;
+                           DUG 4 ;
+                           CDR ;
+                           CDR ;
+                           SENDER ;
+                           PAIR %sender %t ;
+                           DIG 4 ;
+                           DUP ;
+                           DUG 5 ;
+                           CDR ;
+                           CAR ;
+                           PAIR %f ;
+                           DIG 5 ;
+                           DUP ;
+                           DUG 6 ;
+                           CDR ;
+                           CAR ;
+                           DIG 6 ;
+                           CAR ;
+                           CDR ;
+                           PAIR %balances %data ;
+                           DIG 5 ;
+                           DUP ;
+                           DUG 6 ;
+                           CAR ;
+                           CAR ;
+                           PAIR %amount ;
+                           PAIR ;
+                           EXEC ;
+                           SWAP ;
+                           PAIR ;
+                           PAIR ;
+                           SWAP ;
+                           NIL operation ;
+                           DIG 2 ;
+                           DUP ;
+                           DUG 3 ;
+                           CDR ;
+                           CAR ;
+                           PUSH bytes 0x0501000000186576656e7453696e6b436f6e747261637441646472657373 ;
+                           GET ;
+                           IF_NONE { { PUSH string "Get-item:20" ; FAILWITH } } {} ;
+                           UNPACK address ;
+                           IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                           CONTRACT %approvalEvent
+                             (pair (int %amount) (pair (address %owner) (address %spender))) ;
+                           IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                           PUSH mutez 0 ;
+                           DIG 3 ;
+                           DUP ;
+                           DUG 4 ;
+                           CDR ;
+                           CDR ;
+                           DIG 4 ;
+                           DUP ;
+                           DUG 5 ;
+                           CDR ;
+                           CAR ;
+                           PAIR %owner %spender ;
+                           DIG 4 ;
+                           CAR ;
+                           CAR ;
+                           PAIR %amount ;
+                           TRANSFER_TOKENS ;
+                           CONS } }
+                       { { SWAP ;
+                           DUP ;
+                           DUG 2 ;
+                           DUP ;
+                           CDR ;
+                           SWAP ;
+                           CAR ;
+                           CAR ;
+                           DIG 3 ;
+                           DUP ;
+                           DUG 4 ;
+                           CDR ;
+                           CAR ;
+                           DIG 3 ;
+                           DUP ;
+                           DUG 4 ;
+                           CAR ;
+                           CDR ;
+                           PACK ;
+                           GET ;
+                           IF_NONE { { PUSH string "Get-item:555" ; FAILWITH } } {} ;
+                           UNPACK
+                             (lambda
+                                (pair (pair (bytes %b)
+                                            (pair (big_map %balances
+                                                     address
+                                                     (pair (map %approvals address int) (pair (int %balance) (int %nonce))))
+                                                  (big_map %data bytes bytes)))
+                                      (pair (pair (key %k) (signature %s)) (pair (address %sender) (address %thisAddress))))
+                                (big_map address (pair (map %approvals address int) (pair (int %balance) (int %nonce))))) ;
+                           IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                           SELF ;
+                           ADDRESS ;
+                           SENDER ;
+                           PAIR %sender %thisAddress ;
+                           DIG 4 ;
+                           DUP ;
+                           DUG 5 ;
+                           CDR ;
+                           CDR ;
+                           DIG 5 ;
+                           DUP ;
+                           DUG 6 ;
+                           CDR ;
+                           CAR ;
+                           PAIR %k %s ;
+                           PAIR ;
+                           DIG 5 ;
+                           DUP ;
+                           DUG 6 ;
+                           CDR ;
+                           CAR ;
+                           DIG 6 ;
+                           CAR ;
+                           CDR ;
+                           PAIR %balances %data ;
+                           DIG 5 ;
+                           DUP ;
+                           DUG 6 ;
+                           CAR ;
+                           CAR ;
+                           PAIR %b ;
+                           PAIR ;
+                           EXEC ;
+                           SWAP ;
+                           PAIR ;
+                           PAIR ;
+                           SWAP ;
+                           NIL operation ;
+                           DIG 2 ;
+                           DUP ;
+                           DUG 3 ;
+                           CDR ;
+                           CAR ;
+                           PUSH bytes 0x0501000000186576656e7453696e6b436f6e747261637441646472657373 ;
+                           GET ;
+                           IF_NONE { { PUSH string "Get-item:20" ; FAILWITH } } {} ;
+                           UNPACK address ;
+                           IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                           CONTRACT %approvalEvent
+                             (pair (int %amount) (pair (address %owner) (address %spender))) ;
+                           IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                           PUSH mutez 0 ;
+                           DIG 3 ;
+                           DUP ;
+                           DUG 4 ;
+                           CAR ;
+                           CAR ;
+                           UNPACK (pair int (pair int (pair address (pair address address)))) ;
+                           IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                           CDR ;
+                           CDR ;
+                           CDR ;
+                           CAR ;
+                           DIG 4 ;
+                           DUP ;
+                           DUG 5 ;
+                           CAR ;
+                           CAR ;
+                           UNPACK (pair int (pair int (pair address (pair address address)))) ;
+                           IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                           CDR ;
+                           CDR ;
+                           CAR ;
+                           PAIR %owner %spender ;
+                           DIG 4 ;
+                           CAR ;
+                           CAR ;
+                           UNPACK (pair int (pair int (pair address (pair address address)))) ;
+                           IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                           CAR ;
+                           PAIR %amount ;
+                           TRANSFER_TOKENS ;
+                           CONS } } } } }
+           { IF_LEFT
+               { IF_LEFT
+                   { { SWAP ;
+                       DUP ;
+                       DUG 2 ;
+                       DUP ;
+                       CDR ;
+                       SWAP ;
+                       CAR ;
+                       CAR ;
+                       DIG 3 ;
+                       DUP ;
+                       DUG 4 ;
+                       CDR ;
+                       CAR ;
+                       PUSH bytes 0x05010000000863616c6c4d696e74 ;
+                       GET ;
+                       IF_NONE { { PUSH string "Get-item:3" ; FAILWITH } } {} ;
+                       UNPACK
+                         (lambda
+                            (pair (pair (address %address)
+                                        (pair (int %amount)
+                                              (big_map %balances
+                                                 address
+                                                 (pair (map %approvals address int) (pair (int %balance) (int %nonce))))))
+                                  (pair (big_map %data bytes bytes) (pair (address %sender) (int %totalSupply))))
+                            (pair (big_map %balances
+                                     address
+                                     (pair (map %approvals address int) (pair (int %balance) (int %nonce))))
+                                  (int %totalSupply))) ;
+                       IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                       DIG 4 ;
+                       DUP ;
+                       DUG 5 ;
+                       CDR ;
+                       CDR ;
+                       SENDER ;
+                       PAIR %sender %totalSupply ;
+                       DIG 5 ;
+                       DUP ;
+                       DUG 6 ;
+                       CDR ;
+                       CAR ;
+                       PAIR %data ;
+                       DIG 5 ;
+                       CAR ;
+                       CDR ;
+                       DIG 5 ;
+                       DUP ;
+                       DUG 6 ;
+                       CDR ;
+                       PAIR %amount %balances ;
+                       DIG 5 ;
+                       DUP ;
+                       DUG 6 ;
+                       CAR ;
+                       PAIR %address ;
+                       PAIR ;
+                       EXEC ;
+                       CAR ;
+                       SWAP ;
+                       PAIR ;
+                       PAIR ;
+                       SWAP ;
+                       SWAP ;
+                       DUP ;
+                       DUG 2 ;
+                       DUP ;
+                       CAR ;
+                       SWAP ;
+                       CDR ;
+                       CAR ;
+                       DIG 3 ;
+                       DUP ;
+                       DUG 4 ;
+                       CDR ;
+                       CAR ;
+                       PUSH bytes 0x05010000000863616c6c4d696e74 ;
+                       GET ;
+                       IF_NONE { { PUSH string "Get-item:3" ; FAILWITH } } {} ;
+                       UNPACK
+                         (lambda
+                            (pair (pair (address %address)
+                                        (pair (int %amount)
+                                              (big_map %balances
+                                                 address
+                                                 (pair (map %approvals address int) (pair (int %balance) (int %nonce))))))
+                                  (pair (big_map %data bytes bytes) (pair (address %sender) (int %totalSupply))))
+                            (pair (big_map %balances
+                                     address
+                                     (pair (map %approvals address int) (pair (int %balance) (int %nonce))))
+                                  (int %totalSupply))) ;
+                       IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                       DIG 4 ;
+                       DUP ;
+                       DUG 5 ;
+                       CDR ;
+                       CDR ;
+                       SENDER ;
+                       PAIR %sender %totalSupply ;
+                       DIG 5 ;
+                       DUP ;
+                       DUG 6 ;
+                       CDR ;
+                       CAR ;
+                       PAIR %data ;
+                       DIG 5 ;
+                       CAR ;
+                       CDR ;
+                       DIG 5 ;
+                       DUP ;
+                       DUG 6 ;
+                       CDR ;
+                       PAIR %amount %balances ;
+                       DIG 5 ;
+                       DUP ;
+                       DUG 6 ;
+                       CAR ;
+                       PAIR %address ;
+                       PAIR ;
+                       EXEC ;
+                       CDR ;
+                       SWAP ;
+                       PAIR ;
+                       SWAP ;
+                       PAIR ;
+                       SWAP ;
+                       NIL operation ;
+                       DIG 2 ;
+                       DUP ;
+                       DUG 3 ;
+                       CDR ;
+                       CAR ;
+                       PUSH bytes 0x0501000000186576656e7453696e6b436f6e747261637441646472657373 ;
+                       GET ;
+                       IF_NONE { { PUSH string "Get-item:20" ; FAILWITH } } {} ;
+                       UNPACK address ;
+                       IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                       CONTRACT %transferEvent
+                         (pair (int %amount) (pair (option %fromAddress address) (option %toAddress address))) ;
+                       IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                       PUSH mutez 0 ;
+                       DIG 3 ;
+                       DUP ;
+                       DUG 4 ;
+                       CAR ;
+                       SOME ;
+                       NONE address ;
+                       PAIR %fromAddress %toAddress ;
+                       DIG 4 ;
+                       CDR ;
+                       PAIR %amount ;
+                       TRANSFER_TOKENS ;
+                       CONS } }
+                   { { IF_LEFT
+                         { { SWAP ;
+                             DUP ;
+                             DUG 2 ;
+                             DUP ;
+                             CDR ;
+                             SWAP ;
+                             CAR ;
+                             CAR ;
+                             DIG 3 ;
+                             DUP ;
+                             DUG 4 ;
+                             CDR ;
+                             CAR ;
+                             PUSH bytes 0x05010000001663616c6c5265736574416c6c416c6c6f77616e636573 ;
+                             GET ;
+                             IF_NONE { { PUSH string "Get-item:9" ; FAILWITH } } {} ;
+                             UNPACK
+                               (lambda
+                                  (pair (pair (address %address)
+                                              (big_map %balances
+                                                 address
+                                                 (pair (map %approvals address int) (pair (int %balance) (int %nonce)))))
+                                        (pair (big_map %data bytes bytes) (address %sender)))
+                                  (big_map address (pair (map %approvals address int) (pair (int %balance) (int %nonce))))) ;
+                             IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                             SENDER ;
+                             DIG 5 ;
+                             DUP ;
+                             DUG 6 ;
+                             CDR ;
+                             CAR ;
+                             PAIR %data %sender ;
+                             DIG 5 ;
+                             CAR ;
+                             CDR ;
+                             DIG 5 ;
+                             PAIR %address %balances ;
+                             PAIR ;
+                             EXEC ;
+                             SWAP ;
+                             PAIR ;
+                             PAIR } }
+                         { { SWAP ;
+                             DUP ;
+                             DUG 2 ;
+                             DUP ;
+                             CDR ;
+                             SWAP ;
+                             CAR ;
+                             CAR ;
+                             DIG 3 ;
+                             DUP ;
+                             DUG 4 ;
+                             CDR ;
+                             CAR ;
+                             PUSH bytes 0x05010000001263616c6c5265736574416c6c6f77616e6365 ;
+                             GET ;
+                             IF_NONE { { PUSH string "Get-item:10" ; FAILWITH } } {} ;
+                             UNPACK
+                               (lambda
+                                  (pair (pair (address %address)
+                                              (big_map %balances
+                                                 address
+                                                 (pair (map %approvals address int) (pair (int %balance) (int %nonce)))))
+                                        (pair (big_map %data bytes bytes) (pair (address %f) (address %sender))))
+                                  (big_map address (pair (map %approvals address int) (pair (int %balance) (int %nonce))))) ;
+                             IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                             SENDER ;
+                             DIG 4 ;
+                             DUP ;
+                             DUG 5 ;
+                             CDR ;
+                             PAIR %f %sender ;
+                             DIG 5 ;
+                             DUP ;
+                             DUG 6 ;
+                             CDR ;
+                             CAR ;
+                             PAIR %data ;
+                             DIG 5 ;
+                             CAR ;
+                             CDR ;
+                             DIG 5 ;
+                             CAR ;
+                             PAIR %address %balances ;
+                             PAIR ;
+                             EXEC ;
+                             SWAP ;
+                             PAIR ;
+                             PAIR } } ;
+                       NIL operation } } }
+               { IF_LEFT
+                   { { SWAP ;
+                       DUP ;
+                       DUG 2 ;
+                       DUP ;
+                       CDR ;
+                       SWAP ;
+                       CAR ;
+                       CAR ;
+                       DIG 3 ;
+                       DUP ;
+                       DUG 4 ;
+                       CDR ;
+                       CAR ;
+                       PUSH bytes 0x05010000000c63616c6c5472616e73666572 ;
+                       GET ;
+                       IF_NONE { { PUSH string "Get-item:5" ; FAILWITH } } {} ;
+                       UNPACK
+                         (lambda
+                            (pair (pair (int %amount)
+                                        (pair (big_map %balances
+                                                 address
+                                                 (pair (map %approvals address int) (pair (int %balance) (int %nonce))))
+                                              (big_map %data bytes bytes)))
+                                  (pair (address %f) (pair (address %sender) (address %t))))
+                            (big_map address (pair (map %approvals address int) (pair (int %balance) (int %nonce))))) ;
+                       IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                       DIG 3 ;
+                       DUP ;
+                       DUG 4 ;
+                       CDR ;
+                       CDR ;
+                       SENDER ;
+                       PAIR %sender %t ;
+                       DIG 4 ;
+                       DUP ;
+                       DUG 5 ;
+                       CDR ;
+                       CAR ;
+                       PAIR %f ;
+                       DIG 5 ;
+                       DUP ;
+                       DUG 6 ;
+                       CDR ;
+                       CAR ;
+                       DIG 6 ;
+                       CAR ;
+                       CDR ;
+                       PAIR %balances %data ;
+                       DIG 5 ;
+                       DUP ;
+                       DUG 6 ;
+                       CAR ;
+                       PAIR %amount ;
+                       PAIR ;
+                       EXEC ;
+                       SWAP ;
+                       PAIR ;
+                       PAIR ;
+                       SWAP ;
+                       NIL operation ;
+                       DIG 2 ;
+                       DUP ;
+                       DUG 3 ;
+                       CDR ;
+                       CAR ;
+                       PUSH bytes 0x0501000000186576656e7453696e6b436f6e747261637441646472657373 ;
+                       GET ;
+                       IF_NONE { { PUSH string "Get-item:20" ; FAILWITH } } {} ;
+                       UNPACK address ;
+                       IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                       CONTRACT %transferEvent
+                         (pair (int %amount) (pair (option %fromAddress address) (option %toAddress address))) ;
+                       IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                       PUSH mutez 0 ;
+                       DIG 3 ;
+                       DUP ;
+                       DUG 4 ;
+                       CDR ;
+                       CDR ;
+                       SOME ;
+                       DIG 4 ;
+                       DUP ;
+                       DUG 5 ;
+                       CDR ;
+                       CAR ;
+                       SOME ;
+                       PAIR %fromAddress %toAddress ;
+                       DIG 4 ;
+                       CAR ;
+                       PAIR %amount ;
+                       TRANSFER_TOKENS ;
+                       CONS } }
+                   { IF_LEFT
+                       { { SWAP ;
+                           DUP ;
+                           DUG 2 ;
+                           DUP ;
+                           CDR ;
+                           SWAP ;
+                           CAR ;
+                           CAR ;
+                           DIG 3 ;
+                           DUP ;
+                           DUG 4 ;
+                           CDR ;
+                           CAR ;
+                           PUSH bytes 0x05010000001363616c6c5472616e736665724665656c657373 ;
+                           GET ;
+                           IF_NONE { { PUSH string "Get-item:11" ; FAILWITH } } {} ;
+                           UNPACK
+                             (lambda
+                                (pair (pair (bytes %b)
+                                            (pair (big_map %balances
+                                                     address
+                                                     (pair (map %approvals address int) (pair (int %balance) (int %nonce))))
+                                                  (big_map %data bytes bytes)))
+                                      (pair (pair (key %k) (signature %s)) (pair (address %sender) (address %thisAddress))))
+                                (big_map address (pair (map %approvals address int) (pair (int %balance) (int %nonce))))) ;
+                           IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                           SELF ;
+                           ADDRESS ;
+                           SENDER ;
+                           PAIR %sender %thisAddress ;
+                           DIG 4 ;
+                           DUP ;
+                           DUG 5 ;
+                           CDR ;
+                           CDR ;
+                           DIG 5 ;
+                           DUP ;
+                           DUG 6 ;
+                           CDR ;
+                           CAR ;
+                           PAIR %k %s ;
+                           PAIR ;
+                           DIG 5 ;
+                           DUP ;
+                           DUG 6 ;
+                           CDR ;
+                           CAR ;
+                           DIG 6 ;
+                           CAR ;
+                           CDR ;
+                           PAIR %balances %data ;
+                           DIG 5 ;
+                           DUP ;
+                           DUG 6 ;
+                           CAR ;
+                           PAIR %b ;
+                           PAIR ;
+                           EXEC ;
+                           SWAP ;
+                           PAIR ;
+                           PAIR ;
+                           SWAP ;
+                           NIL operation ;
+                           DIG 2 ;
+                           DUP ;
+                           DUG 3 ;
+                           CDR ;
+                           CAR ;
+                           PUSH bytes 0x0501000000186576656e7453696e6b436f6e747261637441646472657373 ;
+                           GET ;
+                           IF_NONE { { PUSH string "Get-item:20" ; FAILWITH } } {} ;
+                           UNPACK address ;
+                           IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                           CONTRACT %transferEvent
+                             (pair (int %amount) (pair (option %fromAddress address) (option %toAddress address))) ;
+                           IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                           PUSH mutez 0 ;
+                           DIG 3 ;
+                           DUP ;
+                           DUG 4 ;
+                           CAR ;
+                           UNPACK (pair int (pair int (pair address (pair address address)))) ;
+                           IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                           CDR ;
+                           CDR ;
+                           CDR ;
+                           CAR ;
+                           SOME ;
+                           DIG 4 ;
+                           DUP ;
+                           DUG 5 ;
+                           CAR ;
+                           UNPACK (pair int (pair int (pair address (pair address address)))) ;
+                           IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                           CDR ;
+                           CDR ;
+                           CAR ;
+                           SOME ;
+                           PAIR %fromAddress %toAddress ;
+                           DIG 4 ;
+                           CAR ;
+                           UNPACK (pair int (pair int (pair address (pair address address)))) ;
+                           IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                           CAR ;
+                           PAIR %amount ;
+                           TRANSFER_TOKENS ;
+                           CONS } }
+                       { { SWAP ;
+                           DUP ;
+                           DUG 2 ;
+                           CAR ;
+                           CAR ;
+                           SENDER ;
+                           COMPARE ;
+                           EQ ;
+                           IF { PUSH bool True }
+                              { { SWAP ; DUP ; DUG 2 ; CAR ; CAR ; SOURCE ; COMPARE ; EQ } } ;
+                           IF { {} } { { PUSH string "01" ; FAILWITH } } ;
+                           DUP ;
+                           ITER { DIG 2 ;
+                                  DUP ;
+                                  CAR ;
+                                  SWAP ;
+                                  CDR ;
+                                  DUP ;
+                                  CDR ;
+                                  SWAP ;
+                                  CAR ;
+                                  DIG 3 ;
+                                  DUP ;
+                                  DUG 4 ;
+                                  CDR ;
+                                  SOME ;
+                                  DIG 4 ;
+                                  CAR ;
+                                  UPDATE ;
+                                  PAIR ;
+                                  SWAP ;
+                                  PAIR ;
+                                  SWAP } ;
+                           DROP ;
+                           NIL operation } } } } } ;
+         PAIR } }

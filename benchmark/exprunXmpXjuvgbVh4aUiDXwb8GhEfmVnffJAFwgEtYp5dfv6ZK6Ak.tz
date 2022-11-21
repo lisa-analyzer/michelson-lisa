@@ -1,0 +1,47 @@
+{ parameter unit ;
+  storage (pair (mutez %currentPrice) (address %theKing)) ;
+  code { DUP ;
+         CDR ;
+         DUP ;
+         CAR ;
+         AMOUNT ;
+         COMPARE ;
+         GE ;
+         IF { PUSH unit Unit } { PUSH string "Assertion" ; FAILWITH } ;
+         DIG 1 ;
+         DUP ;
+         DUG 2 ;
+         CDR ;
+         CONTRACT unit ;
+         IF_NONE
+           { PUSH string "invalid contract" ; FAILWITH }
+           { DUP ; DIP { DROP } } ;
+         DIG 2 ;
+         DUP ;
+         DUG 3 ;
+         CAR ;
+         UNIT ;
+         TRANSFER_TOKENS ;
+         DIG 2 ;
+         DUP ;
+         DUG 3 ;
+         CAR ;
+         SENDER ;
+         SWAP ;
+         PAIR ;
+         DUP ;
+         PUSH nat 2 ;
+         AMOUNT ;
+         MUL ;
+         SWAP ;
+         CDR ;
+         SWAP ;
+         PAIR ;
+         DUP ;
+         NIL operation ;
+         DIG 4 ;
+         DUP ;
+         DUG 5 ;
+         CONS ;
+         PAIR ;
+         DIP { DROP 6 } } }

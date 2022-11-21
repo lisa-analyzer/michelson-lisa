@@ -1,0 +1,598 @@
+{ parameter
+    (or (or (address %computeCoupon)
+            (or (pair %createSubscription
+                   (pair (address %_investor) (address %_issuer))
+                   (pair (nat %_quantity) (nat %_subscriptionId)))
+                (pair %getBalance (address %userAddress) (address %viewBalanceContractAddress))))
+        (or (or (address %getTotalSupply)
+                (pair %playTransition (nat %_state) (nat %_subscriptionId)))
+            (or (pair %run (address %_operator) (pair (nat %_operatorRole) (string %entrypointName)))
+                (map %upgrade bytes bytes)))) ;
+  storage
+    (pair (pair (pair (nat %currentSupply)
+                      (pair (big_map %entrypointsBigMap bytes bytes) (address %eventSinkContractAddress)))
+                (pair (nat %initialSupply) (pair (nat %isinCode) (string %name))))
+          (pair (pair (map %operatorsAuthorizations address (set nat))
+                      (pair (address %owner) (nat %principalValue)))
+                (pair (nat %rate)
+                      (pair (pair %subscriptionTicketManager
+                               (map %balances address (pair (nat %keyIndex) (nat %value)))
+                               (pair (map %subscriptionTicket
+                                        nat
+                                        (pair (address %investor) (pair (nat %quantity) (nat %status))))
+                                     (map %subscriptionsIdByIssuer address (set nat))))
+                            (string %symbol))))) ;
+  code { { DUP ;
+           CDR ;
+           SWAP ;
+           CAR ;
+           IF_LEFT
+             { IF_LEFT
+                 { { NIL operation ;
+                     DIG 2 ;
+                     DUP ;
+                     DUG 3 ;
+                     CAR ;
+                     CAR ;
+                     CDR ;
+                     CDR ;
+                     CONTRACT %computedValue nat ;
+                     IF_NONE { { UNIT ; FAILWITH } } { {} } ;
+                     PUSH mutez 0 ;
+                     DIG 4 ;
+                     DUP ;
+                     DUG 5 ;
+                     CAR ;
+                     CAR ;
+                     CDR ;
+                     CAR ;
+                     PUSH bytes 0x05010000001163616c6c436f6d70757465436f75706f6e ;
+                     GET ;
+                     IF_NONE { { PUSH string "Get-item:18" ; FAILWITH } } {} ;
+                     UNPACK
+                       (lambda
+                          (pair (pair (address %_operator)
+                                      (pair (map %_operatorsAuthorizations address (set nat))
+                                            (map %balances address (pair (nat %keyIndex) (nat %value)))))
+                                (pair (nat %insterestRate) (pair (address %ownerAddress) (nat %principal))))
+                          nat) ;
+                     IF_NONE { { UNIT ; FAILWITH } } { {} } ;
+                     DIG 5 ;
+                     DUP ;
+                     DUG 6 ;
+                     CDR ;
+                     CAR ;
+                     CDR ;
+                     CDR ;
+                     DIG 5 ;
+                     PAIR %ownerAddress %principal ;
+                     DIG 5 ;
+                     DUP ;
+                     DUG 6 ;
+                     CDR ;
+                     CDR ;
+                     CAR ;
+                     PAIR %insterestRate ;
+                     DIG 5 ;
+                     DUP ;
+                     DUG 6 ;
+                     CDR ;
+                     CDR ;
+                     CDR ;
+                     CAR ;
+                     CAR ;
+                     DIG 6 ;
+                     DUP ;
+                     DUG 7 ;
+                     CDR ;
+                     CAR ;
+                     CAR ;
+                     PAIR %_operatorsAuthorizations %balances ;
+                     SENDER ;
+                     PAIR %_operator ;
+                     PAIR ;
+                     EXEC ;
+                     TRANSFER_TOKENS ;
+                     CONS } }
+                 { IF_LEFT
+                     { { SWAP ;
+                         DUP ;
+                         DUG 2 ;
+                         DUP ;
+                         CAR ;
+                         SWAP ;
+                         CDR ;
+                         DUP ;
+                         CAR ;
+                         SWAP ;
+                         CDR ;
+                         DUP ;
+                         CAR ;
+                         SWAP ;
+                         CDR ;
+                         CDR ;
+                         DIG 5 ;
+                         DUP ;
+                         DUG 6 ;
+                         CAR ;
+                         CAR ;
+                         CDR ;
+                         CAR ;
+                         PUSH string "callCreateSubsciption" ;
+                         PACK ;
+                         GET ;
+                         IF_NONE { { PUSH string "Get-item:227" ; FAILWITH } } {} ;
+                         UNPACK
+                           (lambda
+                              (pair (pair (address %_investor)
+                                          (pair (address %_issuer) (map %_operatorsAuthorizations address (set nat))))
+                                    (pair (pair (nat %_quantity) (address %_sender))
+                                          (pair (nat %_subscriptionId)
+                                                (pair %_subscriptionTicketManager
+                                                   (map %balances address (pair (nat %keyIndex) (nat %value)))
+                                                   (pair (map %subscriptionTicket
+                                                            nat
+                                                            (pair (address %investor) (pair (nat %quantity) (nat %status))))
+                                                         (map %subscriptionsIdByIssuer address (set nat)))))))
+                              (pair (map %balances address (pair (nat %keyIndex) (nat %value)))
+                                    (pair (map %subscriptionTicket
+                                             nat
+                                             (pair (address %investor) (pair (nat %quantity) (nat %status))))
+                                          (map %subscriptionsIdByIssuer address (set nat))))) ;
+                         IF_NONE { { UNIT ; FAILWITH } } { {} } ;
+                         DIG 6 ;
+                         DUP ;
+                         DUG 7 ;
+                         CDR ;
+                         CDR ;
+                         CDR ;
+                         CAR ;
+                         DIG 6 ;
+                         DUP ;
+                         DUG 7 ;
+                         CDR ;
+                         CDR ;
+                         PAIR %_subscriptionId %_subscriptionTicketManager ;
+                         SENDER ;
+                         DIG 7 ;
+                         DUP ;
+                         DUG 8 ;
+                         CDR ;
+                         CAR ;
+                         PAIR %_quantity %_sender ;
+                         PAIR ;
+                         DIG 7 ;
+                         CDR ;
+                         CAR ;
+                         CAR ;
+                         DIG 7 ;
+                         DUP ;
+                         DUG 8 ;
+                         CAR ;
+                         CDR ;
+                         PAIR %_issuer %_operatorsAuthorizations ;
+                         DIG 7 ;
+                         DUP ;
+                         DUG 8 ;
+                         CAR ;
+                         CAR ;
+                         PAIR %_investor ;
+                         PAIR ;
+                         EXEC ;
+                         PAIR ;
+                         SWAP ;
+                         PAIR ;
+                         SWAP ;
+                         PAIR ;
+                         SWAP ;
+                         PAIR ;
+                         SWAP ;
+                         NIL operation ;
+                         DIG 2 ;
+                         DUP ;
+                         DUG 3 ;
+                         CAR ;
+                         CAR ;
+                         CDR ;
+                         CDR ;
+                         CONTRACT %confirmTokenLocked (pair (nat %status) (nat %subscriptionId)) ;
+                         IF_NONE { { UNIT ; FAILWITH } } { {} } ;
+                         PUSH mutez 0 ;
+                         DIG 3 ;
+                         DUP ;
+                         DUG 4 ;
+                         CDR ;
+                         CDR ;
+                         DIG 5 ;
+                         DUP ;
+                         DUG 6 ;
+                         CDR ;
+                         CDR ;
+                         CDR ;
+                         CAR ;
+                         CDR ;
+                         CAR ;
+                         DIG 5 ;
+                         CDR ;
+                         CDR ;
+                         GET ;
+                         IF_NONE { { PUSH string "Get-item:244" ; FAILWITH } } {} ;
+                         CDR ;
+                         CDR ;
+                         PAIR %status %subscriptionId ;
+                         TRANSFER_TOKENS ;
+                         CONS } }
+                     { { SWAP ;
+                         DUP ;
+                         DUG 2 ;
+                         CDR ;
+                         CDR ;
+                         CDR ;
+                         CAR ;
+                         CAR ;
+                         SWAP ;
+                         DUP ;
+                         DUG 2 ;
+                         CAR ;
+                         MEM ;
+                         IF { {} } { { PUSH string "user not found" ; FAILWITH } } ;
+                         DUP ;
+                         CDR ;
+                         CONTRACT nat ;
+                         NIL operation ;
+                         SWAP ;
+                         IF_NONE { { UNIT ; FAILWITH } } { {} } ;
+                         PUSH mutez 0 ;
+                         DIG 4 ;
+                         DUP ;
+                         DUG 5 ;
+                         CDR ;
+                         CDR ;
+                         CDR ;
+                         CAR ;
+                         CAR ;
+                         DIG 4 ;
+                         CAR ;
+                         GET ;
+                         IF_NONE { { PUSH string "Get-item:124" ; FAILWITH } } {} ;
+                         CDR ;
+                         TRANSFER_TOKENS ;
+                         CONS } } } }
+             { IF_LEFT
+                 { IF_LEFT
+                     { { CONTRACT nat ;
+                         NIL operation ;
+                         SWAP ;
+                         IF_NONE { { UNIT ; FAILWITH } } { {} } ;
+                         PUSH mutez 0 ;
+                         DIG 3 ;
+                         DUP ;
+                         DUG 4 ;
+                         CAR ;
+                         CDR ;
+                         CAR ;
+                         TRANSFER_TOKENS ;
+                         CONS } }
+                     { { SWAP ;
+                         DUP ;
+                         DUG 2 ;
+                         DUP ;
+                         CAR ;
+                         SWAP ;
+                         CDR ;
+                         DUP ;
+                         CAR ;
+                         SWAP ;
+                         CDR ;
+                         DUP ;
+                         CAR ;
+                         SWAP ;
+                         CDR ;
+                         CDR ;
+                         DIG 5 ;
+                         DUP ;
+                         DUG 6 ;
+                         CAR ;
+                         CAR ;
+                         CDR ;
+                         CAR ;
+                         PUSH string "callPlayTransition" ;
+                         PACK ;
+                         GET ;
+                         IF_NONE { { PUSH string "Get-item:271" ; FAILWITH } } {} ;
+                         UNPACK
+                           (lambda
+                              (pair (pair (map %_operatorsAuthorizations address (set nat))
+                                          (pair (address %_owner) (address %_sender)))
+                                    (pair (nat %_state)
+                                          (pair (nat %_subscriptionId)
+                                                (pair %_subscriptionTicketManager
+                                                   (map %balances address (pair (nat %keyIndex) (nat %value)))
+                                                   (pair (map %subscriptionTicket
+                                                            nat
+                                                            (pair (address %investor) (pair (nat %quantity) (nat %status))))
+                                                         (map %subscriptionsIdByIssuer address (set nat)))))))
+                              (pair (map %balances address (pair (nat %keyIndex) (nat %value)))
+                                    (pair (map %subscriptionTicket
+                                             nat
+                                             (pair (address %investor) (pair (nat %quantity) (nat %status))))
+                                          (map %subscriptionsIdByIssuer address (set nat))))) ;
+                         IF_NONE { { UNIT ; FAILWITH } } { {} } ;
+                         DIG 6 ;
+                         DUP ;
+                         DUG 7 ;
+                         CDR ;
+                         CDR ;
+                         CDR ;
+                         CAR ;
+                         DIG 6 ;
+                         DUP ;
+                         DUG 7 ;
+                         CDR ;
+                         PAIR %_subscriptionId %_subscriptionTicketManager ;
+                         DIG 6 ;
+                         DUP ;
+                         DUG 7 ;
+                         CAR ;
+                         PAIR %_state ;
+                         SENDER ;
+                         DIG 8 ;
+                         DUP ;
+                         DUG 9 ;
+                         CDR ;
+                         CAR ;
+                         CDR ;
+                         CAR ;
+                         PAIR %_owner %_sender ;
+                         DIG 8 ;
+                         CDR ;
+                         CAR ;
+                         CAR ;
+                         PAIR %_operatorsAuthorizations ;
+                         PAIR ;
+                         EXEC ;
+                         PAIR ;
+                         SWAP ;
+                         PAIR ;
+                         SWAP ;
+                         PAIR ;
+                         SWAP ;
+                         PAIR ;
+                         SWAP ;
+                         DUP ;
+                         CAR ;
+                         PUSH nat 3 ;
+                         COMPARE ;
+                         EQ ;
+                         IF { { NIL operation ;
+                                DIG 2 ;
+                                DUP ;
+                                DUG 3 ;
+                                CAR ;
+                                CAR ;
+                                CDR ;
+                                CDR ;
+                                CONTRACT %cashReceived (pair (nat %status) (nat %subscriptionId)) ;
+                                IF_NONE { { UNIT ; FAILWITH } } { {} } ;
+                                PUSH mutez 0 ;
+                                DIG 3 ;
+                                DUP ;
+                                DUG 4 ;
+                                CDR ;
+                                DIG 4 ;
+                                DUP ;
+                                DUG 5 ;
+                                CAR ;
+                                PAIR %status %subscriptionId ;
+                                TRANSFER_TOKENS ;
+                                CONS } }
+                            { NIL operation } ;
+                         PUSH nat 4 ;
+                         DIG 2 ;
+                         DUP ;
+                         DUG 3 ;
+                         CAR ;
+                         COMPARE ;
+                         EQ ;
+                         IF { { DIG 2 ;
+                                DUP ;
+                                DUG 3 ;
+                                CAR ;
+                                CAR ;
+                                CDR ;
+                                CDR ;
+                                CONTRACT %cashSent (pair (nat %status) (nat %subscriptionId)) ;
+                                IF_NONE { { UNIT ; FAILWITH } } { {} } ;
+                                PUSH mutez 0 ;
+                                DIG 3 ;
+                                DUP ;
+                                DUG 4 ;
+                                CDR ;
+                                DIG 4 ;
+                                CAR ;
+                                PAIR %status %subscriptionId ;
+                                TRANSFER_TOKENS ;
+                                CONS } }
+                            { { SWAP ; DROP } } } } }
+                 { IF_LEFT
+                     { { SWAP ;
+                         DUP ;
+                         DUG 2 ;
+                         DUP ;
+                         CAR ;
+                         SWAP ;
+                         CDR ;
+                         DUP ;
+                         CDR ;
+                         SWAP ;
+                         CAR ;
+                         CDR ;
+                         DIG 4 ;
+                         DUP ;
+                         DUG 5 ;
+                         CAR ;
+                         CAR ;
+                         CDR ;
+                         CAR ;
+                         DIG 4 ;
+                         DUP ;
+                         DUG 5 ;
+                         CDR ;
+                         CDR ;
+                         PACK ;
+                         GET ;
+                         IF_NONE { { PUSH string "Get-item:323" ; FAILWITH } } {} ;
+                         UNPACK
+                           (lambda
+                              (pair (pair (address %_operator) (nat %_operatorRole))
+                                    (pair (map %_operatorsAuthorizations address (set nat))
+                                          (pair (address %_owner) (address %_sender))))
+                              (map address (set nat))) ;
+                         IF_NONE { { UNIT ; FAILWITH } } { {} } ;
+                         SENDER ;
+                         DIG 6 ;
+                         DUP ;
+                         DUG 7 ;
+                         CDR ;
+                         CAR ;
+                         CDR ;
+                         CAR ;
+                         PAIR %_owner %_sender ;
+                         DIG 6 ;
+                         CDR ;
+                         CAR ;
+                         CAR ;
+                         PAIR %_operatorsAuthorizations ;
+                         DIG 5 ;
+                         DUP ;
+                         DUG 6 ;
+                         CDR ;
+                         CAR ;
+                         DIG 6 ;
+                         DUP ;
+                         DUG 7 ;
+                         CAR ;
+                         PAIR %_operator %_operatorRole ;
+                         PAIR ;
+                         EXEC ;
+                         PAIR ;
+                         PAIR ;
+                         SWAP ;
+                         PAIR ;
+                         SWAP ;
+                         DUP ;
+                         CDR ;
+                         CDR ;
+                         PUSH string "callAuthorizeOperator" ;
+                         COMPARE ;
+                         EQ ;
+                         IF { { NIL operation ;
+                                DIG 2 ;
+                                DUP ;
+                                DUG 3 ;
+                                CAR ;
+                                CAR ;
+                                CDR ;
+                                CDR ;
+                                CONTRACT %newOperator
+                                  (pair (address %by) (pair (address %operator) (nat %operatorRole))) ;
+                                IF_NONE { { UNIT ; FAILWITH } } { {} } ;
+                                PUSH mutez 0 ;
+                                DIG 3 ;
+                                DUP ;
+                                DUG 4 ;
+                                CDR ;
+                                CAR ;
+                                DIG 4 ;
+                                DUP ;
+                                DUG 5 ;
+                                CAR ;
+                                PAIR %operator %operatorRole ;
+                                SENDER ;
+                                PAIR %by ;
+                                TRANSFER_TOKENS ;
+                                CONS } }
+                            { NIL operation } ;
+                         PUSH string "callRevokeOperatorAuthorization" ;
+                         DIG 2 ;
+                         DUP ;
+                         DUG 3 ;
+                         CDR ;
+                         CDR ;
+                         COMPARE ;
+                         EQ ;
+                         IF { { DIG 2 ;
+                                DUP ;
+                                DUG 3 ;
+                                CAR ;
+                                CAR ;
+                                CDR ;
+                                CDR ;
+                                CONTRACT %revokeOperator
+                                  (pair (address %by) (pair (address %operator) (nat %operatorRole))) ;
+                                IF_NONE { { UNIT ; FAILWITH } } { {} } ;
+                                PUSH mutez 0 ;
+                                DIG 3 ;
+                                DUP ;
+                                DUG 4 ;
+                                CDR ;
+                                CAR ;
+                                DIG 4 ;
+                                CAR ;
+                                PAIR %operator %operatorRole ;
+                                SENDER ;
+                                PAIR %by ;
+                                TRANSFER_TOKENS ;
+                                CONS } }
+                            { { SWAP ; DROP } } } }
+                     { { SWAP ;
+                         DUP ;
+                         DUG 2 ;
+                         CDR ;
+                         CAR ;
+                         CDR ;
+                         CAR ;
+                         SENDER ;
+                         COMPARE ;
+                         EQ ;
+                         IF { PUSH bool True }
+                            { { SWAP ; DUP ; DUG 2 ; CDR ; CAR ; CDR ; CAR ; SOURCE ; COMPARE ; EQ } } ;
+                         IF { {} } { { PUSH string "only owner can upgrade" ; FAILWITH } } ;
+                         DUP ;
+                         ITER { DIG 2 ;
+                                DUP ;
+                                CDR ;
+                                SWAP ;
+                                CAR ;
+                                DUP ;
+                                CDR ;
+                                SWAP ;
+                                CAR ;
+                                DUP ;
+                                CAR ;
+                                SWAP ;
+                                CDR ;
+                                DUP ;
+                                CDR ;
+                                SWAP ;
+                                CAR ;
+                                DIG 5 ;
+                                DUP ;
+                                DUG 6 ;
+                                CDR ;
+                                SOME ;
+                                DIG 6 ;
+                                CAR ;
+                                UPDATE ;
+                                PAIR ;
+                                SWAP ;
+                                PAIR ;
+                                PAIR ;
+                                PAIR ;
+                                SWAP } ;
+                         DROP ;
+                         NIL operation } } } } ;
+           NIL operation ;
+           SWAP ;
+           ITER { CONS } ;
+           PAIR } } }

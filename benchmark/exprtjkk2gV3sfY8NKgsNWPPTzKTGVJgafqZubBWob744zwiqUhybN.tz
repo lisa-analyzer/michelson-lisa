@@ -1,0 +1,70 @@
+{ storage
+    (pair (option %answer
+             (pair (string %companyName) (pair (string %companyNumber) (string %jurisdiction))))
+          (address %oracle)) ;
+  parameter
+    (or (pair %receiveAnswer
+           (string %companyName)
+           (pair (string %companyNumber) (string %jurisdiction)))
+        (pair %sendQuery (string %companyNumber) (pair (string %id) (string %jurisdiction)))) ;
+  code { DUP ;
+         CDR ;
+         SWAP ;
+         CAR ;
+         IF_LEFT
+           { { SWAP ;
+               CDR ;
+               SWAP ;
+               DUP ;
+               DUG 2 ;
+               CDR ;
+               CDR ;
+               DIG 2 ;
+               DUP ;
+               DUG 3 ;
+               CDR ;
+               CAR ;
+               PAIR %companyNumber %jurisdiction ;
+               DIG 2 ;
+               CAR ;
+               PAIR %companyName ;
+               SOME ;
+               PAIR ;
+               NIL operation } }
+           { { NIL operation ;
+               DIG 2 ;
+               DUP ;
+               DUG 3 ;
+               CDR ;
+               CONTRACT %makeQuery
+                 (pair (pair (pair %callback (address %address) (string %entryPoint))
+                             (string %companyNumber))
+                       (pair (string %id) (string %jurisdiction))) ;
+               IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+               PUSH mutez 0 ;
+               DIG 3 ;
+               DUP ;
+               DUG 4 ;
+               CDR ;
+               CDR ;
+               DIG 4 ;
+               DUP ;
+               DUG 5 ;
+               CDR ;
+               CAR ;
+               PAIR %id %jurisdiction ;
+               DIG 4 ;
+               DUP ;
+               DUG 5 ;
+               CAR ;
+               PUSH string "receiveAnswer" ;
+               SELF ;
+               DIG 7 ;
+               DROP ;
+               ADDRESS ;
+               PAIR %address %entryPoint ;
+               PAIR %callback %companyNumber ;
+               PAIR ;
+               TRANSFER_TOKENS ;
+               CONS } } ;
+         PAIR } }

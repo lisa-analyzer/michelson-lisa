@@ -1,0 +1,60 @@
+{ parameter (or (unit %exec) (nat %set_value)) ;
+  storage nat ;
+  code { DUP ;
+         CDR ;
+         DIG 1 ;
+         DUP ;
+         DUG 2 ;
+         CAR ;
+         IF_LEFT
+           { NIL operation ;
+             PUSH nat 2 ;
+             DIG 3 ;
+             DUP ;
+             DUG 4 ;
+             ADD ;
+             SELF ;
+             ADDRESS ;
+             CONTRACT %set_value nat ;
+             DUP ;
+             IF_NONE
+               { PUSH string "getopt_entrysig_nat: argument is none" ; FAILWITH }
+               { DUP ; DIP { DROP } } ;
+             DIG 3 ;
+             DUP ;
+             DUG 4 ;
+             DIG 1 ;
+             DUP ;
+             DUG 2 ;
+             PUSH mutez 0 ;
+             DIG 5 ;
+             DUP ;
+             DUG 6 ;
+             TRANSFER_TOKENS ;
+             CONS ;
+             DIG 6 ;
+             DUP ;
+             DUG 7 ;
+             DIG 1 ;
+             DUP ;
+             DUG 2 ;
+             PAIR ;
+             DIP { DROP 6 } }
+           { DIG 1 ;
+             DUP ;
+             DUG 2 ;
+             DIG 1 ;
+             DUP ;
+             DUG 2 ;
+             PAIR ;
+             DUP ;
+             CDR ;
+             DIG 1 ;
+             DUP ;
+             DUG 2 ;
+             CAR ;
+             DIP { DROP } ;
+             NIL operation ;
+             PAIR ;
+             DIP { DROP 2 } } ;
+         DIP { DROP 2 } } }

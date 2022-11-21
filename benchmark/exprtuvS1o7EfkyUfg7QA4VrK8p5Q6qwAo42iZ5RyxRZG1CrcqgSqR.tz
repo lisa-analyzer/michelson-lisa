@@ -1,0 +1,267 @@
+{ storage
+    (pair (pair (pair (address %administrator)
+                      (pair (int %claimCount) (big_map %claimToAmount address mutez)))
+                (pair (mutez %currentBalance) (pair (timestamp %expiryDate) (int %poolMemberCount))))
+          (pair (pair (int %poolMemberLimit)
+                      (pair (big_map %poolMemberToDeposit address mutez) (mutez %poolTargetBalance)))
+                (pair (mutez %premiumAmount) (pair (string %subType) (string %typeOfContract))))) ;
+  parameter
+    (or (or (mutez %claimAmount) (option %delegate key_hash))
+        (or (unit %insureMyProd) (address %setAdministrator))) ;
+  code { DUP ;
+         CDR ;
+         SWAP ;
+         CAR ;
+         IF_LEFT
+           { IF_LEFT
+               { { SWAP ;
+                   DUP ;
+                   DUG 2 ;
+                   CDR ;
+                   CDR ;
+                   CAR ;
+                   DIG 2 ;
+                   DUP ;
+                   DUG 3 ;
+                   CDR ;
+                   CDR ;
+                   CAR ;
+                   ADD ;
+                   SWAP ;
+                   DUP ;
+                   DUG 2 ;
+                   COMPARE ;
+                   LE ;
+                   IF { {} }
+                      { { PUSH string
+                               "WrongCondition: params.claimAmount <= (self.data.premiumAmount + self.data.premiumAmount)" ;
+                          FAILWITH } } ;
+                   SWAP ;
+                   DUP ;
+                   DUG 2 ;
+                   CDR ;
+                   CAR ;
+                   CDR ;
+                   CAR ;
+                   SENDER ;
+                   MEM ;
+                   IF { {} }
+                      { { PUSH string "WrongCondition: self.data.poolMemberToDeposit.contains(sp.sender)" ;
+                          FAILWITH } } ;
+                   NIL operation ;
+                   SENDER ;
+                   CONTRACT unit ;
+                   IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                   DIG 2 ;
+                   PUSH unit Unit ;
+                   TRANSFER_TOKENS ;
+                   CONS } }
+               { { SWAP ;
+                   DUP ;
+                   DUG 2 ;
+                   CAR ;
+                   CAR ;
+                   CAR ;
+                   SENDER ;
+                   COMPARE ;
+                   EQ ;
+                   IF { {} }
+                      { { PUSH string "WrongCondition: sp.sender == self.data.administrator" ;
+                          FAILWITH } } ;
+                   PUSH mutez 0 ;
+                   AMOUNT ;
+                   COMPARE ;
+                   EQ ;
+                   IF { {} }
+                      { { PUSH string "WrongCondition: sp.amount == sp.tez(0)" ; FAILWITH } } ;
+                   SET_DELEGATE ;
+                   NIL operation ;
+                   SWAP ;
+                   CONS } } }
+           { { IF_LEFT
+                 { { SWAP ;
+                     DUP ;
+                     DUG 2 ;
+                     CAR ;
+                     CDR ;
+                     CDR ;
+                     CAR ;
+                     NOW ;
+                     COMPARE ;
+                     LT ;
+                     IF { {} }
+                        { { PUSH string "WrongCondition: sp.now < self.data.expiryDate" ; FAILWITH } } ;
+                     SWAP ;
+                     DUP ;
+                     DUG 2 ;
+                     CDR ;
+                     CAR ;
+                     CDR ;
+                     CDR ;
+                     DIG 2 ;
+                     DUP ;
+                     DUG 3 ;
+                     CAR ;
+                     CDR ;
+                     CAR ;
+                     AMOUNT ;
+                     ADD ;
+                     COMPARE ;
+                     LE ;
+                     IF { {} }
+                        { { PUSH string
+                                 "WrongCondition: (sp.amount + self.data.currentBalance) <= self.data.poolTargetBalance" ;
+                            FAILWITH } } ;
+                     SWAP ;
+                     DUP ;
+                     DUG 2 ;
+                     CDR ;
+                     CAR ;
+                     CAR ;
+                     DIG 2 ;
+                     DUP ;
+                     DUG 3 ;
+                     CAR ;
+                     CDR ;
+                     CDR ;
+                     CDR ;
+                     COMPARE ;
+                     LT ;
+                     IF { {} }
+                        { { PUSH string
+                                 "WrongCondition: self.data.poolMemberCount < self.data.poolMemberLimit" ;
+                            FAILWITH } } ;
+                     PUSH mutez 0 ;
+                     AMOUNT ;
+                     COMPARE ;
+                     GE ;
+                     IF { {} }
+                        { { PUSH string "WrongCondition: sp.amount >= sp.tez(0)" ; FAILWITH } } ;
+                     AMOUNT ;
+                     DIG 2 ;
+                     DUP ;
+                     DUG 3 ;
+                     CDR ;
+                     CDR ;
+                     CAR ;
+                     COMPARE ;
+                     EQ ;
+                     IF { {} }
+                        { { PUSH string "WrongCondition: self.data.premiumAmount == sp.amount" ;
+                            FAILWITH } } ;
+                     SWAP ;
+                     DUP ;
+                     DUG 2 ;
+                     CDR ;
+                     CAR ;
+                     CDR ;
+                     CAR ;
+                     SENDER ;
+                     MEM ;
+                     IF { { PUSH string
+                                 "WrongCondition: ~ (self.data.poolMemberToDeposit.contains(sp.sender))" ;
+                            FAILWITH } }
+                        { {} } ;
+                     DROP ;
+                     DUP ;
+                     CAR ;
+                     SWAP ;
+                     CDR ;
+                     DUP ;
+                     CDR ;
+                     SWAP ;
+                     CAR ;
+                     DUP ;
+                     CAR ;
+                     SWAP ;
+                     CDR ;
+                     DUP ;
+                     CDR ;
+                     SWAP ;
+                     CAR ;
+                     AMOUNT ;
+                     SOME ;
+                     SENDER ;
+                     UPDATE ;
+                     PAIR ;
+                     SWAP ;
+                     PAIR ;
+                     PAIR ;
+                     SWAP ;
+                     PAIR ;
+                     DUP ;
+                     DUP ;
+                     CDR ;
+                     SWAP ;
+                     CAR ;
+                     DUP ;
+                     CAR ;
+                     SWAP ;
+                     CDR ;
+                     CDR ;
+                     AMOUNT ;
+                     DIG 4 ;
+                     CAR ;
+                     CDR ;
+                     CAR ;
+                     ADD ;
+                     PAIR ;
+                     SWAP ;
+                     PAIR ;
+                     PAIR ;
+                     DUP ;
+                     DUP ;
+                     CDR ;
+                     SWAP ;
+                     CAR ;
+                     DUP ;
+                     CAR ;
+                     SWAP ;
+                     CDR ;
+                     DUP ;
+                     CAR ;
+                     SWAP ;
+                     CDR ;
+                     CAR ;
+                     PUSH int 1 ;
+                     DIG 5 ;
+                     CAR ;
+                     CDR ;
+                     CDR ;
+                     CDR ;
+                     ADD ;
+                     SWAP ;
+                     PAIR ;
+                     SWAP ;
+                     PAIR ;
+                     SWAP ;
+                     PAIR ;
+                     PAIR } }
+                 { { SWAP ;
+                     DUP ;
+                     DUG 2 ;
+                     CAR ;
+                     CAR ;
+                     CAR ;
+                     SENDER ;
+                     COMPARE ;
+                     EQ ;
+                     IF { {} }
+                        { { PUSH string "WrongCondition: sp.sender == self.data.administrator" ;
+                            FAILWITH } } ;
+                     SWAP ;
+                     DUP ;
+                     CDR ;
+                     SWAP ;
+                     CAR ;
+                     DUP ;
+                     CDR ;
+                     SWAP ;
+                     CAR ;
+                     CDR ;
+                     DIG 3 ;
+                     PAIR ;
+                     PAIR ;
+                     PAIR } } ;
+               NIL operation } } ;
+         PAIR } }

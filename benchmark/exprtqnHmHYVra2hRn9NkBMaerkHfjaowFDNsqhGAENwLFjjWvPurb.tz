@@ -1,0 +1,24 @@
+{ parameter string ;
+  storage int ;
+  code { SENDER ;
+         DUP ;
+         CONTRACT unit ;
+         IF_NONE { PUSH string "bad address for get_contract" ; FAILWITH } {} ;
+         DUP ;
+         AMOUNT ;
+         UNIT ;
+         TRANSFER_TOKENS ;
+         NIL operation ;
+         DIG 1 ;
+         DUP ;
+         DUG 2 ;
+         CONS ;
+         DIG 4 ;
+         DUP ;
+         DUG 5 ;
+         CDR ;
+         DIG 1 ;
+         DUP ;
+         DUG 2 ;
+         PAIR ;
+         DIP { DROP 5 } } }

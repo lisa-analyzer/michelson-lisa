@@ -1,0 +1,276 @@
+{ parameter
+    (or (or (address %launchExchange)
+            (big_map %setFunction
+               nat
+               (lambda
+                  (pair (pair (or (or (or (or (pair (pair nat nat) nat) nat) (or nat (pair address bool)))
+                                      (or (or (pair nat address) (pair (pair nat nat) address))
+                                          (or (pair (pair nat nat) (pair address address)) address)))
+                                  (or (pair address key_hash) address))
+                              (pair (pair (pair (pair (pair (big_map address (pair (pair nat timestamp) (pair nat nat)))
+                                                            (big_map
+                                                               nat
+                                                               (pair (pair (pair nat nat) (pair timestamp timestamp)) (pair (pair nat timestamp) nat))))
+                                                      (pair (pair (pair (pair nat nat) (pair timestamp timestamp)) (pair (pair nat timestamp) nat))
+                                                            (option key_hash)))
+                                                (pair (pair (option key_hash) address) (pair nat nat)))
+                                          (pair (pair (pair (big_map address nat) nat) (pair address nat))
+                                                (pair (pair nat nat) (pair nat (big_map address nat)))))
+                                    (pair (pair (big_map key_hash timestamp)
+                                                (big_map address (pair (set address) (option key_hash))))
+                                          (big_map key_hash nat))))
+                        address)
+                  (pair (list operation)
+                        (pair (pair (pair (pair (pair (big_map address (pair (pair nat timestamp) (pair nat nat)))
+                                                      (big_map
+                                                         nat
+                                                         (pair (pair (pair nat nat) (pair timestamp timestamp)) (pair (pair nat timestamp) nat))))
+                                                (pair (pair (pair (pair nat nat) (pair timestamp timestamp)) (pair (pair nat timestamp) nat))
+                                                      (option key_hash)))
+                                          (pair (pair (option key_hash) address) (pair nat nat)))
+                                    (pair (pair (pair (big_map address nat) nat) (pair address nat))
+                                          (pair (pair nat nat) (pair nat (big_map address nat)))))
+                              (pair (pair (big_map key_hash timestamp)
+                                          (big_map address (pair (set address) (option key_hash))))
+                                    (big_map key_hash nat)))))))
+        (pair %tokenToExchangeLookup (pair address address) nat)) ;
+  storage
+    (pair (big_map %lambdas
+             nat
+             (lambda
+                (pair (pair address address)
+                      (pair (pair (big_map %lambdas
+                                     nat
+                                     (lambda
+                                        (pair (pair (or (or (or (or (pair (pair nat nat) nat) nat) (or nat (pair address bool)))
+                                                            (or (or (pair nat address) (pair (pair nat nat) address))
+                                                                (or (pair (pair nat nat) (pair address address)) address)))
+                                                        (or (pair address key_hash) address))
+                                                    (pair (pair (pair (pair (pair (big_map address (pair (pair nat timestamp) (pair nat nat)))
+                                                                                  (big_map
+                                                                                     nat
+                                                                                     (pair (pair (pair nat nat) (pair timestamp timestamp)) (pair (pair nat timestamp) nat))))
+                                                                            (pair (pair (pair (pair nat nat) (pair timestamp timestamp)) (pair (pair nat timestamp) nat))
+                                                                                  (option key_hash)))
+                                                                      (pair (pair (option key_hash) address) (pair nat nat)))
+                                                                (pair (pair (pair (big_map address nat) nat) (pair address nat))
+                                                                      (pair (pair nat nat) (pair nat (big_map address nat)))))
+                                                          (pair (pair (big_map key_hash timestamp)
+                                                                      (big_map address (pair (set address) (option key_hash))))
+                                                                (big_map key_hash nat))))
+                                              address)
+                                        (pair (list operation)
+                                              (pair (pair (pair (pair (pair (big_map address (pair (pair nat timestamp) (pair nat nat)))
+                                                                            (big_map
+                                                                               nat
+                                                                               (pair (pair (pair nat nat) (pair timestamp timestamp)) (pair (pair nat timestamp) nat))))
+                                                                      (pair (pair (pair (pair nat nat) (pair timestamp timestamp)) (pair (pair nat timestamp) nat))
+                                                                            (option key_hash)))
+                                                                (pair (pair (option key_hash) address) (pair nat nat)))
+                                                          (pair (pair (pair (big_map address nat) nat) (pair address nat))
+                                                                (pair (pair nat nat) (pair nat (big_map address nat)))))
+                                                    (pair (pair (big_map key_hash timestamp)
+                                                                (big_map address (pair (set address) (option key_hash))))
+                                                          (big_map key_hash nat))))))
+                                  (set %tokenList address))
+                            (big_map %tokenToExchange address address)))
+                (pair (list operation)
+                      (pair (pair (big_map %lambdas
+                                     nat
+                                     (lambda
+                                        (pair (pair (or (or (or (or (pair (pair nat nat) nat) nat) (or nat (pair address bool)))
+                                                            (or (or (pair nat address) (pair (pair nat nat) address))
+                                                                (or (pair (pair nat nat) (pair address address)) address)))
+                                                        (or (pair address key_hash) address))
+                                                    (pair (pair (pair (pair (pair (big_map address (pair (pair nat timestamp) (pair nat nat)))
+                                                                                  (big_map
+                                                                                     nat
+                                                                                     (pair (pair (pair nat nat) (pair timestamp timestamp)) (pair (pair nat timestamp) nat))))
+                                                                            (pair (pair (pair (pair nat nat) (pair timestamp timestamp)) (pair (pair nat timestamp) nat))
+                                                                                  (option key_hash)))
+                                                                      (pair (pair (option key_hash) address) (pair nat nat)))
+                                                                (pair (pair (pair (big_map address nat) nat) (pair address nat))
+                                                                      (pair (pair nat nat) (pair nat (big_map address nat)))))
+                                                          (pair (pair (big_map key_hash timestamp)
+                                                                      (big_map address (pair (set address) (option key_hash))))
+                                                                (big_map key_hash nat))))
+                                              address)
+                                        (pair (list operation)
+                                              (pair (pair (pair (pair (pair (big_map address (pair (pair nat timestamp) (pair nat nat)))
+                                                                            (big_map
+                                                                               nat
+                                                                               (pair (pair (pair nat nat) (pair timestamp timestamp)) (pair (pair nat timestamp) nat))))
+                                                                      (pair (pair (pair (pair nat nat) (pair timestamp timestamp)) (pair (pair nat timestamp) nat))
+                                                                            (option key_hash)))
+                                                                (pair (pair (option key_hash) address) (pair nat nat)))
+                                                          (pair (pair (pair (big_map address nat) nat) (pair address nat))
+                                                                (pair (pair nat nat) (pair nat (big_map address nat)))))
+                                                    (pair (pair (big_map key_hash timestamp)
+                                                                (big_map address (pair (set address) (option key_hash))))
+                                                          (big_map key_hash nat))))))
+                                  (set %tokenList address))
+                            (big_map %tokenToExchange address address)))))
+          (pair %storage
+             (pair (big_map %lambdas
+                      nat
+                      (lambda
+                         (pair (pair (or (or (or (or (pair (pair nat nat) nat) nat) (or nat (pair address bool)))
+                                             (or (or (pair nat address) (pair (pair nat nat) address))
+                                                 (or (pair (pair nat nat) (pair address address)) address)))
+                                         (or (pair address key_hash) address))
+                                     (pair (pair (pair (pair (pair (big_map address (pair (pair nat timestamp) (pair nat nat)))
+                                                                   (big_map
+                                                                      nat
+                                                                      (pair (pair (pair nat nat) (pair timestamp timestamp)) (pair (pair nat timestamp) nat))))
+                                                             (pair (pair (pair (pair nat nat) (pair timestamp timestamp)) (pair (pair nat timestamp) nat))
+                                                                   (option key_hash)))
+                                                       (pair (pair (option key_hash) address) (pair nat nat)))
+                                                 (pair (pair (pair (big_map address nat) nat) (pair address nat))
+                                                       (pair (pair nat nat) (pair nat (big_map address nat)))))
+                                           (pair (pair (big_map key_hash timestamp)
+                                                       (big_map address (pair (set address) (option key_hash))))
+                                                 (big_map key_hash nat))))
+                               address)
+                         (pair (list operation)
+                               (pair (pair (pair (pair (pair (big_map address (pair (pair nat timestamp) (pair nat nat)))
+                                                             (big_map
+                                                                nat
+                                                                (pair (pair (pair nat nat) (pair timestamp timestamp)) (pair (pair nat timestamp) nat))))
+                                                       (pair (pair (pair (pair nat nat) (pair timestamp timestamp)) (pair (pair nat timestamp) nat))
+                                                             (option key_hash)))
+                                                 (pair (pair (option key_hash) address) (pair nat nat)))
+                                           (pair (pair (pair (big_map address nat) nat) (pair address nat))
+                                                 (pair (pair nat nat) (pair nat (big_map address nat)))))
+                                     (pair (pair (big_map key_hash timestamp)
+                                                 (big_map address (pair (set address) (option key_hash))))
+                                           (big_map key_hash nat))))))
+                   (set %tokenList address))
+             (big_map %tokenToExchange address address))) ;
+  code { DUP ;
+         CDR ;
+         DIG 1 ;
+         DUP ;
+         DUG 2 ;
+         CAR ;
+         IF_LEFT
+           { DUP ;
+             IF_LEFT
+               { DIG 2 ;
+                 DUP ;
+                 DUG 3 ;
+                 DIG 1 ;
+                 DUP ;
+                 DUG 2 ;
+                 PAIR ;
+                 DUP ;
+                 CDR ;
+                 DUP ;
+                 CAR ;
+                 PUSH nat 0 ;
+                 GET ;
+                 IF_NONE
+                   { PUSH string "Factory/function-not-set" ; FAILWITH }
+                   { DIG 1 ;
+                     DUP ;
+                     DUG 2 ;
+                     CDR ;
+                     DIG 3 ;
+                     DUP ;
+                     DUG 4 ;
+                     CAR ;
+                     SELF ;
+                     ADDRESS ;
+                     PAIR ;
+                     PAIR ;
+                     DIG 1 ;
+                     DUP ;
+                     DUG 2 ;
+                     SWAP ;
+                     EXEC ;
+                     DIP { DROP } } ;
+                 DIG 1 ;
+                 DUP ;
+                 DUG 2 ;
+                 DIG 1 ;
+                 DUP ;
+                 DUG 2 ;
+                 CDR ;
+                 SWAP ;
+                 CAR ;
+                 PAIR ;
+                 DIG 1 ;
+                 DUP ;
+                 DUG 2 ;
+                 CAR ;
+                 PAIR ;
+                 DIP { DROP 4 } }
+               { PUSH bool False ;
+                 IF { PUSH string "Factory/functions-set" ; FAILWITH }
+                    { DIG 2 ;
+                      DUP ;
+                      DUG 3 ;
+                      DIG 1 ;
+                      DUP ;
+                      DUG 2 ;
+                      PAIR ;
+                      DUP ;
+                      CDR ;
+                      DIG 1 ;
+                      DUP ;
+                      DUG 2 ;
+                      CAR ;
+                      DIP { DUP ; CAR ; SWAP ; CDR ; DUP ; CDR ; SWAP ; CAR ; CDR } ;
+                      PAIR ;
+                      PAIR ;
+                      SWAP ;
+                      PAIR ;
+                      DIP { DROP } } ;
+                 NIL operation ;
+                 PAIR ;
+                 DIP { DROP } } ;
+             DIP { DROP } }
+           { DIG 1 ;
+             DUP ;
+             DUG 2 ;
+             NIL operation ;
+             DIG 3 ;
+             DUP ;
+             DUG 4 ;
+             CDR ;
+             CDR ;
+             DIG 3 ;
+             DUP ;
+             DUG 4 ;
+             CAR ;
+             CAR ;
+             GET ;
+             IF_NONE { PUSH string "MAP FIND" ; FAILWITH } {} ;
+             CONTRACT %use
+               (pair nat
+                     (or (or (or (or (pair (pair nat nat) nat) nat) (or nat (pair address bool)))
+                             (or (or (pair nat address) (pair (pair nat nat) address))
+                                 (or (pair (pair nat nat) (pair address address)) address)))
+                         (or (pair address key_hash) address))) ;
+             IF_NONE { PUSH string "01" ; FAILWITH } { DUP ; DIP { DROP } } ;
+             AMOUNT ;
+             DIG 4 ;
+             DUP ;
+             DUG 5 ;
+             CAR ;
+             CDR ;
+             DIG 5 ;
+             DUP ;
+             DUG 6 ;
+             CDR ;
+             PAIR ;
+             LEFT (pair (pair nat nat) address) ;
+             LEFT (or (pair (pair nat nat) (pair address address)) address) ;
+             RIGHT (or (or (pair (pair nat nat) nat) nat) (or nat (pair address bool))) ;
+             LEFT (or (pair address key_hash) address) ;
+             PUSH nat 1 ;
+             PAIR ;
+             TRANSFER_TOKENS ;
+             CONS ;
+             PAIR ;
+             DIP { DROP } } ;
+         DIP { DROP 2 } } }

@@ -1,0 +1,72 @@
+{ parameter (or (unit %join) (mutez %withdraw)) ;
+  storage
+    (pair (pair (address %admin) (mutez %balance))
+          (pair (timestamp %expire) (pair (address %fa12) (nat %rate)))) ;
+  code { DUP ;
+         CDR ;
+         SWAP ;
+         CAR ;
+         IF_LEFT
+           { NIL operation ;
+             DIG 2 ;
+             DUP ;
+             DUG 3 ;
+             { CDR ; CDR ; CAR } ;
+             CONTRACT %mint (pair (address %address) (mutez %amount)) ;
+             { IF_NONE { PUSH unit Unit ; FAILWITH } {} } ;
+             PUSH mutez 0 ;
+             AMOUNT ;
+             DIG 5 ;
+             DUP ;
+             DUG 6 ;
+             { CDR ; CDR ; CDR } ;
+             MUL ;
+             SENDER ;
+             PAIR %address %amount ;
+             TRANSFER_TOKENS ;
+             CONS ;
+             SWAP ;
+             DROP }
+           { SWAP ;
+             DUP ;
+             DUG 2 ;
+             { CAR ; CAR } ;
+             SENDER ;
+             COMPARE ;
+             EQ ;
+             IF {}
+                { PUSH string "WrongCondition: sp.sender == self.data.admin" ; FAILWITH } ;
+             NIL operation ;
+             SENDER ;
+             CONTRACT unit ;
+             { IF_NONE { PUSH unit Unit ; FAILWITH } {} } ;
+             DIG 2 ;
+             DUP ;
+             DUG 3 ;
+             PUSH unit Unit ;
+             TRANSFER_TOKENS ;
+             CONS ;
+             DIG 2 ;
+             DUP ;
+             DUG 3 ;
+             DUP ;
+             CDR ;
+             SWAP ;
+             { CAR ; CAR } ;
+             DIG 3 ;
+             DUP ;
+             DUG 4 ;
+             DIG 5 ;
+             DUP ;
+             DUG 6 ;
+             { CAR ; CDR } ;
+             SUB ;
+             SWAP ;
+             PAIR ;
+             PAIR ;
+             DUG 3 ;
+             DIG 2 ;
+             DROP ;
+             SWAP ;
+             DROP } ;
+         PAIR } }

@@ -1,0 +1,434 @@
+{ parameter
+    (or (or (pair %initiate
+               (pair (pair (bytes %hashedSecret) (address %participant))
+                     (pair (timestamp %refundTime) (nat %totalAmount)))
+               (contract %transferEntry (list (pair (pair nat address) address))))
+            (bytes %redeem))
+        (bytes %refund)) ;
+  storage
+    (big_map
+       bytes
+       (pair (pair (pair (address %initiator) (address %participant))
+                   (pair (timestamp %refundTime) (address %tokenAddress)))
+             (nat %totalAmount))) ;
+  code { LAMBDA
+           (pair bytes
+                 (big_map
+                    bytes
+                    (pair (pair (pair (address %initiator) (address %participant))
+                                (pair (timestamp %refundTime) (address %tokenAddress)))
+                          (nat %totalAmount))))
+           (pair (pair (pair (address %initiator) (address %participant))
+                       (pair (timestamp %refundTime) (address %tokenAddress)))
+                 (nat %totalAmount))
+           { DUP ;
+             CDR ;
+             DIG 1 ;
+             DUP ;
+             DUG 2 ;
+             CAR ;
+             GET ;
+             IF_NONE
+               { PUSH string "no swap for such hash" ; FAILWITH }
+               { DUP ; DIP { DROP } } ;
+             DIP { DROP } } ;
+         LAMBDA
+           address
+           (contract (list (pair (pair nat address) address)))
+           { DUP ;
+             CONTRACT (list (pair (pair nat address) address)) ;
+             IF_NONE
+               { PUSH string "expected transfer entrypoint" ; FAILWITH }
+               { DUP ; DIP { DROP } } ;
+             DIP { DROP } } ;
+         LAMBDA
+           (pair (pair (contract (list (pair (pair nat address) address))) address) (pair address nat))
+           operation
+           { NIL (pair (pair nat address) address) ;
+             DIG 1 ;
+             DUP ;
+             DUG 2 ;
+             CDR ;
+             CAR ;
+             DIG 2 ;
+             DUP ;
+             DUG 3 ;
+             CAR ;
+             CDR ;
+             DIG 3 ;
+             DUP ;
+             DUG 4 ;
+             CDR ;
+             CDR ;
+             PAIR ;
+             PAIR ;
+             CONS ;
+             DIG 1 ;
+             DUP ;
+             DUG 2 ;
+             CAR ;
+             CAR ;
+             PUSH mutez 0 ;
+             DIG 2 ;
+             DUP ;
+             DUG 3 ;
+             TRANSFER_TOKENS ;
+             DUP ;
+             DIP { DROP 3 } } ;
+         DIG 3 ;
+         DUP ;
+         DUG 4 ;
+         CDR ;
+         AMOUNT ;
+         PUSH mutez 0 ;
+         COMPARE ;
+         NEQ ;
+         IF { PUSH string "this contract does not accept tez" ; FAILWITH }
+            { PUSH unit Unit } ;
+         DIG 5 ;
+         DUP ;
+         DUG 6 ;
+         CAR ;
+         IF_LEFT
+           { DUP ;
+             IF_LEFT
+               { DIG 3 ;
+                 DUP ;
+                 DUG 4 ;
+                 DIG 1 ;
+                 DUP ;
+                 DUG 2 ;
+                 PAIR ;
+                 DUP ;
+                 CAR ;
+                 DIG 1 ;
+                 DUP ;
+                 DUG 2 ;
+                 CDR ;
+                 NOW ;
+                 DIG 2 ;
+                 DUP ;
+                 DUG 3 ;
+                 CAR ;
+                 CDR ;
+                 CAR ;
+                 COMPARE ;
+                 LE ;
+                 IF { PUSH string "refund time has already come" ; FAILWITH }
+                    { PUSH unit Unit } ;
+                 DIG 2 ;
+                 DUP ;
+                 DUG 3 ;
+                 CAR ;
+                 CAR ;
+                 CAR ;
+                 SIZE ;
+                 PUSH nat 32 ;
+                 COMPARE ;
+                 NEQ ;
+                 IF { PUSH string "hash size doesn't equal 32 bytes" ; FAILWITH }
+                    { PUSH unit Unit } ;
+                 DIG 3 ;
+                 DUP ;
+                 DUG 4 ;
+                 CAR ;
+                 CAR ;
+                 CDR ;
+                 SOURCE ;
+                 COMPARE ;
+                 EQ ;
+                 IF { PUSH string "SOURCE cannot act as participant" ; FAILWITH }
+                    { PUSH unit Unit } ;
+                 DIG 4 ;
+                 DUP ;
+                 DUG 5 ;
+                 CAR ;
+                 CAR ;
+                 CDR ;
+                 SENDER ;
+                 COMPARE ;
+                 EQ ;
+                 IF { PUSH string "SENDER cannot act as participant" ; FAILWITH }
+                    { PUSH unit Unit } ;
+                 DIG 5 ;
+                 DUP ;
+                 DUG 6 ;
+                 CAR ;
+                 CDR ;
+                 CDR ;
+                 DIG 6 ;
+                 DUP ;
+                 DUG 7 ;
+                 CDR ;
+                 ADDRESS ;
+                 DIG 7 ;
+                 DUP ;
+                 DUG 8 ;
+                 CAR ;
+                 CDR ;
+                 CAR ;
+                 PAIR ;
+                 DIG 7 ;
+                 DUP ;
+                 DUG 8 ;
+                 CAR ;
+                 CAR ;
+                 CDR ;
+                 SENDER ;
+                 PAIR ;
+                 PAIR ;
+                 PAIR ;
+                 DIG 5 ;
+                 DUP ;
+                 DUG 6 ;
+                 DIG 7 ;
+                 DUP ;
+                 DUG 8 ;
+                 CAR ;
+                 CAR ;
+                 CAR ;
+                 GET ;
+                 IF_NONE
+                   { DIG 5 ;
+                     DUP ;
+                     DUG 6 ;
+                     DIG 6 ;
+                     DUP ;
+                     DUG 7 ;
+                     DIG 2 ;
+                     DUP ;
+                     DUG 3 ;
+                     DIG 9 ;
+                     DUP ;
+                     DUG 10 ;
+                     CAR ;
+                     CAR ;
+                     CAR ;
+                     SWAP ;
+                     SOME ;
+                     SWAP ;
+                     UPDATE ;
+                     DIP { DROP } }
+                   { PUSH string "swap for this hash is already initiated" ; FAILWITH } ;
+                 DIG 7 ;
+                 DUP ;
+                 DUG 8 ;
+                 CAR ;
+                 CDR ;
+                 CDR ;
+                 SELF ;
+                 ADDRESS ;
+                 PAIR ;
+                 SENDER ;
+                 DIG 9 ;
+                 DUP ;
+                 DUG 10 ;
+                 CDR ;
+                 PAIR ;
+                 PAIR ;
+                 DIG 14 ;
+                 DUP ;
+                 DUG 15 ;
+                 SWAP ;
+                 EXEC ;
+                 DIG 1 ;
+                 DUP ;
+                 DUG 2 ;
+                 NIL operation ;
+                 DIG 2 ;
+                 DUP ;
+                 DUG 3 ;
+                 CONS ;
+                 PAIR ;
+                 DIP { DROP 11 } }
+               { DIG 3 ;
+                 DUP ;
+                 DUG 4 ;
+                 DIG 1 ;
+                 DUP ;
+                 DUG 2 ;
+                 PAIR ;
+                 DUP ;
+                 CAR ;
+                 DIG 1 ;
+                 DUP ;
+                 DUG 2 ;
+                 CDR ;
+                 DIG 1 ;
+                 DUP ;
+                 DUG 2 ;
+                 SIZE ;
+                 PUSH nat 32 ;
+                 COMPARE ;
+                 NEQ ;
+                 IF { PUSH string "secret size doesn't equal 32 bytes" ; FAILWITH }
+                    { PUSH unit Unit } ;
+                 DIG 2 ;
+                 DUP ;
+                 DUG 3 ;
+                 SHA256 ;
+                 SHA256 ;
+                 DIG 2 ;
+                 DUP ;
+                 DUG 3 ;
+                 DIG 1 ;
+                 DUP ;
+                 DUG 2 ;
+                 PAIR ;
+                 DIG 12 ;
+                 DUP ;
+                 DUG 13 ;
+                 SWAP ;
+                 EXEC ;
+                 DUP ;
+                 CAR ;
+                 CDR ;
+                 CAR ;
+                 NOW ;
+                 COMPARE ;
+                 GE ;
+                 IF { PUSH string "refund time has already come" ; FAILWITH }
+                    { PUSH unit Unit } ;
+                 DIG 4 ;
+                 DUP ;
+                 DUG 5 ;
+                 DIG 3 ;
+                 DUP ;
+                 DUG 4 ;
+                 NONE (pair (pair (pair (address %initiator) (address %participant))
+                                  (pair (timestamp %refundTime) (address %tokenAddress)))
+                            (nat %totalAmount)) ;
+                 SWAP ;
+                 UPDATE ;
+                 DIG 2 ;
+                 DUP ;
+                 DUG 3 ;
+                 CAR ;
+                 CDR ;
+                 CDR ;
+                 DIG 14 ;
+                 DUP ;
+                 DUG 15 ;
+                 SWAP ;
+                 EXEC ;
+                 DIG 3 ;
+                 DUP ;
+                 DUG 4 ;
+                 CDR ;
+                 DIG 4 ;
+                 DUP ;
+                 DUG 5 ;
+                 CAR ;
+                 CAR ;
+                 CDR ;
+                 PAIR ;
+                 SELF ;
+                 ADDRESS ;
+                 DIG 2 ;
+                 DUP ;
+                 DUG 3 ;
+                 PAIR ;
+                 PAIR ;
+                 DIG 14 ;
+                 DUP ;
+                 DUG 15 ;
+                 SWAP ;
+                 EXEC ;
+                 DIG 2 ;
+                 DUP ;
+                 DUG 3 ;
+                 NIL operation ;
+                 DIG 2 ;
+                 DUP ;
+                 DUG 3 ;
+                 CONS ;
+                 PAIR ;
+                 DIP { DROP 11 } } ;
+             DIP { DROP } }
+           { DIG 2 ;
+             DUP ;
+             DUG 3 ;
+             DIG 1 ;
+             DUP ;
+             DUG 2 ;
+             PAIR ;
+             DUP ;
+             CAR ;
+             DIG 1 ;
+             DUP ;
+             DUG 2 ;
+             CDR ;
+             DUP ;
+             DIG 2 ;
+             DUP ;
+             DUG 3 ;
+             PAIR ;
+             DIG 9 ;
+             DUP ;
+             DUG 10 ;
+             SWAP ;
+             EXEC ;
+             DUP ;
+             CAR ;
+             CDR ;
+             CAR ;
+             NOW ;
+             COMPARE ;
+             LT ;
+             IF { PUSH string "refund time hasn't come" ; FAILWITH } { PUSH unit Unit } ;
+             DIG 2 ;
+             DUP ;
+             DUG 3 ;
+             DIG 4 ;
+             DUP ;
+             DUG 5 ;
+             NONE (pair (pair (pair (address %initiator) (address %participant))
+                              (pair (timestamp %refundTime) (address %tokenAddress)))
+                        (nat %totalAmount)) ;
+             SWAP ;
+             UPDATE ;
+             DIG 2 ;
+             DUP ;
+             DUG 3 ;
+             CAR ;
+             CDR ;
+             CDR ;
+             DIG 11 ;
+             DUP ;
+             DUG 12 ;
+             SWAP ;
+             EXEC ;
+             DIG 3 ;
+             DUP ;
+             DUG 4 ;
+             CDR ;
+             DIG 4 ;
+             DUP ;
+             DUG 5 ;
+             CAR ;
+             CAR ;
+             CAR ;
+             PAIR ;
+             SELF ;
+             ADDRESS ;
+             DIG 2 ;
+             DUP ;
+             DUG 3 ;
+             PAIR ;
+             PAIR ;
+             DIG 11 ;
+             DUP ;
+             DUG 12 ;
+             SWAP ;
+             EXEC ;
+             DIG 2 ;
+             DUP ;
+             DUG 3 ;
+             NIL operation ;
+             DIG 2 ;
+             DUP ;
+             DUG 3 ;
+             CONS ;
+             PAIR ;
+             DIP { DROP 9 } } ;
+         DIP { DROP 6 } } }

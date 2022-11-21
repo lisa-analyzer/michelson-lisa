@@ -1,0 +1,26 @@
+{ parameter address ;
+  storage int ;
+  code { DUP ;
+         CAR ;
+         CONTRACT unit ;
+         IF_NONE
+           { PUSH string "Not a contract" ; FAILWITH }
+           { DUP ; DIP { DROP } } ;
+         DUP ;
+         AMOUNT ;
+         UNIT ;
+         TRANSFER_TOKENS ;
+         NIL operation ;
+         DIG 1 ;
+         DUP ;
+         DUG 2 ;
+         CONS ;
+         DIG 3 ;
+         DUP ;
+         DUG 4 ;
+         CDR ;
+         DIG 1 ;
+         DUP ;
+         DUG 2 ;
+         PAIR ;
+         DIP { DROP 4 } } }

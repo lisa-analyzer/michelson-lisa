@@ -1,0 +1,511 @@
+{ parameter
+    (or (or (or (or (pair %isPublicSwap unit (contract bool))
+                    (or (pair %isFinalized unit (contract bool)) (pair %isBound address (contract bool))))
+                (or (pair %getNumTokens unit (contract nat))
+                    (or (pair %getCurrentTokens unit (contract (list address)))
+                        (pair %getFinalTokens unit (contract (list address))))))
+            (or (or (pair %getDenormalizedWeight address (contract nat))
+                    (or (pair %getTotalDenormalizedWeight unit (contract nat))
+                        (pair %getNormalizedWeight address (contract nat))))
+                (or (pair %getBalance address (contract nat))
+                    (or (pair %getSwapFee unit (contract nat))
+                        (pair %getController unit (contract address))))))
+        (or (or (or (nat %setSwapFee) (or (address %setController) (bool %setPublicSwap)))
+                (or (unit %finalize)
+                    (or (pair %bind address (pair nat nat)) (pair %rebind address (pair nat nat)))))
+            (or (or (address %unbind)
+                    (or (address %gulp) (pair %getSpotPrice (pair address address) (contract nat))))
+                (or (or (pair %getSpotPriceSansFee (pair address address) (contract nat))
+                        (pair %joinPool nat (list nat)))
+                    (or (pair %exitPool nat (list nat))
+                        (pair %swapExactAmountIn address (pair nat (pair address (pair nat nat))))))))) ;
+  storage
+    (pair (pair (pair address address) (pair bool nat))
+          (pair (pair bool (list address))
+                (pair (map address (pair (pair bool nat) (pair nat nat))) (pair nat (pair string bytes))))) ;
+  code { CAST (pair (or (or (or (or (pair unit (contract bool))
+                                    (or (pair unit (contract bool)) (pair address (contract bool))))
+                                (or (pair unit (contract nat))
+                                    (or (pair unit (contract (list address))) (pair unit (contract (list address))))))
+                            (or (or (pair address (contract nat))
+                                    (or (pair unit (contract nat)) (pair address (contract nat))))
+                                (or (pair address (contract nat))
+                                    (or (pair unit (contract nat)) (pair unit (contract address))))))
+                        (or (or (or nat (or address bool))
+                                (or unit (or (pair address (pair nat nat)) (pair address (pair nat nat)))))
+                            (or (or address (or address (pair (pair address address) (contract nat))))
+                                (or (or (pair (pair address address) (contract nat)) (pair nat (list nat)))
+                                    (or (pair nat (list nat)) (pair address (pair nat (pair address (pair nat nat)))))))))
+                    (pair (pair (pair address address) (pair bool nat))
+                          (pair (pair bool (list address))
+                                (pair (map address (pair (pair bool nat) (pair nat nat))) (pair nat (pair string bytes)))))) ;
+         DUP ;
+         CAR ;
+         DIP { CDR } ;
+         IF_LEFT
+           { IF_LEFT
+               { IF_LEFT
+                   { IF_LEFT
+                       { DUP ;
+                         CAR ;
+                         DIP { CDR } ;
+                         DIP { DIP { DUP } ; SWAP } ;
+                         PAIR ;
+                         CDR ;
+                         CAR ;
+                         CDR ;
+                         CAR ;
+                         DIP { AMOUNT } ;
+                         TRANSFER_TOKENS ;
+                         NIL operation ;
+                         SWAP ;
+                         CONS ;
+                         PAIR }
+                       { IF_LEFT
+                           { DUP ;
+                             CAR ;
+                             DIP { CDR } ;
+                             DIP { DIP { DUP } ; SWAP } ;
+                             PAIR ;
+                             CDR ;
+                             CDR ;
+                             CAR ;
+                             CAR ;
+                             DIP { AMOUNT } ;
+                             TRANSFER_TOKENS ;
+                             NIL operation ;
+                             SWAP ;
+                             CONS ;
+                             PAIR }
+                           { DUP ;
+                             CAR ;
+                             DIP { CDR } ;
+                             DIP { DIP { DUP } ; SWAP } ;
+                             PAIR ;
+                             DUP ;
+                             CAR ;
+                             DIP { CDR } ;
+                             DIP { CDR ; CDR ; CAR } ;
+                             GET ;
+                             IF_NONE
+                               { PUSH (or (or unit unit) (or unit (or unit unit))) (Right (Right (Left Unit))) ;
+                                 FAILWITH }
+                               {} ;
+                             CAR ;
+                             CAR ;
+                             DIP { AMOUNT } ;
+                             TRANSFER_TOKENS ;
+                             NIL operation ;
+                             SWAP ;
+                             CONS ;
+                             PAIR } } }
+                   { IF_LEFT
+                       { DUP ;
+                         CAR ;
+                         DIP { CDR } ;
+                         DIP { DIP { DUP } ; SWAP } ;
+                         PAIR ;
+                         CDR ;
+                         CDR ;
+                         CAR ;
+                         CDR ;
+                         SIZE ;
+                         DIP { AMOUNT } ;
+                         TRANSFER_TOKENS ;
+                         NIL operation ;
+                         SWAP ;
+                         CONS ;
+                         PAIR }
+                       { IF_LEFT
+                           { DUP ;
+                             CAR ;
+                             DIP { CDR } ;
+                             DIP { DIP { DUP } ; SWAP } ;
+                             PAIR ;
+                             CDR ;
+                             CDR ;
+                             CAR ;
+                             CDR ;
+                             DIP { AMOUNT } ;
+                             TRANSFER_TOKENS ;
+                             NIL operation ;
+                             SWAP ;
+                             CONS ;
+                             PAIR }
+                           { DUP ;
+                             CAR ;
+                             DIP { CDR } ;
+                             DIP { DIP { DUP } ; SWAP } ;
+                             PAIR ;
+                             CDR ;
+                             DUP ;
+                             CDR ;
+                             CAR ;
+                             CAR ;
+                             PUSH bool False ;
+                             COMPARE ;
+                             EQ ;
+                             IF {}
+                                { PUSH (or (or unit unit) (or unit (or unit unit))) (Left (Left Unit)) ; FAILWITH } ;
+                             CDR ;
+                             CAR ;
+                             CDR ;
+                             DIP { AMOUNT } ;
+                             TRANSFER_TOKENS ;
+                             NIL operation ;
+                             SWAP ;
+                             CONS ;
+                             PAIR } } } }
+               { IF_LEFT
+                   { IF_LEFT
+                       { DUP ;
+                         CAR ;
+                         DIP { CDR } ;
+                         DIP { DIP { DUP } ; SWAP } ;
+                         PAIR ;
+                         DUP ;
+                         CAR ;
+                         DIP { CDR } ;
+                         DIP { CDR ; CDR ; CAR } ;
+                         GET ;
+                         IF_NONE
+                           { PUSH (or (or unit unit) (or unit (or unit unit))) (Right (Right (Left Unit))) ;
+                             FAILWITH }
+                           {} ;
+                         DUP ;
+                         CAR ;
+                         CAR ;
+                         IF {}
+                            { PUSH (or (or unit unit) (or unit (or unit unit))) (Right (Left Unit)) ; FAILWITH } ;
+                         CDR ;
+                         CAR ;
+                         DIP { AMOUNT } ;
+                         TRANSFER_TOKENS ;
+                         NIL operation ;
+                         SWAP ;
+                         CONS ;
+                         PAIR }
+                       { IF_LEFT
+                           { DUP ;
+                             CAR ;
+                             DIP { CDR } ;
+                             DIP { DIP { DUP } ; SWAP } ;
+                             PAIR ;
+                             CDR ;
+                             CDR ;
+                             CDR ;
+                             CDR ;
+                             CAR ;
+                             DIP { AMOUNT } ;
+                             TRANSFER_TOKENS ;
+                             NIL operation ;
+                             SWAP ;
+                             CONS ;
+                             PAIR }
+                           { DUP ;
+                             CAR ;
+                             DIP { CDR } ;
+                             DIP { DIP { DUP } ; SWAP } ;
+                             PAIR ;
+                             DUP ;
+                             CAR ;
+                             DIP { CDR } ;
+                             DIP { DUP ; CDR ; CDR ; CAR ; DIP { CDR ; CDR ; CDR ; CAR } } ;
+                             GET ;
+                             IF_NONE
+                               { PUSH (or (or unit unit) (or unit (or unit unit))) (Right (Right (Left Unit))) ;
+                                 FAILWITH }
+                               {} ;
+                             DUP ;
+                             CAR ;
+                             CAR ;
+                             IF {}
+                                { PUSH (or (or unit unit) (or unit (or unit unit))) (Right (Left Unit)) ; FAILWITH } ;
+                             CDR ;
+                             CAR ;
+                             EDIV ;
+                             IF_NONE { PUSH unit Unit ; FAILWITH } {} ;
+                             DUP ;
+                             CAR ;
+                             DIP { CDR } ;
+                             DIP { DROP } ;
+                             DIP { AMOUNT } ;
+                             TRANSFER_TOKENS ;
+                             NIL operation ;
+                             SWAP ;
+                             CONS ;
+                             PAIR } } }
+                   { IF_LEFT
+                       { DUP ;
+                         CAR ;
+                         DIP { CDR } ;
+                         DIP { DIP { DUP } ; SWAP } ;
+                         PAIR ;
+                         DUP ;
+                         CAR ;
+                         DIP { CDR } ;
+                         DIP { CDR ; CDR ; CAR } ;
+                         GET ;
+                         IF_NONE
+                           { PUSH (or (or unit unit) (or unit (or unit unit))) (Right (Right (Left Unit))) ;
+                             FAILWITH }
+                           {} ;
+                         DUP ;
+                         CAR ;
+                         CAR ;
+                         IF {}
+                            { PUSH (or (or unit unit) (or unit (or unit unit))) (Right (Left Unit)) ; FAILWITH } ;
+                         CDR ;
+                         CDR ;
+                         DIP { AMOUNT } ;
+                         TRANSFER_TOKENS ;
+                         NIL operation ;
+                         SWAP ;
+                         CONS ;
+                         PAIR }
+                       { IF_LEFT
+                           { DUP ;
+                             CAR ;
+                             DIP { CDR } ;
+                             DIP { DIP { DUP } ; SWAP } ;
+                             PAIR ;
+                             CDR ;
+                             CAR ;
+                             CDR ;
+                             CDR ;
+                             DIP { AMOUNT } ;
+                             TRANSFER_TOKENS ;
+                             NIL operation ;
+                             SWAP ;
+                             CONS ;
+                             PAIR }
+                           { DUP ;
+                             CAR ;
+                             DIP { CDR } ;
+                             DIP { DIP { DUP } ; SWAP } ;
+                             PAIR ;
+                             CDR ;
+                             CAR ;
+                             CAR ;
+                             CDR ;
+                             DIP { AMOUNT } ;
+                             TRANSFER_TOKENS ;
+                             NIL operation ;
+                             SWAP ;
+                             CONS ;
+                             PAIR } } } } }
+           { IF_LEFT
+               { IF_LEFT
+                   { IF_LEFT
+                       { DUP ;
+                         PUSH nat 0 ;
+                         COMPARE ;
+                         GE ;
+                         IF {} { PUSH string "Swap fee too low" ; FAILWITH } ;
+                         DUP ;
+                         PUSH nat 6553 ;
+                         COMPARE ;
+                         LE ;
+                         IF {} { PUSH string "Swap fee too high" ; FAILWITH } ;
+                         DIP { DUP ;
+                               CDR ;
+                               CAR ;
+                               CAR ;
+                               PUSH bool False ;
+                               COMPARE ;
+                               EQ ;
+                               IF {}
+                                  { PUSH (or (or unit unit) (or unit (or unit unit))) (Left (Left Unit)) ; FAILWITH } ;
+                               DUP ;
+                               CAR ;
+                               CAR ;
+                               CDR ;
+                               SENDER ;
+                               COMPARE ;
+                               EQ ;
+                               IF {}
+                                  { PUSH (or (or unit unit) (or unit (or unit unit))) (Right (Right (Right Unit))) ;
+                                    FAILWITH } } ;
+                         DIP { DUP ; DIP { CDR } ; CAR } ;
+                         DIP { DUP ; DIP { CAR } ; CDR } ;
+                         DIP { DUP ; DIP { CAR } ; CDR } ;
+                         DIP { DROP } ;
+                         SWAP ;
+                         PAIR ;
+                         SWAP ;
+                         PAIR ;
+                         PAIR ;
+                         NIL operation ;
+                         PAIR }
+                       { IF_LEFT
+                           { DIP { DUP ;
+                                   CAR ;
+                                   CAR ;
+                                   CDR ;
+                                   SENDER ;
+                                   COMPARE ;
+                                   EQ ;
+                                   IF {}
+                                      { PUSH (or (or unit unit) (or unit (or unit unit))) (Right (Right (Right Unit))) ;
+                                        FAILWITH } } ;
+                             DIP { DUP ; DIP { CDR } ; CAR } ;
+                             DIP { DUP ; DIP { CDR } ; CAR } ;
+                             DIP { DUP ; DIP { CAR } ; CDR } ;
+                             DIP { DROP } ;
+                             SWAP ;
+                             PAIR ;
+                             PAIR ;
+                             PAIR ;
+                             NIL operation ;
+                             PAIR }
+                           { DIP { DUP ;
+                                   CDR ;
+                                   CAR ;
+                                   CAR ;
+                                   PUSH bool False ;
+                                   COMPARE ;
+                                   EQ ;
+                                   IF {}
+                                      { PUSH (or (or unit unit) (or unit (or unit unit))) (Left (Left Unit)) ; FAILWITH } ;
+                                   DUP ;
+                                   CAR ;
+                                   CAR ;
+                                   CDR ;
+                                   SENDER ;
+                                   COMPARE ;
+                                   EQ ;
+                                   IF {}
+                                      { PUSH (or (or unit unit) (or unit (or unit unit))) (Right (Right (Right Unit))) ;
+                                        FAILWITH } } ;
+                             DIP { DUP ; DIP { CDR } ; CAR } ;
+                             DIP { DUP ; DIP { CAR } ; CDR } ;
+                             DIP { DUP ; DIP { CDR } ; CAR } ;
+                             DIP { DROP } ;
+                             PAIR ;
+                             SWAP ;
+                             PAIR ;
+                             PAIR ;
+                             NIL operation ;
+                             PAIR } } }
+                   { IF_LEFT
+                       { DROP ;
+                         DUP ;
+                         CAR ;
+                         CAR ;
+                         CDR ;
+                         SENDER ;
+                         COMPARE ;
+                         EQ ;
+                         IF {}
+                            { PUSH (or (or unit unit) (or unit (or unit unit))) (Right (Right (Right Unit))) ;
+                              FAILWITH } ;
+                         DUP ;
+                         CDR ;
+                         CAR ;
+                         CAR ;
+                         PUSH bool False ;
+                         COMPARE ;
+                         EQ ;
+                         IF {} { PUSH string "Already finalized" ; FAILWITH } ;
+                         DUP ;
+                         CDR ;
+                         CAR ;
+                         CDR ;
+                         SIZE ;
+                         PUSH nat 2 ;
+                         COMPARE ;
+                         GE ;
+                         IF {} { PUSH string "Less than min bound tokens" ; FAILWITH } ;
+                         PUSH bool True ;
+                         DIP { DUP ; DIP { CAR } ; CDR } ;
+                         DIP { DUP ; DIP { CDR } ; CAR } ;
+                         DIP { DUP ; DIP { CDR } ; CAR } ;
+                         DIP { DROP } ;
+                         PAIR ;
+                         PAIR ;
+                         SWAP ;
+                         PAIR ;
+                         PUSH bool True ;
+                         DIP { DUP ; DIP { CDR } ; CAR } ;
+                         DIP { DUP ; DIP { CAR } ; CDR } ;
+                         DIP { DUP ; DIP { CDR } ; CAR } ;
+                         DIP { DROP } ;
+                         PAIR ;
+                         SWAP ;
+                         PAIR ;
+                         PAIR ;
+                         NIL operation ;
+                         PAIR }
+                       { IF_LEFT
+                           { CAR ;
+                             DUP ;
+                             DIP { DIP { DUP ; CDR ; CDR ; CAR } ;
+                                   GET ;
+                                   IF_NONE
+                                     { PUSH (or (or unit unit) (or unit (or unit unit))) (Right (Right (Left Unit))) ;
+                                       FAILWITH }
+                                     {} ;
+                                   DUP ;
+                                   CAR ;
+                                   CAR ;
+                                   IF {}
+                                      { PUSH (or (or unit unit) (or unit (or unit unit))) (Right (Left Unit)) ; FAILWITH } ;
+                                   DROP ;
+                                   DUP ;
+                                   CAR ;
+                                   CAR ;
+                                   CDR ;
+                                   SENDER ;
+                                   COMPARE ;
+                                   EQ ;
+                                   IF {}
+                                      { PUSH (or (or unit unit) (or unit (or unit unit))) (Right (Right (Right Unit))) ;
+                                        FAILWITH } ;
+                                   DUP ;
+                                   CDR ;
+                                   CAR ;
+                                   CAR ;
+                                   PUSH bool False ;
+                                   COMPARE ;
+                                   EQ ;
+                                   IF {}
+                                      { PUSH (or (or unit unit) (or unit (or unit unit))) (Left (Left Unit)) ; FAILWITH } ;
+                                   DUP ;
+                                   CDR ;
+                                   CAR ;
+                                   CDR ;
+                                   SIZE ;
+                                   DUP ;
+                                   PUSH nat 8 ;
+                                   COMPARE ;
+                                   LT ;
+                                   IF {} { PUSH string "Greater than max bound tokens" ; FAILWITH } ;
+                                   DIP { PUSH (pair (pair bool nat) (pair nat nat)) (Pair (Pair True 0) (Pair 0 0)) } ;
+                                   DIP { DUP ; DIP { CDR } ; CAR } ;
+                                   DIP { DUP ; DIP { CAR } ; CDR } ;
+                                   DIP { DROP } ;
+                                   SWAP ;
+                                   PAIR ;
+                                   PAIR ;
+                                   DIP { DUP ; CDR ; CDR ; CAR } } ;
+                             DIP { SOME } ;
+                             UPDATE ;
+                             DIP { DUP ; DIP { CAR } ; CDR } ;
+                             DIP { DUP ; DIP { CAR } ; CDR } ;
+                             DIP { DUP ; DIP { CDR } ; CAR } ;
+                             DIP { DROP } ;
+                             PAIR ;
+                             SWAP ;
+                             PAIR ;
+                             SWAP ;
+                             PAIR ;
+                             NIL operation ;
+                             PAIR }
+                           { UNIT ; FAILWITH } } } }
+               { IF_LEFT
+                   { IF_LEFT
+                       { UNIT ; FAILWITH }
+                       { IF_LEFT { UNIT ; FAILWITH } { UNIT ; FAILWITH } } }
+                   { IF_LEFT
+                       { IF_LEFT { UNIT ; FAILWITH } { UNIT ; FAILWITH } }
+                       { IF_LEFT { UNIT ; FAILWITH } { UNIT ; FAILWITH } } } } } } }

@@ -1,0 +1,53 @@
+{ parameter (or :sum (address %get) (pair %set signature (pair string nat))) ;
+  storage (pair :storage (key %key) (pair (nat %counter) (string %string))) ;
+  code { {} ;
+         { DUP ; CDR ; DIP { CAR } } ;
+         { { DIG 1 ; DUP ; DUG 2 } ;
+           IF_LEFT
+             { { PUSH mutez 3000000 ;
+                 { PUSH unit Unit ; DROP ; AMOUNT } ;
+                 COMPARE ;
+                 LT } ;
+               IF { { PUSH string "too low" ; FAILWITH } } { UNIT } ;
+               DROP ;
+               { { DUP ; CONTRACT string } ;
+                 DUP ;
+                 IF_NONE
+                   { { PUSH string "unexpected" ; FAILWITH } }
+                   { DUP ; DIP { DROP } } ;
+                 DIP { DROP } ;
+                 PUSH mutez 0 ;
+                 { { { DIG 3 ; DUP ; DUG 4 } ; CDR } ; CDR } ;
+                 TRANSFER_TOKENS } ;
+               { DIG 2 ; DUP ; DUG 3 } ;
+               NIL operation ;
+               { DIG 2 ; DUP ; DUG 3 } ;
+               CONS ;
+               PAIR ;
+               DIP { DROP 2 } }
+             { { DUP ; CAR } ;
+               { { DIG 1 ; DUP ; DUG 2 } ; CDR } ;
+               { DUP ; CAR } ;
+               { { DIG 1 ; DUP ; DUG 2 } ; CDR } ;
+               { DUP ;
+                 { { { DIG 6 ; DUP ; DUG 7 } ; CDR } ; CAR } ;
+                 COMPARE ;
+                 NEQ } ;
+               IF { { PUSH string "invalid counter" ; FAILWITH } } { UNIT } ;
+               DROP ;
+               { { { DUP ; { DIG 2 ; DUP ; DUG 3 } ; PAIR ; PACK } ;
+                   { DIG 4 ; DUP ; DUG 5 } ;
+                   { { DIG 7 ; DUP ; DUG 8 } ; CAR } ;
+                   CHECK_SIGNATURE } ;
+                 NOT } ;
+               IF { { PUSH string "invalid signature" ; FAILWITH } } { UNIT } ;
+               DROP ;
+               { DIG 1 ; DUP ; DUG 2 } ;
+               { PUSH nat 1 ; { { { DIG 7 ; DUP ; DUG 8 } ; CDR } ; CAR } ; ADD } ;
+               PAIR ;
+               { { DIG 6 ; DUP ; DUG 7 } ; CAR } ;
+               PAIR ;
+               NIL operation ;
+               PAIR ;
+               DIP { DROP 5 } } } ;
+         DIP { DROP 2 } } }

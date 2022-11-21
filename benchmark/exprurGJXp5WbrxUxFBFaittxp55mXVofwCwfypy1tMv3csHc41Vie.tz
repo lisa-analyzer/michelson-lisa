@@ -1,0 +1,36 @@
+{ storage (pair (int %buy) (address %sell)) ;
+  parameter (or (int %receiveDataFromOrO) (unit %requestDataFromOrO)) ;
+  code { DUP ;
+         CDR ;
+         SWAP ;
+         CAR ;
+         IF_LEFT
+           { { SWAP ;
+               CDR ;
+               SWAP ;
+               DUP ;
+               DUG 2 ;
+               PAIR ;
+               SWAP ;
+               SWAP ;
+               DUP ;
+               DUG 2 ;
+               CAR ;
+               SOURCE ;
+               DIG 3 ;
+               DROP ;
+               DIG 2 ;
+               DROP ;
+               SWAP ;
+               PAIR ;
+               NIL operation } }
+           { { DROP ;
+               NIL operation ;
+               PUSH address "KT1HMg9qVHDdRnhYcRJHZJwGWxkeaRxwntNu" ;
+               CONTRACT %getDataFromOrO string ;
+               IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+               PUSH mutez 0 ;
+               PUSH string "USD" ;
+               TRANSFER_TOKENS ;
+               CONS } } ;
+         PAIR } }

@@ -1,0 +1,252 @@
+{ storage
+    (pair (pair (pair (address %admin) (map %canExchangeBool address bool))
+                (pair (timestamp %creationTime) (bool %exchanged)))
+          (pair (pair (bool %expired) (timestamp %expiryTime))
+                (pair (map %partyDetailsMap
+                         address
+                         (pair (int %amount) (pair (address %publicAddress) (address %tokenAddress))))
+                      (pair (address %publicAddress_A) (address %publicAddress_B))))) ;
+  parameter
+    (or (or (pair %canExchangeResponse (int %amount) (address %partyAddress))
+            (address %canPartyAExchange))
+        (or (address %canPartyBExchange) (or (unit %exchange) (unit %isExpired)))) ;
+  code { DUP ;
+         CDR ;
+         SWAP ;
+         CAR ;
+         IF_LEFT
+           { IF_LEFT
+               { { DUP ;
+                   CAR ;
+                   DIG 2 ;
+                   DUP ;
+                   DUG 3 ;
+                   CDR ;
+                   CDR ;
+                   CAR ;
+                   DIG 2 ;
+                   DUP ;
+                   DUG 3 ;
+                   CDR ;
+                   GET ;
+                   IF_NONE { { PUSH string "Get-item:41" ; FAILWITH } } {} ;
+                   CAR ;
+                   COMPARE ;
+                   LE ;
+                   IF { { SWAP ;
+                          DUP ;
+                          DUG 2 ;
+                          DUP ;
+                          CDR ;
+                          SWAP ;
+                          CAR ;
+                          DUP ;
+                          CDR ;
+                          SWAP ;
+                          CAR ;
+                          DUP ;
+                          CAR ;
+                          SWAP ;
+                          CDR ;
+                          PUSH (option bool) (Some True) ;
+                          DIG 5 ;
+                          DUP ;
+                          DUG 6 ;
+                          CDR ;
+                          UPDATE ;
+                          SWAP ;
+                          PAIR ;
+                          PAIR ;
+                          PAIR ;
+                          DUG 2 ;
+                          SWAP ;
+                          DROP } }
+                      { {} } ;
+                   DROP ;
+                   NIL operation } }
+               { { NIL operation ;
+                   DIG 2 ;
+                   DUP ;
+                   DUG 3 ;
+                   CDR ;
+                   CDR ;
+                   CAR ;
+                   DIG 3 ;
+                   DUP ;
+                   DUG 4 ;
+                   CDR ;
+                   CDR ;
+                   CDR ;
+                   CAR ;
+                   GET ;
+                   IF_NONE { { PUSH string "Get-item:46" ; FAILWITH } } {} ;
+                   CDR ;
+                   CDR ;
+                   CONTRACT %canPartyExchange
+                     (pair (address %DVPContractAddress) (address %partyAddress)) ;
+                   IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                   PUSH mutez 0 ;
+                   DIG 4 ;
+                   DUP ;
+                   DUG 5 ;
+                   CDR ;
+                   CDR ;
+                   CDR ;
+                   CAR ;
+                   DIG 4 ;
+                   DUP ;
+                   DUG 5 ;
+                   PAIR %DVPContractAddress %partyAddress ;
+                   TRANSFER_TOKENS ;
+                   CONS ;
+                   SWAP ;
+                   DROP } } }
+           { IF_LEFT
+               { { NIL operation ;
+                   DIG 2 ;
+                   DUP ;
+                   DUG 3 ;
+                   CDR ;
+                   CDR ;
+                   CAR ;
+                   DIG 3 ;
+                   DUP ;
+                   DUG 4 ;
+                   CDR ;
+                   CDR ;
+                   CDR ;
+                   CDR ;
+                   GET ;
+                   IF_NONE { { PUSH string "Get-item:51" ; FAILWITH } } {} ;
+                   CDR ;
+                   CDR ;
+                   CONTRACT %canPartyExchange
+                     (pair (address %DVPContractAddress) (address %partyAddress)) ;
+                   IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                   PUSH mutez 0 ;
+                   DIG 4 ;
+                   DUP ;
+                   DUG 5 ;
+                   CDR ;
+                   CDR ;
+                   CDR ;
+                   CDR ;
+                   DIG 4 ;
+                   DUP ;
+                   DUG 5 ;
+                   PAIR %DVPContractAddress %partyAddress ;
+                   TRANSFER_TOKENS ;
+                   CONS ;
+                   SWAP ;
+                   DROP } }
+               { IF_LEFT
+                   { { PUSH bool True ;
+                       DIG 2 ;
+                       DUP ;
+                       DUG 3 ;
+                       CAR ;
+                       CAR ;
+                       CDR ;
+                       DIG 3 ;
+                       DUP ;
+                       DUG 4 ;
+                       CDR ;
+                       CDR ;
+                       CDR ;
+                       CAR ;
+                       GET ;
+                       IF_NONE { { PUSH string "Get-item:46" ; FAILWITH } } {} ;
+                       COMPARE ;
+                       EQ ;
+                       IF { {} }
+                          { { PUSH string "partyA doesn't approved yet." ; FAILWITH } } ;
+                       NIL operation ;
+                       DIG 2 ;
+                       DUP ;
+                       DUG 3 ;
+                       CDR ;
+                       CDR ;
+                       CAR ;
+                       DIG 3 ;
+                       DUP ;
+                       DUG 4 ;
+                       CDR ;
+                       CDR ;
+                       CDR ;
+                       CAR ;
+                       GET ;
+                       IF_NONE { { PUSH string "Get-item:46" ; FAILWITH } } {} ;
+                       CDR ;
+                       CDR ;
+                       CONTRACT %transfer (pair (int %amount) (pair (address %f) (address %t))) ;
+                       IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                       PUSH mutez 0 ;
+                       DIG 4 ;
+                       DUP ;
+                       DUG 5 ;
+                       CDR ;
+                       CDR ;
+                       CDR ;
+                       CDR ;
+                       DIG 5 ;
+                       DUP ;
+                       DUG 6 ;
+                       CDR ;
+                       CDR ;
+                       CDR ;
+                       CAR ;
+                       PAIR %f %t ;
+                       DIG 5 ;
+                       DUP ;
+                       DUG 6 ;
+                       CDR ;
+                       CDR ;
+                       CAR ;
+                       DIG 6 ;
+                       DUP ;
+                       DUG 7 ;
+                       CDR ;
+                       CDR ;
+                       CDR ;
+                       CAR ;
+                       GET ;
+                       IF_NONE { { PUSH string "Get-item:46" ; FAILWITH } } {} ;
+                       CAR ;
+                       PAIR %amount ;
+                       TRANSFER_TOKENS ;
+                       CONS ;
+                       SWAP ;
+                       DROP } }
+                   { { SWAP ;
+                       DUP ;
+                       DUG 2 ;
+                       CDR ;
+                       CAR ;
+                       CDR ;
+                       NOW ;
+                       COMPARE ;
+                       GT ;
+                       IF { { SWAP ;
+                              DUP ;
+                              DUG 2 ;
+                              DUP ;
+                              CAR ;
+                              SWAP ;
+                              CDR ;
+                              DUP ;
+                              CDR ;
+                              SWAP ;
+                              CAR ;
+                              CDR ;
+                              PUSH bool True ;
+                              PAIR ;
+                              PAIR ;
+                              SWAP ;
+                              PAIR ;
+                              DUG 2 ;
+                              SWAP ;
+                              DROP } }
+                          { {} } ;
+                       DROP ;
+                       NIL operation } } } } ;
+         PAIR } }

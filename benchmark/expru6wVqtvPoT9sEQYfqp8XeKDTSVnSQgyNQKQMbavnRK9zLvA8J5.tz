@@ -1,0 +1,68 @@
+{ parameter
+    (or (option %delegate key_hash)
+        (or (unit %join) (pair %withdraw (address %address) (mutez %amount)))) ;
+  storage
+    (pair (pair (address %admin) (mutez %balance))
+          (pair (timestamp %expire) (pair (address %fa12) (nat %rate)))) ;
+  code { DUP ;
+         CDR ;
+         SWAP ;
+         CAR ;
+         IF_LEFT
+           { SWAP ;
+             DUP ;
+             DUG 2 ;
+             { CAR ; CAR } ;
+             SENDER ;
+             COMPARE ;
+             EQ ;
+             IF {}
+                { PUSH string "WrongCondition: sp.sender == self.data.admin" ; FAILWITH } ;
+             SET_DELEGATE ;
+             NIL operation ;
+             SWAP ;
+             CONS }
+           { IF_LEFT
+               { DROP ;
+                 DUP ;
+                 { CDR ; CDR ; CAR } ;
+                 CONTRACT %mint (pair (address %to) (nat %value)) ;
+                 NIL operation ;
+                 SWAP ;
+                 { IF_NONE { PUSH unit Unit ; FAILWITH } {} } ;
+                 PUSH mutez 0 ;
+                 DIG 3 ;
+                 DUP ;
+                 DUG 4 ;
+                 { CDR ; CDR ; CDR } ;
+                 PUSH mutez 1 ;
+                 AMOUNT ;
+                 EDIV ;
+                 { IF_NONE { PUSH unit Unit ; FAILWITH } {} } ;
+                 CAR ;
+                 MUL ;
+                 SENDER ;
+                 PAIR %to %value ;
+                 TRANSFER_TOKENS ;
+                 CONS }
+               { SWAP ;
+                 DUP ;
+                 DUG 2 ;
+                 { CAR ; CAR } ;
+                 SENDER ;
+                 COMPARE ;
+                 EQ ;
+                 IF {}
+                    { PUSH string "WrongCondition: sp.sender == self.data.admin" ; FAILWITH } ;
+                 DUP ;
+                 CAR ;
+                 CONTRACT unit ;
+                 NIL operation ;
+                 SWAP ;
+                 { IF_NONE { PUSH unit Unit ; FAILWITH } {} } ;
+                 DIG 2 ;
+                 CDR ;
+                 PUSH unit Unit ;
+                 TRANSFER_TOKENS ;
+                 CONS } } ;
+         PAIR } }

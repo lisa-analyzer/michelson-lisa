@@ -1,0 +1,18 @@
+{ parameter (pair address key_hash) ;
+  storage unit ;
+  code { CAR ;
+         DUP ;
+         CAR ;
+         CONTRACT %updateTokenPool key_hash ;
+         IF_NONE
+           { PUSH string "bad address for get_entrypoint (%updateTokenPool)" ; FAILWITH }
+           {} ;
+         PUSH mutez 0 ;
+         DIG 2 ;
+         CDR ;
+         TRANSFER_TOKENS ;
+         UNIT ;
+         NIL operation ;
+         DIG 2 ;
+         CONS ;
+         PAIR } }

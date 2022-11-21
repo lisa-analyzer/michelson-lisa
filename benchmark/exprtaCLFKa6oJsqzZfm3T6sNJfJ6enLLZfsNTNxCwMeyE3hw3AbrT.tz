@@ -1,0 +1,35 @@
+{ storage int ;
+  parameter (or (int %getit) (int %sendit)) ;
+  code { DUP ;
+         CDR ;
+         SWAP ;
+         CAR ;
+         IF_LEFT
+           { { SWAP ; DROP ; NIL operation } }
+           { { DUP ;
+               PUSH mutez 1 ;
+               SWAP ;
+               ISNAT ;
+               IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+               MUL ;
+               AMOUNT ;
+               COMPARE ;
+               EQ ;
+               IF { {} }
+                  { { PUSH string "WrongCondition: sp.amount == sp.mutez(sp.as_nat(params.amount))" ;
+                      FAILWITH } } ;
+               NIL operation ;
+               PUSH address "KT1AmHSTeeZewT6d2TkzWcvAVM5TCWjZS1Eo" ;
+               CONTRACT %addTwo nat ;
+               IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+               PUSH mutez 0 ;
+               DIG 3 ;
+               DUP ;
+               DUG 4 ;
+               ISNAT ;
+               IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+               TRANSFER_TOKENS ;
+               CONS ;
+               SWAP ;
+               DROP } } ;
+         PAIR } }

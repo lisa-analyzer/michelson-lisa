@@ -1,0 +1,109 @@
+{ storage (pair (address %cadmin) (pair (mutez %funds) (map %transfers string mutez))) ;
+  parameter
+    (or (unit %add_funds)
+        (or (pair %pay_recipient (address %address) (nat %amt)) (string %transfer_eth))) ;
+  code { DUP ;
+         CDR ;
+         SWAP ;
+         CAR ;
+         IF_LEFT
+           { DROP ;
+             DUP ;
+             CAR ;
+             SENDER ;
+             COMPARE ;
+             EQ ;
+             IF {}
+                { PUSH string "WrongCondition: sp.sender == self.data.cadmin" ; FAILWITH } ;
+             DUP ;
+             CAR ;
+             SWAP ;
+             CDR ;
+             DUP ;
+             CDR ;
+             SWAP ;
+             CAR ;
+             AMOUNT ;
+             ADD ;
+             PAIR ;
+             SWAP ;
+             PAIR ;
+             NIL operation }
+           { IF_LEFT
+               { SWAP ;
+                 DUP ;
+                 DUG 2 ;
+                 CAR ;
+                 SENDER ;
+                 COMPARE ;
+                 EQ ;
+                 IF {}
+                    { PUSH string "WrongCondition: sp.sender == self.data.cadmin" ; FAILWITH } ;
+                 DUP ;
+                 CDR ;
+                 PUSH mutez 1000000 ;
+                 MUL ;
+                 DIG 2 ;
+                 DUP ;
+                 DUG 3 ;
+                 CDR ;
+                 CAR ;
+                 COMPARE ;
+                 GE ;
+                 IF {}
+                    { PUSH string "WrongCondition: self.data.funds >= sp.tez(params.amt)" ;
+                      FAILWITH } ;
+                 SWAP ;
+                 DUP ;
+                 CAR ;
+                 SWAP ;
+                 CDR ;
+                 DUP ;
+                 CDR ;
+                 SWAP ;
+                 CAR ;
+                 PUSH mutez 1000000 ;
+                 DIG 4 ;
+                 DUP ;
+                 DUG 5 ;
+                 CDR ;
+                 MUL ;
+                 SWAP ;
+                 SUB ;
+                 PAIR ;
+                 SWAP ;
+                 PAIR ;
+                 SWAP ;
+                 DUP ;
+                 CAR ;
+                 CONTRACT unit ;
+                 NIL operation ;
+                 SWAP ;
+                 IF_NONE { PUSH int 12 ; FAILWITH } {} ;
+                 PUSH mutez 1000000 ;
+                 DIG 3 ;
+                 CDR ;
+                 MUL ;
+                 UNIT ;
+                 TRANSFER_TOKENS ;
+                 CONS }
+               { SWAP ;
+                 DUP ;
+                 CAR ;
+                 SWAP ;
+                 CDR ;
+                 DUP ;
+                 CAR ;
+                 SWAP ;
+                 CDR ;
+                 DIG 3 ;
+                 AMOUNT ;
+                 SOME ;
+                 SWAP ;
+                 UPDATE ;
+                 SWAP ;
+                 PAIR ;
+                 SWAP ;
+                 PAIR ;
+                 NIL operation } } ;
+         PAIR } }

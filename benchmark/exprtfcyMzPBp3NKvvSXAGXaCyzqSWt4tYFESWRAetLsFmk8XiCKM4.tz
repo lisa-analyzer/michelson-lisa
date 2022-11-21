@@ -1,0 +1,22 @@
+{ parameter
+    (or (pair %receiveDataFromOrO (int %marketCap) (int %price))
+        (pair %requestDataFromOrO (address %oracleAddress) (string %ticker))) ;
+  storage (pair (int %marketCap) (int %price)) ;
+  code { DUP ;
+         CDR ;
+         SWAP ;
+         CAR ;
+         IF_LEFT
+           { SWAP ; DROP ; DUP ; CDR ; SWAP ; CAR ; PAIR ; NIL operation }
+           { DUP ;
+             CAR ;
+             CONTRACT %getDataFromOrO string ;
+             NIL operation ;
+             SWAP ;
+             { IF_NONE { UNIT ; FAILWITH } {} } ;
+             PUSH mutez 5000 ;
+             DIG 3 ;
+             CDR ;
+             TRANSFER_TOKENS ;
+             CONS } ;
+         PAIR } }

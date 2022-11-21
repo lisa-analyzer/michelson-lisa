@@ -1,0 +1,68 @@
+{ parameter
+    (or (or (map %update
+               (string :assetcode)
+               (pair signature
+                     (pair (timestamp %start)
+                           (pair (timestamp %end)
+                                 (pair (nat %open) (pair (nat %high) (pair (nat %low) (pair (nat %close) (nat %volume)))))))))
+            (signature %revoke))
+        (contract %request
+           (big_map
+              (string :assetcode)
+              (pair (timestamp %start)
+                    (pair (timestamp %end)
+                          (pair (nat %open) (pair (nat %high) (pair (nat %low) (pair (nat %close) (nat %volume)))))))))) ;
+  storage
+    (pair (option key)
+          (big_map %values
+             (string :assetcode)
+             (pair (timestamp %start)
+                   (pair (timestamp %end)
+                         (pair (nat %open) (pair (nat %high) (pair (nat %low) (pair (nat %close) (nat %volume))))))))) ;
+  code { { { DUP ; CAR ; DIP { CDR } } } ;
+         IF_LEFT
+           { IF_LEFT
+               { DIP { { { DUP ; CAR ; DIP { CDR } } } } ;
+                 ITER { DUP ;
+                        { { DUP ; CAR ; DIP { CDR } } } ;
+                        SWAP ;
+                        { { DUP ; CAR ; DIP { CDR } } } ;
+                        DIP { SWAP ; PAIR ; PACK } ;
+                        { DIP 3 { DUP } ; DIG 4 } ;
+                        { IF_NONE { { UNIT ; FAILWITH } } {} } ;
+                        CHECK_SIGNATURE ;
+                        { IF {} { { UNIT ; FAILWITH } } } ;
+                        DUP ;
+                        { { DUP ; CAR ; DIP { CDR } } } ;
+                        { DIP 4 { DUP } ; DIG 5 } ;
+                        SWAP ;
+                        GET ;
+                        { IF_NONE { { UNIT ; FAILWITH } } {} } ;
+                        { CDR ; CAR @old_time } ;
+                        SWAP ;
+                        { CDR ; CDR ; CAR @new_time } ;
+                        { { COMPARE ; GT } ; IF {} { { UNIT ; FAILWITH } } } ;
+                        { { DUP ; CAR ; DIP { CDR } } } ;
+                        DIP { CDR ; SOME } ;
+                        DIG 2 ;
+                        DIP { UPDATE } } }
+               { DIP { { { DUP ; CAR ; DIP { CDR } } } } ;
+                 PUSH (option key) None ;
+                 DUP ;
+                 DIP { PACK ;
+                       SWAP ;
+                       DIG 2 ;
+                       { IF_NONE { { UNIT ; FAILWITH } } {} } ;
+                       CHECK_SIGNATURE ;
+                       { IF {} { { UNIT ; FAILWITH } } } } } ;
+             PAIR ;
+             NIL operation }
+           { { DIP { DUP } ; SWAP } ;
+             CDR ;
+             PUSH mutez 0 ;
+             SWAP ;
+             TRANSFER_TOKENS ;
+             NIL operation ;
+             SWAP ;
+             CONS } ;
+         PAIR } }

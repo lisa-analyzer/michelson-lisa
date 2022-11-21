@@ -1,0 +1,110 @@
+{ parameter
+    (or (contract %push
+           (big_map
+              string
+              (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat))))))))
+        (or (signature %revoke)
+            (map %update
+               string
+               (pair signature
+                     (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat)))))))))) ;
+  storage
+    (pair (big_map %oracleData
+             string
+             (pair timestamp (pair timestamp (pair nat (pair nat (pair nat (pair nat nat)))))))
+          (option %publicKey key)) ;
+  code { DUP ;
+         CDR ;
+         SWAP ;
+         CAR ;
+         IF_LEFT
+           { NIL operation ;
+             SWAP ;
+             PUSH mutez 0 ;
+             DIG 3 ;
+             DUP ;
+             DUG 4 ;
+             CAR ;
+             TRANSFER_TOKENS ;
+             CONS }
+           { IF_LEFT
+               { NONE key ;
+                 PACK ;
+                 SWAP ;
+                 DIG 2 ;
+                 DUP ;
+                 DUG 3 ;
+                 CDR ;
+                 { IF_NONE { UNIT ; FAILWITH } {} } ;
+                 CHECK_SIGNATURE ;
+                 IF {} { UNIT ; FAILWITH } ;
+                 CAR ;
+                 NONE key ;
+                 SWAP ;
+                 PAIR }
+               { DUP ;
+                 ITER { DIG 2 ;
+                        DUP ;
+                        DUG 3 ;
+                        CAR ;
+                        SWAP ;
+                        DUP ;
+                        DUG 2 ;
+                        CAR ;
+                        MEM ;
+                        IF {} { UNIT ; FAILWITH } ;
+                        DUP ;
+                        { CDR ; CDR } ;
+                        SWAP ;
+                        DUP ;
+                        DUG 2 ;
+                        CAR ;
+                        PAIR ;
+                        PACK ;
+                        SWAP ;
+                        DUP ;
+                        DUG 2 ;
+                        { CDR ; CAR } ;
+                        DIG 4 ;
+                        DUP ;
+                        DUG 5 ;
+                        CDR ;
+                        { IF_NONE { UNIT ; FAILWITH } {} } ;
+                        CHECK_SIGNATURE ;
+                        IF {} { UNIT ; FAILWITH } ;
+                        DIG 2 ;
+                        DUP ;
+                        DUG 3 ;
+                        CAR ;
+                        SWAP ;
+                        DUP ;
+                        DUG 2 ;
+                        CAR ;
+                        GET ;
+                        { IF_NONE { UNIT ; FAILWITH } {} } ;
+                        CAR ;
+                        SWAP ;
+                        DUP ;
+                        DUG 2 ;
+                        { CDR ; CDR ; CAR } ;
+                        COMPARE ;
+                        GT ;
+                        IF {} { UNIT ; FAILWITH } ;
+                        DIG 2 ;
+                        DUP ;
+                        CDR ;
+                        SWAP ;
+                        CAR ;
+                        DIG 2 ;
+                        DUP ;
+                        CAR ;
+                        SWAP ;
+                        { CDR ; CDR } ;
+                        SOME ;
+                        SWAP ;
+                        UPDATE ;
+                        PAIR ;
+                        SWAP } ;
+                 DROP } ;
+             NIL operation } ;
+         PAIR } }

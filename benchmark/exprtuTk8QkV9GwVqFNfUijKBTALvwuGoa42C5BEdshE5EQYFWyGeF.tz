@@ -1,0 +1,177 @@
+{ parameter
+    (or (or (pair %answerQuery (string %companyName) (nat %id))
+            (pair %makeQuery
+               (pair %callback (address %address) (string %entryPoint))
+               (pair (string %companyNumber) (string %jurisdiction))))
+        (or (address %updateAdmin) (set %updateOperatorList address))) ;
+  storage
+    (pair (pair (address %admin) (set %operators address))
+          (pair (int %oracleIndex)
+                (pair (big_map %queries
+                         nat
+                         (pair (pair %callback (address %address) (string %entryPoint))
+                               (pair (string %companyNumber) (string %jurisdiction))))
+                      (nat %queryIndex)))) ;
+  code { DUP ;
+         CDR ;
+         SWAP ;
+         CAR ;
+         IF_LEFT
+           { IF_LEFT
+               { SWAP ;
+                 DUP ;
+                 DUG 2 ;
+                 { CAR ; CDR } ;
+                 SENDER ;
+                 MEM ;
+                 IF {} { PUSH string "Privileged operation" ; FAILWITH } ;
+                 SWAP ;
+                 DUP ;
+                 DUG 2 ;
+                 { CDR ; CDR ; CAR } ;
+                 SWAP ;
+                 DUP ;
+                 DUG 2 ;
+                 CDR ;
+                 MEM ;
+                 IF {} { PUSH string "Query doesn't exist" ; FAILWITH } ;
+                 NIL operation ;
+                 DIG 2 ;
+                 DUP ;
+                 DUG 3 ;
+                 { CDR ; CDR ; CAR } ;
+                 DIG 2 ;
+                 DUP ;
+                 DUG 3 ;
+                 CDR ;
+                 GET ;
+                 { IF_NONE { PUSH string "Get-item:48" ; FAILWITH } {} } ;
+                 { CAR ; CAR } ;
+                 CONTRACT %receiveAnswer
+                   (pair (string %companyName) (pair (string %companyNumber) (string %jurisdiction))) ;
+                 { IF_NONE { PUSH unit Unit ; FAILWITH } {} } ;
+                 PUSH mutez 0 ;
+                 DIG 4 ;
+                 DUP ;
+                 DUG 5 ;
+                 { CDR ; CDR ; CAR } ;
+                 DIG 4 ;
+                 DUP ;
+                 DUG 5 ;
+                 CDR ;
+                 GET ;
+                 { IF_NONE { PUSH string "Get-item:48" ; FAILWITH } {} } ;
+                 { CDR ; CDR } ;
+                 DIG 5 ;
+                 DUP ;
+                 DUG 6 ;
+                 { CDR ; CDR ; CAR } ;
+                 DIG 5 ;
+                 DUP ;
+                 DUG 6 ;
+                 CDR ;
+                 GET ;
+                 { IF_NONE { PUSH string "Get-item:48" ; FAILWITH } {} } ;
+                 { CDR ; CAR } ;
+                 PAIR %companyNumber %jurisdiction ;
+                 DIG 4 ;
+                 CAR ;
+                 PAIR %companyName ;
+                 TRANSFER_TOKENS ;
+                 CONS }
+               { SWAP ;
+                 DUP ;
+                 DUG 2 ;
+                 { CDR ; CDR ; CDR } ;
+                 DIG 2 ;
+                 DUP ;
+                 DUG 3 ;
+                 DUP ;
+                 CAR ;
+                 SWAP ;
+                 CDR ;
+                 DUP ;
+                 CAR ;
+                 SWAP ;
+                 { CDR ; CAR } ;
+                 PUSH nat 1 ;
+                 DIG 6 ;
+                 { CDR ; CDR ; CDR } ;
+                 ADD ;
+                 SWAP ;
+                 PAIR ;
+                 SWAP ;
+                 PAIR ;
+                 SWAP ;
+                 PAIR ;
+                 DUG 2 ;
+                 DIG 2 ;
+                 DUP ;
+                 CAR ;
+                 SWAP ;
+                 CDR ;
+                 DUP ;
+                 CAR ;
+                 SWAP ;
+                 CDR ;
+                 DUP ;
+                 CDR ;
+                 SWAP ;
+                 CAR ;
+                 DIG 5 ;
+                 DUP ;
+                 DUG 6 ;
+                 { CDR ; CDR } ;
+                 DIG 6 ;
+                 DUP ;
+                 DUG 7 ;
+                 { CDR ; CAR } ;
+                 PAIR %companyNumber %jurisdiction ;
+                 DIG 6 ;
+                 CAR ;
+                 PAIR %callback ;
+                 SOME ;
+                 DIG 5 ;
+                 UPDATE ;
+                 PAIR ;
+                 SWAP ;
+                 PAIR ;
+                 SWAP ;
+                 PAIR ;
+                 NIL operation } }
+           { IF_LEFT
+               { SWAP ;
+                 DUP ;
+                 DUG 2 ;
+                 { CAR ; CAR } ;
+                 SENDER ;
+                 COMPARE ;
+                 EQ ;
+                 IF {} { PUSH string "Privileged operation" ; FAILWITH } ;
+                 SWAP ;
+                 DUP ;
+                 CDR ;
+                 SWAP ;
+                 { CAR ; CDR } ;
+                 DIG 2 ;
+                 PAIR ;
+                 PAIR }
+               { SWAP ;
+                 DUP ;
+                 DUG 2 ;
+                 { CAR ; CAR } ;
+                 SENDER ;
+                 COMPARE ;
+                 EQ ;
+                 IF {} { PUSH string "Privileged operation" ; FAILWITH } ;
+                 SWAP ;
+                 DUP ;
+                 CDR ;
+                 SWAP ;
+                 { CAR ; CAR } ;
+                 DIG 2 ;
+                 SWAP ;
+                 PAIR ;
+                 PAIR } ;
+             NIL operation } ;
+         PAIR } }

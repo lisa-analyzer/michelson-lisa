@@ -1,0 +1,262 @@
+{ parameter
+    (or (or (or (pair %admin_update (address %contract) (address %owner))
+                (pair %check_address (address %addr) (bytes %name)))
+            (or (pair %claim_reverse_record
+                   (pair (option %name bytes) (address %owner))
+                   (option %ttl nat))
+                (pair %resolve (contract %callback (option address)) (bytes %name))))
+        (or (or (pair %reverse_resolve (address %addr) (contract %callback (option bytes)))
+                (pair %set_child_record
+                   (pair (pair (option %address address)
+                               (map %data
+                                  string
+                                  (or (or (or (or (address %address) (bool %bool)) (or (bytes %bytes) (int %int)))
+                                          (or (or (key %key) (key_hash %key_hash)) (or (nat %nat) (signature %signature))))
+                                      (or (or (string %string) (mutez %tez)) (timestamp %timestamp)))))
+                         (pair (bytes %label) (address %owner)))
+                   (pair (pair (bytes %parent) (option %ttl nat)) (option %validity timestamp))))
+            (or (pair %update_record
+                   (pair (pair (option %address address)
+                               (map %data
+                                  string
+                                  (or (or (or (or (address %address) (bool %bool)) (or (bytes %bytes) (int %int)))
+                                          (or (or (key %key) (key_hash %key_hash)) (or (nat %nat) (signature %signature))))
+                                      (or (or (string %string) (mutez %tez)) (timestamp %timestamp)))))
+                         (pair (bytes %name) (address %owner)))
+                   (option %ttl nat))
+                (pair %update_reverse_record
+                   (pair (address %addr) (option %name bytes))
+                   (pair (address %owner) (option %ttl nat)))))) ;
+  storage (pair (address %contract) (address %owner)) ;
+  code { LAMBDA unit (list operation) { PUSH string "INVALID_CONTRACT" ; FAILWITH } ;
+         DIG 1 ;
+         DUP ;
+         DUG 2 ;
+         CDR ;
+         PUSH mutez 0 ;
+         AMOUNT ;
+         COMPARE ;
+         GT ;
+         IF { PUSH string "AMOUNT_NOT_ZERO" ; FAILWITH } { PUSH unit Unit } ;
+         DIG 3 ;
+         DUP ;
+         DUG 4 ;
+         CAR ;
+         IF_LEFT
+           { DUP ;
+             IF_LEFT
+               { DUP ;
+                 IF_LEFT
+                   { DIG 4 ;
+                     DUP ;
+                     DUG 5 ;
+                     DIG 1 ;
+                     DUP ;
+                     DUG 2 ;
+                     PAIR ;
+                     DUP ;
+                     CDR ;
+                     CDR ;
+                     SENDER ;
+                     COMPARE ;
+                     EQ ;
+                     IF { DUP ; CAR } { PUSH string "NOT_AUTHORIZED" ; FAILWITH } ;
+                     DIP { DROP } ;
+                     NIL operation ;
+                     PAIR ;
+                     DIP { DROP } }
+                   { DIG 4 ;
+                     DUP ;
+                     DUG 5 ;
+                     DIG 5 ;
+                     DUP ;
+                     DUG 6 ;
+                     CAR ;
+                     CONTRACT %check_address (pair (address %addr) (bytes %name)) ;
+                     IF_NONE
+                       { PUSH unit Unit ; DIG 7 ; DUP ; DUG 8 ; SWAP ; EXEC }
+                       { NIL operation ;
+                         DIG 1 ;
+                         DUP ;
+                         DUG 2 ;
+                         PUSH mutez 0 ;
+                         DIG 5 ;
+                         DUP ;
+                         DUG 6 ;
+                         TRANSFER_TOKENS ;
+                         CONS ;
+                         DIP { DROP } } ;
+                     PAIR ;
+                     DIP { DROP } } ;
+                 DIP { DROP } }
+               { DUP ;
+                 IF_LEFT
+                   { DIG 4 ;
+                     DUP ;
+                     DUG 5 ;
+                     DIG 5 ;
+                     DUP ;
+                     DUG 6 ;
+                     CAR ;
+                     CONTRACT %claim_reverse_record
+                       (pair (pair (option %name bytes) (address %owner)) (option %ttl nat)) ;
+                     IF_NONE
+                       { PUSH unit Unit ; DIG 7 ; DUP ; DUG 8 ; SWAP ; EXEC }
+                       { NIL operation ;
+                         DIG 1 ;
+                         DUP ;
+                         DUG 2 ;
+                         PUSH mutez 0 ;
+                         DIG 5 ;
+                         DUP ;
+                         DUG 6 ;
+                         TRANSFER_TOKENS ;
+                         CONS ;
+                         DIP { DROP } } ;
+                     PAIR ;
+                     DIP { DROP } }
+                   { DIG 4 ;
+                     DUP ;
+                     DUG 5 ;
+                     DIG 5 ;
+                     DUP ;
+                     DUG 6 ;
+                     CAR ;
+                     CONTRACT %resolve (pair (contract %callback (option address)) (bytes %name)) ;
+                     IF_NONE
+                       { PUSH unit Unit ; DIG 7 ; DUP ; DUG 8 ; SWAP ; EXEC }
+                       { NIL operation ;
+                         DIG 1 ;
+                         DUP ;
+                         DUG 2 ;
+                         PUSH mutez 0 ;
+                         DIG 5 ;
+                         DUP ;
+                         DUG 6 ;
+                         TRANSFER_TOKENS ;
+                         CONS ;
+                         DIP { DROP } } ;
+                     PAIR ;
+                     DIP { DROP } } ;
+                 DIP { DROP } } ;
+             DIP { DROP } }
+           { DUP ;
+             IF_LEFT
+               { DUP ;
+                 IF_LEFT
+                   { DIG 4 ;
+                     DUP ;
+                     DUG 5 ;
+                     DIG 5 ;
+                     DUP ;
+                     DUG 6 ;
+                     CAR ;
+                     CONTRACT %reverse_resolve (pair (address %addr) (contract %callback (option bytes))) ;
+                     IF_NONE
+                       { PUSH unit Unit ; DIG 7 ; DUP ; DUG 8 ; SWAP ; EXEC }
+                       { NIL operation ;
+                         DIG 1 ;
+                         DUP ;
+                         DUG 2 ;
+                         PUSH mutez 0 ;
+                         DIG 5 ;
+                         DUP ;
+                         DUG 6 ;
+                         TRANSFER_TOKENS ;
+                         CONS ;
+                         DIP { DROP } } ;
+                     PAIR ;
+                     DIP { DROP } }
+                   { DIG 4 ;
+                     DUP ;
+                     DUG 5 ;
+                     DIG 5 ;
+                     DUP ;
+                     DUG 6 ;
+                     CAR ;
+                     CONTRACT %set_child_record
+                       (pair (pair (pair (option %address address)
+                                         (map %data
+                                            string
+                                            (or (or (or (or (address %address) (bool %bool)) (or (bytes %bytes) (int %int)))
+                                                    (or (or (key %key) (key_hash %key_hash)) (or (nat %nat) (signature %signature))))
+                                                (or (or (string %string) (mutez %tez)) (timestamp %timestamp)))))
+                                   (pair (bytes %label) (address %owner)))
+                             (pair (pair (bytes %parent) (option %ttl nat)) (option %validity timestamp))) ;
+                     IF_NONE
+                       { PUSH unit Unit ; DIG 7 ; DUP ; DUG 8 ; SWAP ; EXEC }
+                       { NIL operation ;
+                         DIG 1 ;
+                         DUP ;
+                         DUG 2 ;
+                         PUSH mutez 0 ;
+                         DIG 5 ;
+                         DUP ;
+                         DUG 6 ;
+                         TRANSFER_TOKENS ;
+                         CONS ;
+                         DIP { DROP } } ;
+                     PAIR ;
+                     DIP { DROP } } ;
+                 DIP { DROP } }
+               { DUP ;
+                 IF_LEFT
+                   { DIG 4 ;
+                     DUP ;
+                     DUG 5 ;
+                     DIG 5 ;
+                     DUP ;
+                     DUG 6 ;
+                     CAR ;
+                     CONTRACT %update_record
+                       (pair (pair (pair (option %address address)
+                                         (map %data
+                                            string
+                                            (or (or (or (or (address %address) (bool %bool)) (or (bytes %bytes) (int %int)))
+                                                    (or (or (key %key) (key_hash %key_hash)) (or (nat %nat) (signature %signature))))
+                                                (or (or (string %string) (mutez %tez)) (timestamp %timestamp)))))
+                                   (pair (bytes %name) (address %owner)))
+                             (option %ttl nat)) ;
+                     IF_NONE
+                       { PUSH unit Unit ; DIG 7 ; DUP ; DUG 8 ; SWAP ; EXEC }
+                       { NIL operation ;
+                         DIG 1 ;
+                         DUP ;
+                         DUG 2 ;
+                         PUSH mutez 0 ;
+                         DIG 5 ;
+                         DUP ;
+                         DUG 6 ;
+                         TRANSFER_TOKENS ;
+                         CONS ;
+                         DIP { DROP } } ;
+                     PAIR ;
+                     DIP { DROP } }
+                   { DIG 4 ;
+                     DUP ;
+                     DUG 5 ;
+                     DIG 5 ;
+                     DUP ;
+                     DUG 6 ;
+                     CAR ;
+                     CONTRACT %update_reverse_record
+                       (pair (pair (address %addr) (option %name bytes))
+                             (pair (address %owner) (option %ttl nat))) ;
+                     IF_NONE
+                       { PUSH unit Unit ; DIG 7 ; DUP ; DUG 8 ; SWAP ; EXEC }
+                       { NIL operation ;
+                         DIG 1 ;
+                         DUP ;
+                         DUG 2 ;
+                         PUSH mutez 0 ;
+                         DIG 5 ;
+                         DUP ;
+                         DUG 6 ;
+                         TRANSFER_TOKENS ;
+                         CONS ;
+                         DIP { DROP } } ;
+                     PAIR ;
+                     DIP { DROP } } ;
+                 DIP { DROP } } ;
+             DIP { DROP } } ;
+         DIP { DROP 4 } } }

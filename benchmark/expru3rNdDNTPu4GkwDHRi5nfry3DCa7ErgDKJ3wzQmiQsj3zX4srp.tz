@@ -1,0 +1,57 @@
+{ parameter
+    (or (lambda %proxy_admin_update
+           (pair (address %contract) (address %owner))
+           (pair (list operation) (pair (address %contract) (address %owner))))
+        (pair %set_child_record
+           (pair (pair (pair (pair (bytes %label) (bytes %parent)) (option %address address))
+                       (address %owner))
+                 (map %data string bytes))
+           (option %expiry timestamp))) ;
+  storage (pair (address %contract) (address %owner)) ;
+  code { DUP ;
+         CDR ;
+         SWAP ;
+         CAR ;
+         IF_LEFT
+           { PAIR ;
+             DUP ;
+             CDR ;
+             DUP ;
+             CDR ;
+             SENDER ;
+             COMPARE ;
+             EQ ;
+             IF { SWAP ; CAR ; SWAP ; EXEC }
+                { DROP 2 ; PUSH string "NOT_AUTHORIZED" ; FAILWITH } }
+           { SWAP ;
+             DUP ;
+             CAR ;
+             DIG 2 ;
+             PACK ;
+             PUSH string "SetChildRecord" ;
+             PAIR ;
+             PAIR ;
+             DUP ;
+             CDR ;
+             CONTRACT %execute
+               (pair (pair (string %action_name) (address %original_sender)) (bytes %payload)) ;
+             IF_NONE
+               { DROP ; PUSH string "INVALID_CONTRACT" ; FAILWITH }
+               { SWAP ;
+                 DUP ;
+                 DUG 2 ;
+                 CAR ;
+                 CDR ;
+                 SENDER ;
+                 DIG 3 ;
+                 CAR ;
+                 CAR ;
+                 PAIR ;
+                 PAIR ;
+                 NIL operation ;
+                 DIG 2 ;
+                 AMOUNT ;
+                 DIG 3 ;
+                 TRANSFER_TOKENS ;
+                 CONS } ;
+             PAIR } } }

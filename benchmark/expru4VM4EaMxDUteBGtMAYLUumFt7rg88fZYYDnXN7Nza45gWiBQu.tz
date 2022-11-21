@@ -1,0 +1,15 @@
+{ storage unit ;
+  parameter unit ;
+  code { DROP ;
+         PUSH address 0x00008753e875969a309b1466a05735a8698f8349587e ;
+         CONTRACT unit ;
+         { IF_NONE { { UNIT ; FAILWITH } } {} } ;
+         PUSH mutez 0 ;
+         UNIT ;
+         TRANSFER_TOKENS ;
+         NIL operation ;
+         SWAP ;
+         CONS ;
+         UNIT ;
+         SWAP ;
+         PAIR } }

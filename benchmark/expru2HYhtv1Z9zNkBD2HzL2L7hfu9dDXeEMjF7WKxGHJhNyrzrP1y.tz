@@ -1,0 +1,26 @@
+{ parameter (or :sum (int %event) (int %main)) ;
+  storage unit ;
+  code { SELF ;
+         DIG 1 ;
+         DUP ;
+         DUG 2 ;
+         CAR ;
+         IF_LEFT
+           { PUSH unit Unit ; NIL operation ; PAIR ; DIP { DROP } }
+           { PUSH unit Unit ;
+             NIL operation ;
+             DIG 3 ;
+             DUP ;
+             DUG 4 ;
+             ADDRESS ;
+             CONTRACT %event (int :event) ;
+             IF_NONE { PUSH string "Option.get" ; FAILWITH } {} ;
+             PUSH mutez 0 ;
+             DIG 4 ;
+             DUP ;
+             DUG 5 ;
+             TRANSFER_TOKENS ;
+             CONS ;
+             PAIR ;
+             DIP { DROP } } ;
+         DIP { DROP 2 } } }

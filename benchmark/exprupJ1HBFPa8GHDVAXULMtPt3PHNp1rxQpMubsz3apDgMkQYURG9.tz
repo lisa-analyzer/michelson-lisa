@@ -1,0 +1,27 @@
+{ parameter (or (unit %createContract) (contract %callContract unit)) ;
+  storage (big_map string string) ;
+  code { DUP ;
+         CAR ;
+         IF_LEFT
+           { DROP ;
+             DUP ;
+             CDR ;
+             PUSH mutez 0 ;
+             NONE key_hash ;
+             CREATE_CONTRACT
+               { parameter unit ;
+                 storage (big_map string string) ;
+                 code { CDR ;
+                        PUSH string "Tema" ;
+                        SOME ;
+                        PUSH string "Hello" ;
+                        UPDATE ;
+                        NIL operation ;
+                        PAIR } } ;
+             DIP { DROP } }
+           { PUSH mutez 0 ; UNIT ; TRANSFER_TOKENS } ;
+         NIL operation ;
+         SWAP ;
+         CONS ;
+         DIP { CDR } ;
+         PAIR } }

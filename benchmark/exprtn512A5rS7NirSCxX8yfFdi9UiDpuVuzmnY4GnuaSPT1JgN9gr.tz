@@ -1,0 +1,96 @@
+{ storage
+    (pair (map %apidata string (pair (int %humidity) (pair (int %pressure) (int %temperature))))
+          (set %keysset address)) ;
+  parameter
+    (or (pair %feedData
+           (pair (string %city) (int %humidity))
+           (pair (int %pressure) (int %temperature)))
+        (string %getDataFromOrO)) ;
+  code { DUP ;
+         CDR ;
+         SWAP ;
+         CAR ;
+         IF_LEFT
+           { SWAP ;
+             DUP ;
+             DUG 2 ;
+             CDR ;
+             SENDER ;
+             MEM ;
+             IF { SWAP ;
+                  DUP ;
+                  CDR ;
+                  SWAP ;
+                  CAR ;
+                  DIG 2 ;
+                  DUP ;
+                  CAR ;
+                  CAR ;
+                  SWAP ;
+                  DUP ;
+                  CDR ;
+                  CDR ;
+                  SWAP ;
+                  DUP ;
+                  DUG 5 ;
+                  CDR ;
+                  CAR ;
+                  PAIR %pressure %temperature ;
+                  DIG 4 ;
+                  CAR ;
+                  CDR ;
+                  PAIR %humidity ;
+                  SOME ;
+                  SWAP ;
+                  UPDATE ;
+                  PAIR }
+                { DROP } ;
+             NIL operation }
+           { PUSH mutez 3000 ;
+             AMOUNT ;
+             COMPARE ;
+             EQ ;
+             IF { SWAP ;
+                  DUP ;
+                  DUG 2 ;
+                  CAR ;
+                  SWAP ;
+                  DUP ;
+                  DUG 2 ;
+                  MEM ;
+                  IF { NIL operation ;
+                       SENDER ;
+                       CONTRACT %receiveDataFromOrO
+                         (pair (int %humidity) (pair (int %pressure) (int %temperature))) ;
+                       IF_NONE { PUSH int 17 ; FAILWITH } {} ;
+                       PUSH mutez 0 ;
+                       DIG 4 ;
+                       DUP ;
+                       DUG 5 ;
+                       CAR ;
+                       DIG 4 ;
+                       GET ;
+                       IF_NONE { PUSH int 20 ; FAILWITH } {} ;
+                       TRANSFER_TOKENS ;
+                       CONS }
+                     { DROP ;
+                       NIL operation ;
+                       SENDER ;
+                       CONTRACT %receiveDataFromOrO
+                         (pair (int %humidity) (pair (int %pressure) (int %temperature))) ;
+                       IF_NONE { PUSH int 17 ; FAILWITH } {} ;
+                       PUSH mutez 0 ;
+                       PUSH (pair (int %humidity) (pair (int %pressure) (int %temperature))) (Pair 0 (Pair 0 0)) ;
+                       TRANSFER_TOKENS ;
+                       CONS } }
+                { DROP ;
+                  NIL operation ;
+                  SENDER ;
+                  CONTRACT %receiveDataFromOrO
+                    (pair (int %humidity) (pair (int %pressure) (int %temperature))) ;
+                  IF_NONE { PUSH int 17 ; FAILWITH } {} ;
+                  PUSH mutez 0 ;
+                  PUSH (pair (int %humidity) (pair (int %pressure) (int %temperature))) (Pair 0 (Pair 0 0)) ;
+                  TRANSFER_TOKENS ;
+                  CONS } } ;
+         PAIR } }

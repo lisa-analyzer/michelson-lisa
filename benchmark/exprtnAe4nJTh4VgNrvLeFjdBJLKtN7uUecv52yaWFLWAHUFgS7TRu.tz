@@ -1,0 +1,24 @@
+{ storage address ;
+  parameter address ;
+  code { DUP ;
+         CDR ;
+         SWAP ;
+         CAR ;
+         PUSH mutez 1000000 ;
+         AMOUNT ;
+         COMPARE ;
+         EQ ;
+         IF { {} }
+            { { PUSH string "WrongCondition: sp.amount == sp.tez(1)" ; FAILWITH } } ;
+         DUP ;
+         NIL operation ;
+         SWAP ;
+         CONTRACT %play unit ;
+         IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+         PUSH mutez 1000000 ;
+         PUSH unit Unit ;
+         TRANSFER_TOKENS ;
+         CONS ;
+         SWAP ;
+         DROP ;
+         PAIR } }

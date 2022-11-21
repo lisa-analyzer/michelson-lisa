@@ -1,0 +1,11 @@
+{ parameter (key_hash %) ;
+  storage unit ;
+  code { { DUP ; CAR ; DIP { CDR } } ;
+         IMPLICIT_ACCOUNT ;
+         PUSH mutez 0 ;
+         UNIT ;
+         TRANSFER_TOKENS ;
+         NIL operation ;
+         SWAP ;
+         CONS ;
+         PAIR } }

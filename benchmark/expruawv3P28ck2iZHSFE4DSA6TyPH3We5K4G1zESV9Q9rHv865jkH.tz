@@ -1,0 +1,29 @@
+{ storage (pair (option %sender address) (int %value)) ;
+  parameter (or (int %confirmWager) (unit %requestDataFromOracle)) ;
+  code { DUP ;
+         CDR ;
+         SWAP ;
+         CAR ;
+         IF_LEFT
+           { { SWAP ;
+               CDR ;
+               SENDER ;
+               SOME ;
+               PAIR ;
+               SWAP ;
+               SWAP ;
+               CAR ;
+               PAIR ;
+               NIL operation } }
+           { { DROP ;
+               NIL operation ;
+               PUSH address "KT1WLPAUWj5PLcarchRCdpYVfoFjjd6epixv" ;
+               CONTRACT %wagergetDataFromOrO
+                 (pair (string %currency) (pair (address %wager) (int %wagerID))) ;
+               IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+               PUSH mutez 0 ;
+               PUSH (pair (string %currency) (pair (address %wager) (int %wagerID)))
+                    (Pair "USD" (Pair "tz1VpuHAja3hRE5McTU8GkoepqXPDcEevMBf" 1)) ;
+               TRANSFER_TOKENS ;
+               CONS } } ;
+         PAIR } }

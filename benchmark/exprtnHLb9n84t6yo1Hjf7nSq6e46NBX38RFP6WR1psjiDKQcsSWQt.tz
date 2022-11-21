@@ -1,0 +1,115 @@
+{ storage
+    (pair (map %conversionData string (pair (int %buy) (int %sell)))
+          (pair (set %keysset address) (address %owner))) ;
+  parameter
+    (or (address %addDataContributor)
+        (or (pair %feedData (int %buy) (pair (string %currency) (int %sell)))
+            (string %getDataFromOrO))) ;
+  code { DUP ;
+         CDR ;
+         SWAP ;
+         CAR ;
+         IF_LEFT
+           { { SWAP ;
+               DUP ;
+               DUG 2 ;
+               CDR ;
+               CDR ;
+               SENDER ;
+               COMPARE ;
+               EQ ;
+               IF { { SWAP ;
+                      DUP ;
+                      DUG 2 ;
+                      DUP ;
+                      CAR ;
+                      SWAP ;
+                      CDR ;
+                      DUP ;
+                      CDR ;
+                      SWAP ;
+                      CAR ;
+                      PUSH bool True ;
+                      DIG 4 ;
+                      DUP ;
+                      DUG 5 ;
+                      UPDATE ;
+                      PAIR ;
+                      SWAP ;
+                      PAIR ;
+                      DUG 2 ;
+                      SWAP ;
+                      DROP } }
+                  { {} } ;
+               DROP ;
+               NIL operation } }
+           { IF_LEFT
+               { { SWAP ;
+                   DUP ;
+                   DUG 2 ;
+                   CDR ;
+                   CAR ;
+                   SENDER ;
+                   MEM ;
+                   IF { { SWAP ;
+                          DUP ;
+                          DUG 2 ;
+                          DUP ;
+                          CDR ;
+                          SWAP ;
+                          CAR ;
+                          DIG 2 ;
+                          DUP ;
+                          DUG 3 ;
+                          CDR ;
+                          CDR ;
+                          DIG 3 ;
+                          DUP ;
+                          DUG 4 ;
+                          CAR ;
+                          PAIR %buy %sell ;
+                          SOME ;
+                          DIG 3 ;
+                          DUP ;
+                          DUG 4 ;
+                          CDR ;
+                          CAR ;
+                          UPDATE ;
+                          PAIR ;
+                          DUG 2 ;
+                          SWAP ;
+                          DROP } }
+                      { {} } ;
+                   DROP ;
+                   NIL operation } }
+               { { PUSH mutez 5000 ;
+                   AMOUNT ;
+                   COMPARE ;
+                   EQ ;
+                   IF { { NIL operation ;
+                          SENDER ;
+                          CONTRACT %receiveDataFromOrO (pair (int %buy) (int %sell)) ;
+                          IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                          PUSH mutez 0 ;
+                          DIG 4 ;
+                          DUP ;
+                          DUG 5 ;
+                          CAR ;
+                          DIG 4 ;
+                          DUP ;
+                          DUG 5 ;
+                          GET ;
+                          IF_NONE { { PUSH string "Get-item:23" ; FAILWITH } } {} ;
+                          TRANSFER_TOKENS ;
+                          CONS } }
+                      { { NIL operation ;
+                          SENDER ;
+                          CONTRACT %receiveDataFromOrO (pair (int %buy) (int %sell)) ;
+                          IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                          AMOUNT ;
+                          PUSH (pair (int %buy) (int %sell)) (Pair 0 0) ;
+                          TRANSFER_TOKENS ;
+                          CONS } } ;
+                   SWAP ;
+                   DROP } } } ;
+         PAIR } }

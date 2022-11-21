@@ -1,0 +1,27 @@
+{ parameter (pair nat (contract (pair (address :from) (pair (address :to) (nat :value))))) ;
+  storage unit ;
+  code { CAST (pair (pair nat (contract (pair address (pair address nat)))) unit) ;
+         CAR ;
+         DUP ;
+         CAR ;
+         DIP { CDR } ;
+         PUSH address "tz1VRjRpVKnv16AVprFH1tkDn4TDfVqA893A" ;
+         NIL operation ;
+         BALANCE ;
+         PUSH mutez 0 ;
+         COMPARE ;
+         EQ ;
+         IF {}
+            { DIP { DUP ;
+                    CONTRACT unit ;
+                    IF_NONE { PUSH string "not a wallet" ; FAILWITH } {} ;
+                    BALANCE ;
+                    UNIT ;
+                    TRANSFER_TOKENS } ;
+              SWAP ;
+              CONS } ;
+         DIP { PAIR ; SELF ; ADDRESS ; PAIR ; DIP { PUSH mutez 0 } ; TRANSFER_TOKENS } ;
+         SWAP ;
+         CONS ;
+         DIP { UNIT } ;
+         PAIR } }

@@ -1,0 +1,139 @@
+{ parameter (or (or (string %buy) (unit %redeemPoints)) (unit %withdraw)) ;
+  storage
+    (pair (pair (map %customers address nat) (map %menu string mutez))
+          (pair (address %owner) (mutez %total))) ;
+  code { DUP ;
+         CDR ;
+         DIP { DUP } ;
+         SWAP ;
+         CAR ;
+         IF_LEFT
+           { DUP ;
+             IF_LEFT
+               { DUP ;
+                 DIP { DIP 2 { DUP } ; DIG 2 } ;
+                 PAIR ;
+                 DUP ;
+                 CDR ;
+                 DIP { DUP } ;
+                 SWAP ;
+                 CAR ;
+                 DIP { DUP ; CAR ; CDR } ;
+                 GET ;
+                 IF_NONE
+                   { PUSH string "No such item found!" ; FAILWITH }
+                   { DUP ;
+                     AMOUNT ;
+                     COMPARE ;
+                     LT ;
+                     IF { PUSH string "You didn't send enough tez!" ; FAILWITH }
+                        { DIP { DUP } ;
+                          SWAP ;
+                          DIP 2 { DUP } ;
+                          DIG 2 ;
+                          CDR ;
+                          CDR ;
+                          AMOUNT ;
+                          ADD ;
+                          DIP { DUP ; CAR ; SWAP ; CDR ; CAR } ;
+                          SWAP ;
+                          PAIR ;
+                          SWAP ;
+                          PAIR ;
+                          DIP 2 { DUP } ;
+                          DIG 2 ;
+                          CAR ;
+                          CAR ;
+                          SENDER ;
+                          GET ;
+                          DUP ;
+                          IF_NONE
+                            { DIP 3 { DUP } ;
+                              DIG 3 ;
+                              CAR ;
+                              CAR ;
+                              PUSH nat 1 ;
+                              SOME ;
+                              SENDER ;
+                              UPDATE }
+                            { DUP ;
+                              PUSH nat 1 ;
+                              ADD ;
+                              SOME ;
+                              DIP { DIP 4 { DUP } ; DIG 4 ; CAR ; CAR } ;
+                              SENDER ;
+                              UPDATE ;
+                              DIP { DROP } } ;
+                          DIP { DROP ; DUP ; CDR ; SWAP ; CAR ; CDR } ;
+                          PAIR ;
+                          PAIR ;
+                          NIL operation ;
+                          PAIR } ;
+                     DIP { DROP } } ;
+                 DIP { DROP 3 } }
+               { DIP 2 { DUP } ;
+                 DIG 2 ;
+                 CAR ;
+                 CAR ;
+                 SENDER ;
+                 GET ;
+                 IF_NONE
+                   { PUSH string "You don't have points!" ; FAILWITH }
+                   { DUP ;
+                     PUSH nat 10 ;
+                     SWAP ;
+                     COMPARE ;
+                     GE ;
+                     IF { DUP ;
+                          PUSH nat 10 ;
+                          SWAP ;
+                          SUB ;
+                          ABS ;
+                          SOME ;
+                          DIP { DIP 3 { DUP } ; DIG 3 ; CAR ; CAR } ;
+                          SENDER ;
+                          UPDATE ;
+                          DIP 4 { DUP } ;
+                          DIG 4 ;
+                          DIP { DUP } ;
+                          SWAP ;
+                          DIP { DUP ; CDR ; SWAP ; CAR ; CDR } ;
+                          PAIR ;
+                          PAIR ;
+                          NIL operation ;
+                          PAIR ;
+                          DIP { DROP } }
+                        { PUSH string "You don't have enough points!" ; FAILWITH } ;
+                     DIP { DROP } } ;
+                 DIP { DROP } } ;
+             DIP { DROP } }
+           { DIP { DUP } ;
+             SWAP ;
+             CDR ;
+             CAR ;
+             SENDER ;
+             COMPARE ;
+             NEQ ;
+             IF { PUSH string "Your are not allowed to perform this action!" ; FAILWITH }
+                { DIP { DUP } ;
+                  SWAP ;
+                  CDR ;
+                  CAR ;
+                  CONTRACT unit ;
+                  DUP ;
+                  IF_NONE
+                    { PUSH string "Wrong address provided!" ; FAILWITH }
+                    { DUP ;
+                      BALANCE ;
+                      UNIT ;
+                      TRANSFER_TOKENS ;
+                      DUP ;
+                      NIL operation ;
+                      SWAP ;
+                      CONS ;
+                      DIP { DIP 4 { DUP } ; DIG 4 } ;
+                      PAIR ;
+                      DIP { DROP 2 } } ;
+                  DIP { DROP } } ;
+             DIP { DROP } } ;
+         DIP { DROP 2 } } }

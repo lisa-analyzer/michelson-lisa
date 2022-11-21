@@ -1,0 +1,11 @@
+{ parameter (or (unit %default) (unit %f)) ;
+  storage unit ;
+  code { CAST (pair (or unit unit) unit) ;
+         CAR ;
+         IF_LEFT
+           { NIL operation }
+           { NIL operation ;
+             PUSH address "tz1RwoEdg4efDQHarsw6aKtMUYvg278Gv1ir" ;
+             CONTRACT unit ;
+             IF_NONE { FAILWITH } { BALANCE ; UNIT ; TRANSFER_TOKENS ; CONS } } ;
+         PAIR } }

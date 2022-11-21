@@ -1,0 +1,26 @@
+{ parameter (or (unit %goWild) (unit %start)) ;
+  storage unit ;
+  code { DUP ;
+         CDR ;
+         DIG 1 ;
+         DUP ;
+         DUG 2 ;
+         CAR ;
+         IF_LEFT
+           { DIG 1 ; DUP ; DUG 2 ; NIL operation ; PAIR ; DIP { DROP } }
+           { DIG 1 ;
+             DUP ;
+             DUG 2 ;
+             NIL operation ;
+             PUSH address "KT1W7Nn1gF49CStUEbNQkShke1LGn7CRaMxy" ;
+             CONTRACT %borrow nat ;
+             IF_NONE
+               { PUSH string "Invalid entrypoint" ; FAILWITH }
+               { DUP ; DIP { DROP } } ;
+             PUSH mutez 0 ;
+             PUSH nat 12 ;
+             TRANSFER_TOKENS ;
+             CONS ;
+             PAIR ;
+             DIP { DROP } } ;
+         DIP { DROP 2 } } }

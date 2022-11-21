@@ -1,0 +1,33 @@
+{ parameter (or (or (nat %decrement) (nat %increment)) (unit %reset)) ;
+  storage int ;
+  code { PUSH address "KT1UESzFFTM3wm8Hyv47o1ho6BwMfg1yni6G" ;
+         CONTRACT (or (or (nat %decrement) (nat %increment)) (unit %reset)) ;
+         IF_NONE
+           { PUSH string "Contract not found." ; FAILWITH }
+           { DUP ; DIP { DROP } } ;
+         PUSH nat 7 ;
+         RIGHT nat ;
+         LEFT unit ;
+         DIG 1 ;
+         DUP ;
+         DUG 2 ;
+         PUSH mutez 0 ;
+         DIG 4 ;
+         DUP ;
+         DUG 5 ;
+         CAR ;
+         TRANSFER_TOKENS ;
+         NIL operation ;
+         DIG 1 ;
+         DUP ;
+         DUG 2 ;
+         CONS ;
+         DIG 4 ;
+         DUP ;
+         DUG 5 ;
+         CDR ;
+         DIG 1 ;
+         DUP ;
+         DUG 2 ;
+         PAIR ;
+         DIP { DROP 5 } } }

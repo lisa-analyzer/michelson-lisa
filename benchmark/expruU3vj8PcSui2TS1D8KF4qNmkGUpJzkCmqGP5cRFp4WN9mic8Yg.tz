@@ -1,0 +1,164 @@
+{ parameter
+    (or (or (or (pair %decrementcounter (address %at) (nat %value))
+                (pair %decrementcounterget (address %at) (nat %value)))
+            (or (address %getcounter) (pair %incrementcounter (address %at) (nat %value))))
+        (or (pair %incrementcounterget (address %at) (nat %value)) (nat %receivecounter))) ;
+  storage nat ;
+  code { SELF ;
+         ADDRESS ;
+         DIP { DUP } ;
+         SWAP ;
+         CDR ;
+         PUSH mutez 0 ;
+         AMOUNT ;
+         COMPARE ;
+         NEQ ;
+         IF { PUSH string "This contract do not accept token" ; FAILWITH }
+            { PUSH unit Unit } ;
+         DIP 3 { DUP } ;
+         DIG 3 ;
+         CAR ;
+         IF_LEFT
+           { DUP ;
+             IF_LEFT
+               { DUP ;
+                 IF_LEFT
+                   { DUP ;
+                     DIP { DIP 4 { DUP } ; DIG 4 } ;
+                     PAIR ;
+                     DUP ;
+                     CAR ;
+                     DUP ;
+                     CAR ;
+                     CONTRACT %decrement nat ;
+                     IF_NONE
+                       { PUSH string "bad address for get_entrypoint (%decrement)" ; FAILWITH }
+                       {} ;
+                     DIP { DUP } ;
+                     SWAP ;
+                     CDR ;
+                     DIP { DUP ; PUSH mutez 0 } ;
+                     TRANSFER_TOKENS ;
+                     DUP ;
+                     NIL operation ;
+                     SWAP ;
+                     CONS ;
+                     DIP { DIP 3 { DUP } ; DIG 3 ; CDR } ;
+                     PAIR ;
+                     DIP { DROP 5 } }
+                   { DUP ;
+                     DIP { DIP 4 { DUP } ; DIG 4 } ;
+                     PAIR ;
+                     DUP ;
+                     CAR ;
+                     DUP ;
+                     CAR ;
+                     CONTRACT %decrementret (pair (contract %receiver nat) (nat %value)) ;
+                     IF_NONE
+                       { PUSH string "bad address for get_entrypoint (%decrementret)" ; FAILWITH }
+                       {} ;
+                     DIP 8 { DUP } ;
+                     DIG 8 ;
+                     CONTRACT %receivecounter nat ;
+                     IF_NONE
+                       { PUSH string "bad address for get_entrypoint (%receivecounter)" ; FAILWITH }
+                       {} ;
+                     DUP ;
+                     DIP { DIP 2 { DUP } ; DIG 2 ; CDR } ;
+                     PAIR ;
+                     DIP { DIP { DUP } ; SWAP ; PUSH mutez 0 } ;
+                     TRANSFER_TOKENS ;
+                     DUP ;
+                     NIL operation ;
+                     SWAP ;
+                     CONS ;
+                     DIP { DIP 4 { DUP } ; DIG 4 ; CDR } ;
+                     PAIR ;
+                     DIP { DROP 6 } } ;
+                 DIP { DROP } }
+               { DUP ;
+                 IF_LEFT
+                   { DUP ;
+                     DIP { DIP 4 { DUP } ; DIG 4 } ;
+                     PAIR ;
+                     DUP ;
+                     CAR ;
+                     CONTRACT %getvalue (contract nat) ;
+                     IF_NONE
+                       { PUSH string "bad address for get_entrypoint (%getvalue)" ; FAILWITH }
+                       {} ;
+                     DIP 7 { DUP } ;
+                     DIG 7 ;
+                     CONTRACT %receivecounter nat ;
+                     IF_NONE
+                       { PUSH string "bad address for get_entrypoint (%receivecounter)" ; FAILWITH }
+                       {} ;
+                     DUP ;
+                     DIP { DIP { DUP } ; SWAP ; PUSH mutez 0 } ;
+                     TRANSFER_TOKENS ;
+                     DUP ;
+                     NIL operation ;
+                     SWAP ;
+                     CONS ;
+                     DIP { DIP 3 { DUP } ; DIG 3 ; CDR } ;
+                     PAIR ;
+                     DIP { DROP 5 } }
+                   { DUP ;
+                     DIP { DIP 4 { DUP } ; DIG 4 } ;
+                     PAIR ;
+                     DUP ;
+                     CAR ;
+                     DUP ;
+                     CAR ;
+                     CONTRACT %increment nat ;
+                     IF_NONE
+                       { PUSH string "bad address for get_entrypoint (%increment)" ; FAILWITH }
+                       {} ;
+                     DIP { DUP } ;
+                     SWAP ;
+                     CDR ;
+                     DIP { DUP ; PUSH mutez 0 } ;
+                     TRANSFER_TOKENS ;
+                     DUP ;
+                     NIL operation ;
+                     SWAP ;
+                     CONS ;
+                     DIP { DIP 3 { DUP } ; DIG 3 ; CDR } ;
+                     PAIR ;
+                     DIP { DROP 5 } } ;
+                 DIP { DROP } } ;
+             DIP { DROP } }
+           { DUP ;
+             IF_LEFT
+               { DUP ;
+                 DIP { DIP 3 { DUP } ; DIG 3 } ;
+                 PAIR ;
+                 DUP ;
+                 CAR ;
+                 DUP ;
+                 CAR ;
+                 CONTRACT %incrementget (pair (contract %callback nat) (nat %value)) ;
+                 IF_NONE
+                   { PUSH string "bad address for get_entrypoint (%incrementget)" ; FAILWITH }
+                   {} ;
+                 DIP 7 { DUP } ;
+                 DIG 7 ;
+                 CONTRACT %receivecounter nat ;
+                 IF_NONE
+                   { PUSH string "bad address for get_entrypoint (%receivecounter)" ; FAILWITH }
+                   {} ;
+                 DUP ;
+                 DIP { DIP 2 { DUP } ; DIG 2 ; CDR } ;
+                 PAIR ;
+                 DIP { DIP { DUP } ; SWAP ; PUSH mutez 0 } ;
+                 TRANSFER_TOKENS ;
+                 DUP ;
+                 NIL operation ;
+                 SWAP ;
+                 CONS ;
+                 DIP { DIP 4 { DUP } ; DIG 4 ; CDR } ;
+                 PAIR ;
+                 DIP { DROP 6 } }
+               { DUP ; NIL operation ; PAIR ; DIP { DROP } } ;
+             DIP { DROP } } ;
+         DIP { DROP 4 } } }

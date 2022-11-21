@@ -1,0 +1,17 @@
+{ storage int ;
+  parameter unit ;
+  code { DUP ;
+         CDR ;
+         SWAP ;
+         CAR ;
+         NIL operation ;
+         PUSH address "KT1DUxVLG3kthspF71FGrCxQPJx4WWxwYZvA" ;
+         CONTRACT %main address ;
+         IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+         PUSH mutez 0 ;
+         PUSH address "tz1SVqTz7entj982jDSKcTQNgT7f2cg7C8dk" ;
+         TRANSFER_TOKENS ;
+         CONS ;
+         SWAP ;
+         DROP ;
+         PAIR } }

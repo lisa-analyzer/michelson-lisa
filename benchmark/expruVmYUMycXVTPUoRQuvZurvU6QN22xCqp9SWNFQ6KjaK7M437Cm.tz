@@ -1,0 +1,86 @@
+{ parameter
+    (or (or (unit %default) (address %deposit))
+        (or (unit %reRoll) (or (key_hash %updateDelegator) (mutez %withdraw)))) ;
+  storage (pair (address %guildContract) (address %owner)) ;
+  code { DUP ;
+         CDR ;
+         SWAP ;
+         CAR ;
+         IF_LEFT
+           { IF_LEFT
+               { DROP ; NIL operation }
+               { SWAP ;
+                 DUP ;
+                 DUG 2 ;
+                 CDR ;
+                 COMPARE ;
+                 EQ ;
+                 IF {} { PUSH string "WrongCondition: self.data.owner == params" ; FAILWITH } ;
+                 DUP ;
+                 CAR ;
+                 CONTRACT %deposit mutez ;
+                 NIL operation ;
+                 SWAP ;
+                 IF_NONE { PUSH int 31 ; FAILWITH } {} ;
+                 AMOUNT ;
+                 BALANCE ;
+                 TRANSFER_TOKENS ;
+                 CONS } }
+           { IF_LEFT
+               { DROP ;
+                 DUP ;
+                 CDR ;
+                 SENDER ;
+                 COMPARE ;
+                 EQ ;
+                 IF {}
+                    { PUSH string "WrongCondition: self.data.owner == sp.sender" ; FAILWITH } ;
+                 DUP ;
+                 CAR ;
+                 CONTRACT %reRoll mutez ;
+                 NIL operation ;
+                 SWAP ;
+                 IF_NONE { PUSH int 47 ; FAILWITH } {} ;
+                 AMOUNT ;
+                 BALANCE ;
+                 TRANSFER_TOKENS ;
+                 CONS }
+               { IF_LEFT
+                   { SWAP ;
+                     DUP ;
+                     DUG 2 ;
+                     CAR ;
+                     SENDER ;
+                     COMPARE ;
+                     EQ ;
+                     IF {}
+                        { PUSH string "WrongCondition: sp.sender == self.data.guildContract" ;
+                          FAILWITH } ;
+                     SOME ;
+                     SET_DELEGATE ;
+                     NIL operation ;
+                     SWAP ;
+                     CONS }
+                   { SENDER ;
+                     DIG 2 ;
+                     DUP ;
+                     DUG 3 ;
+                     CDR ;
+                     COMPARE ;
+                     EQ ;
+                     IF {}
+                        { PUSH string "WrongCondition: self.data.owner == sp.sender" ; FAILWITH } ;
+                     NIL operation ;
+                     DIG 2 ;
+                     DUP ;
+                     DUG 3 ;
+                     CAR ;
+                     CONTRACT %withdraw (pair (mutez %amountRequested) (mutez %balance)) ;
+                     IF_NONE { PUSH int 41 ; FAILWITH } {} ;
+                     BALANCE ;
+                     BALANCE ;
+                     DIG 4 ;
+                     PAIR %amountRequested %balance ;
+                     TRANSFER_TOKENS ;
+                     CONS } } } ;
+         PAIR } }

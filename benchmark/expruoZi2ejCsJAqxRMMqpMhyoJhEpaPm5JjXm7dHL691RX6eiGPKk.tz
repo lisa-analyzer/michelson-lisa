@@ -1,0 +1,38 @@
+{ storage (pair (int %storedValue) (string %testValue)) ;
+  parameter (or (int %replace) (pair %request_test (address %address) (string %text))) ;
+  code { DUP ;
+         CDR ;
+         SWAP ;
+         CAR ;
+         IF_LEFT
+           { { SWAP ;
+               DUP ;
+               DUG 2 ;
+               CDR ;
+               SWAP ;
+               DUP ;
+               DUG 2 ;
+               PAIR ;
+               DUG 2 ;
+               DROP 2 ;
+               NIL operation } }
+           { { DUP ;
+               CDR ;
+               PUSH string "test" ;
+               COMPARE ;
+               NEQ ;
+               IF { {} }
+                  { { PUSH string "WrongCondition: params.text != 'test'" ; FAILWITH } } ;
+               DUP ;
+               CAR ;
+               NIL operation ;
+               SWAP ;
+               CONTRACT %request_test string ;
+               IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+               PUSH mutez 0 ;
+               PUSH string "test" ;
+               TRANSFER_TOKENS ;
+               CONS ;
+               SWAP ;
+               DROP } } ;
+         PAIR } }

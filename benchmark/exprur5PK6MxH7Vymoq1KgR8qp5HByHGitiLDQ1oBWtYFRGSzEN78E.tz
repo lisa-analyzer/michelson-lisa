@@ -1,0 +1,64 @@
+{ parameter (or (address %receive) (unit %set)) ;
+  storage mutez ;
+  code { DUP ;
+         CDR ;
+         DIG 1 ;
+         DUP ;
+         DUG 2 ;
+         CAR ;
+         IF_LEFT
+           { DIG 1 ;
+             DUP ;
+             DUG 2 ;
+             DIG 1 ;
+             DUP ;
+             DUG 2 ;
+             PAIR ;
+             DUP ;
+             CAR ;
+             CONTRACT unit ;
+             NIL operation ;
+             DIG 1 ;
+             DUP ;
+             DUG 2 ;
+             IF_NONE
+               { PUSH string "can't send xtz" ; FAILWITH }
+               { DUP ;
+                 AMOUNT ;
+                 UNIT ;
+                 TRANSFER_TOKENS ;
+                 NIL operation ;
+                 DIG 1 ;
+                 DUP ;
+                 DUG 2 ;
+                 CONS ;
+                 DIG 3 ;
+                 DUP ;
+                 DUG 4 ;
+                 DIG 1 ;
+                 DUP ;
+                 DUG 2 ;
+                 DIP { DROP 4 } } ;
+             DIG 3 ;
+             DUP ;
+             DUG 4 ;
+             CDR ;
+             DIG 1 ;
+             DUP ;
+             DUG 2 ;
+             PAIR ;
+             DIP { DROP 5 } }
+           { NIL operation ;
+             PUSH mutez 0 ;
+             AMOUNT ;
+             COMPARE ;
+             GT ;
+             IF { PUSH string "Do not send tezos." ; FAILWITH }
+                { BALANCE ; DIG 3 ; DUP ; DUG 4 ; DIG 1 ; DUP ; DUG 2 ; DIP { DROP 2 } } ;
+             DUP ;
+             DIG 2 ;
+             DUP ;
+             DUG 3 ;
+             PAIR ;
+             DIP { DROP 3 } } ;
+         DIP { DROP 2 } } }

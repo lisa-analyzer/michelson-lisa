@@ -1,0 +1,182 @@
+{ parameter
+    (or (or (pair %receiveDexStorage
+               (pair (pair (pair (big_map %address_map nat address) (big_map %allowed address bool))
+                           (pair (big_map %circles nat mutez) (big_map %key_hash_map nat key_hash)))
+                     (pair (pair (big_map %nat_map nat nat) (timestamp %next_circle))
+                           (pair (mutez %reward) (big_map %shares address nat))))
+               (pair (pair (big_map %vetoVoters address nat) (big_map %vetos key_hash timestamp))
+                     (pair (big_map %voters
+                              address
+                              (pair (map %allowances address bool) (option %candidate key_hash)))
+                           (big_map %votes key_hash nat))))
+            (address %setMain))
+        (pair %use address bool)) ;
+  storage (pair (pair (address %main) (address %sender)) (pair %tmp address bool)) ;
+  code { DUP ;
+         CDR ;
+         DIG 1 ;
+         DUP ;
+         DUG 2 ;
+         CAR ;
+         IF_LEFT
+           { DUP ;
+             IF_LEFT
+               { DIG 2 ;
+                 DUP ;
+                 DUG 3 ;
+                 DIG 1 ;
+                 DUP ;
+                 DUG 2 ;
+                 DIG 4 ;
+                 DUP ;
+                 DUG 5 ;
+                 PAIR ;
+                 DUP ;
+                 CAR ;
+                 DIG 1 ;
+                 DUP ;
+                 DUG 2 ;
+                 CDR ;
+                 DIG 1 ;
+                 DUP ;
+                 DUG 2 ;
+                 CDR ;
+                 CAR ;
+                 DIG 2 ;
+                 DUP ;
+                 DUG 3 ;
+                 CAR ;
+                 CDR ;
+                 COMPARE ;
+                 EQ ;
+                 IF { DUP }
+                    { DUP ;
+                      CDR ;
+                      CDR ;
+                      CAR ;
+                      DIG 2 ;
+                      DUP ;
+                      DUG 3 ;
+                      CAR ;
+                      CDR ;
+                      GET ;
+                      IF_NONE
+                        { NONE key_hash ; EMPTY_MAP address bool ; PAIR }
+                        { DUP ; DIP { DROP } } ;
+                      DIG 1 ;
+                      DUP ;
+                      DUG 2 ;
+                      DIG 2 ;
+                      DUP ;
+                      DUG 3 ;
+                      DIG 3 ;
+                      DUP ;
+                      DUG 4 ;
+                      CDR ;
+                      CDR ;
+                      CAR ;
+                      DIG 3 ;
+                      DUP ;
+                      DUG 4 ;
+                      DIG 4 ;
+                      DUP ;
+                      DUG 5 ;
+                      CAR ;
+                      DIG 7 ;
+                      DUP ;
+                      DUG 8 ;
+                      CDR ;
+                      CDR ;
+                      DIG 8 ;
+                      DUP ;
+                      DUG 9 ;
+                      CDR ;
+                      CAR ;
+                      SWAP ;
+                      SOME ;
+                      SWAP ;
+                      UPDATE ;
+                      SWAP ;
+                      CDR ;
+                      SWAP ;
+                      PAIR ;
+                      DIG 6 ;
+                      DUP ;
+                      DUG 7 ;
+                      CAR ;
+                      CDR ;
+                      SWAP ;
+                      SOME ;
+                      SWAP ;
+                      UPDATE ;
+                      DIP { DUP ; CAR ; SWAP ; CDR ; DUP ; CAR ; SWAP ; CDR ; CDR } ;
+                      PAIR ;
+                      SWAP ;
+                      PAIR ;
+                      SWAP ;
+                      PAIR ;
+                      DIP { DROP 2 } } ;
+                 NIL operation ;
+                 DIG 3 ;
+                 DUP ;
+                 DUG 4 ;
+                 CAR ;
+                 CAR ;
+                 CONTRACT %updateStorage
+                   (pair (pair (pair (pair (big_map %address_map nat address) (big_map %allowed address bool))
+                                     (pair (big_map %circles nat mutez) (big_map %key_hash_map nat key_hash)))
+                               (pair (pair (big_map %nat_map nat nat) (timestamp %next_circle))
+                                     (pair (mutez %reward) (big_map %shares address nat))))
+                         (pair (pair (big_map %vetoVoters address nat) (big_map %vetos key_hash timestamp))
+                               (pair (big_map %voters
+                                        address
+                                        (pair (map %allowances address bool) (option %candidate key_hash)))
+                                     (big_map %votes key_hash nat)))) ;
+                 IF_NONE { PUSH string "01" ; FAILWITH } { DUP ; DIP { DROP } } ;
+                 PUSH mutez 0 ;
+                 DIG 3 ;
+                 DUP ;
+                 DUG 4 ;
+                 TRANSFER_TOKENS ;
+                 CONS ;
+                 DIP { DROP 4 } ;
+                 PAIR ;
+                 DIP { DROP } }
+               { PUSH address "tz1burnburnburnburnburnburnburjAYjjX" ;
+                 DIG 3 ;
+                 DUP ;
+                 DUG 4 ;
+                 CAR ;
+                 CAR ;
+                 COMPARE ;
+                 EQ ;
+                 IF { DIG 2 ; DUP ; DUG 3 ; CDR ; SENDER ; DIG 2 ; DUP ; DUG 3 ; PAIR ; PAIR }
+                    { PUSH string "01" ; FAILWITH } ;
+                 NIL operation ;
+                 PAIR ;
+                 DIP { DROP } } ;
+             DIP { DROP } }
+           { DUP ;
+             SENDER ;
+             DIG 3 ;
+             DUP ;
+             DUG 4 ;
+             CAR ;
+             CAR ;
+             PAIR ;
+             PAIR ;
+             NIL operation ;
+             DIG 3 ;
+             DUP ;
+             DUG 4 ;
+             CAR ;
+             CAR ;
+             CONTRACT %getStorage unit ;
+             IF_NONE { PUSH string "00" ; FAILWITH } { DUP ; DIP { DROP } } ;
+             AMOUNT ;
+             UNIT ;
+             TRANSFER_TOKENS ;
+             CONS ;
+             PAIR ;
+             DIP { DROP } } ;
+         DIP { DROP 2 } } }

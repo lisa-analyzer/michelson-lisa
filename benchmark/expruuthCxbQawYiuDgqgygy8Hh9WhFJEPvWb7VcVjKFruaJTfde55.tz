@@ -1,0 +1,129 @@
+{ storage
+    (pair (address %administrator)
+          (pair (big_map %entrypointsBytes bytes bytes) (int %totalSupply))) ;
+  parameter (or (address %sendEntrypoints) (unit %setEntrypoints)) ;
+  code { DUP ;
+         CDR ;
+         SWAP ;
+         CAR ;
+         IF_LEFT
+           { { CONTRACT %setEntrypoint
+                 (pair (pair (bytes %administrator) (bytes %epName))
+                       (pair (bytes %epScript) (bytes %totalSupply))) ;
+               NIL operation ;
+               SWAP ;
+               IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+               PUSH mutez 0 ;
+               DIG 3 ;
+               DUP ;
+               DUG 4 ;
+               CDR ;
+               CDR ;
+               PACK ;
+               DIG 4 ;
+               DUP ;
+               DUG 5 ;
+               CDR ;
+               CAR ;
+               PUSH string "callMint" ;
+               PACK ;
+               GET ;
+               IF_NONE { { PUSH string "Get-item:50" ; FAILWITH } } {} ;
+               PAIR %epScript %totalSupply ;
+               PUSH string "callMint" ;
+               PACK ;
+               DIG 5 ;
+               DUP ;
+               DUG 6 ;
+               CAR ;
+               PACK ;
+               PAIR %administrator %epName ;
+               PAIR ;
+               TRANSFER_TOKENS ;
+               CONS } }
+           { { SWAP ;
+               DUP ;
+               DUG 2 ;
+               DUP ;
+               CAR ;
+               SWAP ;
+               CDR ;
+               DUP ;
+               CDR ;
+               SWAP ;
+               CAR ;
+               LAMBDA
+                 (pair (pair (address %administrator) (int %amount))
+                       (pair (address %sender)
+                             (pair (int %totalSupply)
+                                   (option %userDetails (pair (map %approvals address int) (int %balance))))))
+                 (pair (int %totalSupply)
+                       (pair %userDetails (map %approvals address int) (int %balance)))
+                 { { DUP ;
+                     CAR ;
+                     CAR ;
+                     SWAP ;
+                     DUP ;
+                     DUG 2 ;
+                     CDR ;
+                     CAR ;
+                     COMPARE ;
+                     EQ ;
+                     IF { {} } { { PUSH string "Only admin can mint." ; FAILWITH } } ;
+                     DUP ;
+                     CDR ;
+                     CDR ;
+                     CDR ;
+                     SWAP ;
+                     DUP ;
+                     DUG 2 ;
+                     CDR ;
+                     CDR ;
+                     CAR ;
+                     SWAP ;
+                     DUP ;
+                     DUG 2 ;
+                     IF_NONE { PUSH bool False } { { DROP ; PUSH bool True } } ;
+                     IF { {} }
+                        { { SWAP ;
+                            DROP ;
+                            PUSH (option (pair (map %approvals address int) (int %balance))) (Some (Pair {} 0)) ;
+                            SWAP } } ;
+                     SWAP ;
+                     IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                     DUP ;
+                     CAR ;
+                     DIG 3 ;
+                     DUP ;
+                     DUG 4 ;
+                     CAR ;
+                     CDR ;
+                     DIG 2 ;
+                     CDR ;
+                     ADD ;
+                     SWAP ;
+                     PAIR ;
+                     SWAP ;
+                     DIG 2 ;
+                     CAR ;
+                     CDR ;
+                     ADD ;
+                     SWAP ;
+                     SWAP ;
+                     PAIR %totalSupply %userDetails } } ;
+               DIG 5 ;
+               DROP ;
+               DIG 4 ;
+               DROP ;
+               SOME ;
+               IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+               PACK ;
+               SOME ;
+               PUSH string "callMint" ;
+               PACK ;
+               UPDATE ;
+               PAIR ;
+               SWAP ;
+               PAIR ;
+               NIL operation } } ;
+         PAIR } }

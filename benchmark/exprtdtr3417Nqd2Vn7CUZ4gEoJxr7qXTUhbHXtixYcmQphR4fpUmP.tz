@@ -1,0 +1,284 @@
+{ storage
+    (map string
+         (pair (pair (pair (map %applications address string) (string %company))
+                     (pair (string %contact) (string %job_description)))
+               (pair (pair (address %owner) (option %selected address))
+                     (pair (int %status) (mutez %stipend))))) ;
+  parameter
+    (or (or (pair %apply_for_job (string %_job_id) (string %_resume))
+            (pair %hire (address %_candidate) (string %_job_id)))
+        (or (pair %list_job
+               (pair (string %_company) (string %_contact))
+               (pair (string %_job_description) (string %_job_id)))
+            (string %submit))) ;
+  code { DUP ;
+         CDR ;
+         SWAP ;
+         CAR ;
+         IF_LEFT
+           { IF_LEFT
+               { SWAP ;
+                 DUP ;
+                 DIG 2 ;
+                 DUP ;
+                 DUG 3 ;
+                 CAR ;
+                 DUP ;
+                 DUG 2 ;
+                 GET ;
+                 IF_NONE { PUSH int 26 ; FAILWITH } {} ;
+                 DUP ;
+                 CDR ;
+                 SWAP ;
+                 CAR ;
+                 DUP ;
+                 CDR ;
+                 SWAP ;
+                 CAR ;
+                 DUP ;
+                 CDR ;
+                 SWAP ;
+                 CAR ;
+                 SOURCE ;
+                 DIG 7 ;
+                 CDR ;
+                 SOME ;
+                 SWAP ;
+                 UPDATE ;
+                 PAIR ;
+                 PAIR ;
+                 PAIR ;
+                 SOME ;
+                 SWAP ;
+                 UPDATE }
+               { SWAP ;
+                 DUP ;
+                 DUG 2 ;
+                 SWAP ;
+                 DUP ;
+                 DUG 2 ;
+                 CDR ;
+                 MEM ;
+                 IF {}
+                    { PUSH string "WrongCondition: self.data.jobs.contains(params._job_id)" ;
+                      FAILWITH } ;
+                 SWAP ;
+                 DUP ;
+                 DUG 2 ;
+                 SWAP ;
+                 DUP ;
+                 DUG 2 ;
+                 CDR ;
+                 GET ;
+                 IF_NONE { PUSH int 33 ; FAILWITH } {} ;
+                 CDR ;
+                 CAR ;
+                 CAR ;
+                 SOURCE ;
+                 COMPARE ;
+                 EQ ;
+                 IF {}
+                    { PUSH string "WrongCondition: sp.source == self.data.jobs[params._job_id].owner" ;
+                      FAILWITH } ;
+                 PUSH int 0 ;
+                 DIG 2 ;
+                 DUP ;
+                 DUG 3 ;
+                 DIG 2 ;
+                 DUP ;
+                 DUG 3 ;
+                 CDR ;
+                 GET ;
+                 IF_NONE { PUSH int 35 ; FAILWITH } {} ;
+                 CDR ;
+                 CDR ;
+                 CAR ;
+                 COMPARE ;
+                 EQ ;
+                 IF {}
+                    { PUSH string "WrongCondition: self.data.jobs[params._job_id].status == 0" ;
+                      FAILWITH } ;
+                 SWAP ;
+                 DUP ;
+                 DUG 2 ;
+                 SWAP ;
+                 DUP ;
+                 DUG 2 ;
+                 CDR ;
+                 GET ;
+                 IF_NONE { PUSH int 37 ; FAILWITH } {} ;
+                 CDR ;
+                 CAR ;
+                 CDR ;
+                 IF_NONE { PUSH bool False } { DROP ; PUSH bool True } ;
+                 IF { PUSH string "WrongCondition: ~ self.data.jobs[params._job_id].selected.is_some()" ;
+                      FAILWITH }
+                    {} ;
+                 SWAP ;
+                 DUP ;
+                 DIG 2 ;
+                 DUP ;
+                 DUG 3 ;
+                 CDR ;
+                 DUP ;
+                 DUG 2 ;
+                 GET ;
+                 IF_NONE { PUSH int 38 ; FAILWITH } {} ;
+                 DUP ;
+                 CAR ;
+                 SWAP ;
+                 CDR ;
+                 DUP ;
+                 CDR ;
+                 SWAP ;
+                 CAR ;
+                 CAR ;
+                 DIG 5 ;
+                 DUP ;
+                 DUG 6 ;
+                 CAR ;
+                 SOME ;
+                 SWAP ;
+                 PAIR ;
+                 PAIR ;
+                 SWAP ;
+                 PAIR ;
+                 SOME ;
+                 SWAP ;
+                 UPDATE ;
+                 DUP ;
+                 DIG 2 ;
+                 CDR ;
+                 DUP ;
+                 DUG 2 ;
+                 GET ;
+                 IF_NONE { PUSH int 39 ; FAILWITH } {} ;
+                 DUP ;
+                 CAR ;
+                 SWAP ;
+                 CDR ;
+                 DUP ;
+                 CAR ;
+                 SWAP ;
+                 CDR ;
+                 CDR ;
+                 PUSH int 1 ;
+                 PAIR ;
+                 SWAP ;
+                 PAIR ;
+                 SWAP ;
+                 PAIR ;
+                 SOME ;
+                 SWAP ;
+                 UPDATE } ;
+             NIL operation }
+           { IF_LEFT
+               { SWAP ;
+                 DUP ;
+                 DUG 2 ;
+                 SWAP ;
+                 DUP ;
+                 DUG 2 ;
+                 CDR ;
+                 CDR ;
+                 MEM ;
+                 IF { PUSH string "WrongCondition: ~ (self.data.jobs.contains(params._job_id))" ;
+                      FAILWITH }
+                    {} ;
+                 DUP ;
+                 DUG 2 ;
+                 CDR ;
+                 CDR ;
+                 AMOUNT ;
+                 PUSH int 0 ;
+                 PAIR %status %stipend ;
+                 NONE address ;
+                 SOURCE ;
+                 PAIR %owner %selected ;
+                 PAIR ;
+                 DIG 3 ;
+                 DUP ;
+                 DUG 4 ;
+                 CDR ;
+                 CAR ;
+                 DIG 4 ;
+                 DUP ;
+                 DUG 5 ;
+                 CAR ;
+                 CDR ;
+                 PAIR %contact %job_description ;
+                 DIG 4 ;
+                 CAR ;
+                 CAR ;
+                 EMPTY_MAP address string ;
+                 PAIR %applications %company ;
+                 PAIR ;
+                 PAIR ;
+                 SOME ;
+                 SWAP ;
+                 UPDATE ;
+                 NIL operation }
+               { SWAP ;
+                 DUP ;
+                 DUG 2 ;
+                 SWAP ;
+                 DUP ;
+                 DUG 2 ;
+                 MEM ;
+                 IF {}
+                    { PUSH string "WrongCondition: self.data.jobs.contains(params)" ; FAILWITH } ;
+                 PUSH int 1 ;
+                 DIG 2 ;
+                 DUP ;
+                 DUG 3 ;
+                 DIG 2 ;
+                 DUP ;
+                 DUG 3 ;
+                 GET ;
+                 IF_NONE { PUSH int 44 ; FAILWITH } {} ;
+                 CDR ;
+                 CDR ;
+                 CAR ;
+                 COMPARE ;
+                 EQ ;
+                 IF {}
+                    { PUSH string "WrongCondition: self.data.jobs[params].status == 1" ;
+                      FAILWITH } ;
+                 NIL operation ;
+                 DIG 2 ;
+                 DUP ;
+                 DUG 3 ;
+                 DIG 2 ;
+                 DUP ;
+                 DUG 3 ;
+                 GET ;
+                 IF_NONE { PUSH int 45 ; FAILWITH } {} ;
+                 CDR ;
+                 CAR ;
+                 CDR ;
+                 IF_NONE { PUSH int 45 ; FAILWITH } {} ;
+                 CONTRACT unit ;
+                 IF_NONE { PUSH int 45 ; FAILWITH } {} ;
+                 DIG 3 ;
+                 DUP ;
+                 DUG 4 ;
+                 DIG 3 ;
+                 DUP ;
+                 DUG 4 ;
+                 GET ;
+                 IF_NONE { PUSH int 45 ; FAILWITH } {} ;
+                 CDR ;
+                 CDR ;
+                 CDR ;
+                 UNIT ;
+                 TRANSFER_TOKENS ;
+                 CONS ;
+                 DIG 2 ;
+                 NONE (pair (pair (pair (map %applications address string) (string %company))
+                                  (pair (string %contact) (string %job_description)))
+                            (pair (pair (address %owner) (option %selected address))
+                                  (pair (int %status) (mutez %stipend)))) ;
+                 DIG 3 ;
+                 UPDATE ;
+                 SWAP } } ;
+         PAIR } }

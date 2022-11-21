@@ -1,0 +1,31 @@
+{ parameter (or (or (int %store_int) (int %call_store_int)) (timestamp %update_counter)) ;
+  storage (pair int nat) ;
+  code { { { DUP ; CAR ; DIP { CDR } } } ;
+         IF_LEFT
+           { IF_LEFT
+               { SELF ;
+                 ADDRESS ;
+                 SENDER ;
+                 { { COMPARE ; EQ } ; IF {} { { UNIT ; FAILWITH } } } ;
+                 SWAP ;
+                 CDR ;
+                 SWAP ;
+                 PAIR ;
+                 NIL operation ;
+                 PAIR }
+               { SELF %store_int ;
+                 SWAP ;
+                 PUSH mutez 0 ;
+                 SWAP ;
+                 TRANSFER_TOKENS ;
+                 NIL operation ;
+                 SWAP ;
+                 CONS ;
+                 PAIR } }
+           { NOW ;
+             { { COMPARE ; LT } ; IF {} { { UNIT ; FAILWITH } } } ;
+             { { DUP ; CAR ; DIP { CDR } } } ;
+             DIP { PUSH nat 1 ; ADD } ;
+             PAIR ;
+             NIL operation ;
+             PAIR } } }

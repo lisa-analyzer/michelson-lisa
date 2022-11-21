@@ -1,0 +1,162 @@
+{ storage
+    (pair (pair (address %administrator)
+                (big_map %balances address (pair (map %approvals address int) (int %balance))))
+          (pair (big_map %entrypointsBytes bytes bytes) (int %totalSupply))) ;
+  parameter (or (address %sendEntrypoints) (unit %setEntrypoints)) ;
+  code { DUP ;
+         CDR ;
+         SWAP ;
+         CAR ;
+         IF_LEFT
+           { { CONTRACT %setEntrypoint
+                 (pair (pair (bytes %administrator) (bytes %epName))
+                       (pair (bytes %epScript) (bytes %totalSupply))) ;
+               NIL operation ;
+               SWAP ;
+               IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+               PUSH mutez 0 ;
+               DIG 3 ;
+               DUP ;
+               DUG 4 ;
+               CDR ;
+               CDR ;
+               PACK ;
+               DIG 4 ;
+               DUP ;
+               DUG 5 ;
+               CDR ;
+               CAR ;
+               PUSH string "callMint" ;
+               PACK ;
+               GET ;
+               IF_NONE { { PUSH string "Get-item:57" ; FAILWITH } } {} ;
+               PAIR %epScript %totalSupply ;
+               PUSH string "callMint" ;
+               PACK ;
+               DIG 5 ;
+               DUP ;
+               DUG 6 ;
+               CAR ;
+               CAR ;
+               PACK ;
+               PAIR %administrator %epName ;
+               PAIR ;
+               TRANSFER_TOKENS ;
+               CONS } }
+           { { SWAP ;
+               DUP ;
+               DUG 2 ;
+               DUP ;
+               CAR ;
+               SWAP ;
+               CDR ;
+               DUP ;
+               CDR ;
+               SWAP ;
+               CAR ;
+               LAMBDA
+                 (pair (pair (address %address) (pair (address %administrator) (int %amount)))
+                       (pair (big_map %balances address (pair (map %approvals address int) (int %balance)))
+                             (pair (address %sender) (int %totalSupply))))
+                 (pair (big_map %balances address (pair (map %approvals address int) (int %balance)))
+                       (int %totalSupply))
+                 { { DUP ;
+                     CAR ;
+                     CDR ;
+                     CAR ;
+                     SWAP ;
+                     DUP ;
+                     DUG 2 ;
+                     CDR ;
+                     CDR ;
+                     CAR ;
+                     COMPARE ;
+                     EQ ;
+                     IF { {} } { { PUSH string "Only admin can mint." ; FAILWITH } } ;
+                     DUP ;
+                     CDR ;
+                     CAR ;
+                     SWAP ;
+                     DUP ;
+                     DUG 2 ;
+                     CDR ;
+                     CDR ;
+                     CDR ;
+                     SWAP ;
+                     DUP ;
+                     DUG 2 ;
+                     DIG 3 ;
+                     DUP ;
+                     DUG 4 ;
+                     CAR ;
+                     CAR ;
+                     MEM ;
+                     IF { {} }
+                        { { SWAP ;
+                            PUSH (option (pair (map %approvals address int) (int %balance))) (Some (Pair {} 0)) ;
+                            DIG 3 ;
+                            DUP ;
+                            DUG 4 ;
+                            CAR ;
+                            CAR ;
+                            UPDATE ;
+                            SWAP } } ;
+                     SWAP ;
+                     DUP ;
+                     DIG 3 ;
+                     DUP ;
+                     DUG 4 ;
+                     CAR ;
+                     CAR ;
+                     DUP ;
+                     DUG 2 ;
+                     GET ;
+                     IF_NONE { { PUSH string "set_in_top-any" ; FAILWITH } } {} ;
+                     CAR ;
+                     DIG 4 ;
+                     DUP ;
+                     DUG 5 ;
+                     CAR ;
+                     CDR ;
+                     CDR ;
+                     DIG 3 ;
+                     DUP ;
+                     DUG 4 ;
+                     DIG 6 ;
+                     DUP ;
+                     DUG 7 ;
+                     CAR ;
+                     CAR ;
+                     GET ;
+                     IF_NONE { { PUSH string "Get-item:36" ; FAILWITH } } {} ;
+                     CDR ;
+                     ADD ;
+                     SWAP ;
+                     PAIR ;
+                     SOME ;
+                     SWAP ;
+                     UPDATE ;
+                     SWAP ;
+                     DIG 2 ;
+                     CAR ;
+                     CDR ;
+                     CDR ;
+                     ADD ;
+                     SWAP ;
+                     PAIR %balances %totalSupply } } ;
+               DIG 5 ;
+               DROP ;
+               DIG 4 ;
+               DROP ;
+               SOME ;
+               IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+               PACK ;
+               SOME ;
+               PUSH string "callMint" ;
+               PACK ;
+               UPDATE ;
+               PAIR ;
+               SWAP ;
+               PAIR ;
+               NIL operation } } ;
+         PAIR } }

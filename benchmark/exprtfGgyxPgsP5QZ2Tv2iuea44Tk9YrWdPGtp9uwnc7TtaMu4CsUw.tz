@@ -1,0 +1,17 @@
+{ parameter %main key_hash ;
+  storage unit ;
+  code { DUP ;
+         DIP { CDR @storage_slash_1 } ;
+         CAR @destination_slash_2 ;
+         DIP { DUP @storage } ;
+         SWAP ;
+         NIL operation ;
+         DIP 2 { DUP @destination } ;
+         DIG 2 ;
+         DIP 3 { DROP 2 } ;
+         IMPLICIT_ACCOUNT ;
+         AMOUNT @amount ;
+         UNIT ;
+         TRANSFER_TOKENS @op ;
+         CONS ;
+         PAIR } }

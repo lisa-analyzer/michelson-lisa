@@ -1,0 +1,42 @@
+{ parameter (or (unit %contribute) (unit %withdraw)) ;
+  storage (pair (address %admin) (pair (mutez %amount) (address %party))) ;
+  code { DUP ;
+         CDR ;
+         SWAP ;
+         CAR ;
+         IF_LEFT
+           { DROP ;
+             DUP ;
+             { CDR ; CDR } ;
+             SENDER ;
+             COMPARE ;
+             EQ ;
+             IF {}
+                { PUSH string "WrongCondition: sp.sender == self.data.party" ; FAILWITH } ;
+             DUP ;
+             { CDR ; CAR } ;
+             AMOUNT ;
+             COMPARE ;
+             EQ ;
+             IF {}
+                { PUSH string "WrongCondition: sp.amount == self.data.amount" ; FAILWITH } ;
+             NIL operation }
+           { DROP ;
+             DUP ;
+             CAR ;
+             SENDER ;
+             COMPARE ;
+             EQ ;
+             IF {}
+                { PUSH string "WrongCondition: sp.sender == self.data.admin" ; FAILWITH } ;
+             DUP ;
+             CAR ;
+             CONTRACT unit ;
+             NIL operation ;
+             SWAP ;
+             { IF_NONE { UNIT ; FAILWITH } {} } ;
+             BALANCE ;
+             UNIT ;
+             TRANSFER_TOKENS ;
+             CONS } ;
+         PAIR } }

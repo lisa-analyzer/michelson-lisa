@@ -1,0 +1,41 @@
+{ parameter unit ;
+  storage mutez ;
+  code { PUSH address "KT1FdiDfGRejfjWhZbapW5GaT7wGKgCibdZd" ;
+         DUP ;
+         CONTRACT %Receive unit ;
+         IF_NONE
+           { PUSH string "bad address for get_entrypoint (%Receive)" ; FAILWITH }
+           {} ;
+         DUP ;
+         AMOUNT ;
+         UNIT ;
+         TRANSFER_TOKENS ;
+         DIG 2 ;
+         DUP ;
+         DUG 3 ;
+         CONTRACT %Set unit ;
+         IF_NONE
+           { PUSH string "bad address for get_entrypoint (%Set)" ; FAILWITH }
+           {} ;
+         DUP ;
+         AMOUNT ;
+         UNIT ;
+         TRANSFER_TOKENS ;
+         NIL operation ;
+         DIG 1 ;
+         DUP ;
+         DUG 2 ;
+         CONS ;
+         DIG 3 ;
+         DUP ;
+         DUG 4 ;
+         CONS ;
+         DIG 6 ;
+         DUP ;
+         DUG 7 ;
+         CDR ;
+         DIG 1 ;
+         DUP ;
+         DUG 2 ;
+         PAIR ;
+         DIP { DROP 7 } } }

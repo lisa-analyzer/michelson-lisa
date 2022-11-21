@@ -1,0 +1,48 @@
+{ storage (pair (int %humidity) (pair (int %pressure) (int %temperature))) ;
+  parameter
+    (or (pair %receiveDataFromOrO (int %humidity) (pair (int %pressure) (int %temperature)))
+        (pair %requestDataFromOracle (address %address) (string %city))) ;
+  code { DUP ;
+         CDR ;
+         SWAP ;
+         CAR ;
+         IF_LEFT
+           { SWAP ;
+             DUP ;
+             CAR ;
+             SWAP ;
+             CDR ;
+             CAR ;
+             DIG 2 ;
+             DUP ;
+             DUG 3 ;
+             CDR ;
+             CDR ;
+             SWAP ;
+             PAIR ;
+             SWAP ;
+             PAIR ;
+             CDR ;
+             CDR ;
+             SWAP ;
+             DUP ;
+             DUG 2 ;
+             CDR ;
+             CAR ;
+             PAIR ;
+             SWAP ;
+             CAR ;
+             PAIR ;
+             NIL operation }
+           { DUP ;
+             CAR ;
+             CONTRACT %getDataFromOrO string ;
+             NIL operation ;
+             SWAP ;
+             IF_NONE { PUSH int 9 ; FAILWITH } {} ;
+             PUSH mutez 3000 ;
+             DIG 3 ;
+             CDR ;
+             TRANSFER_TOKENS ;
+             CONS } ;
+         PAIR } }

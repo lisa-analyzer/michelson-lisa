@@ -1,0 +1,104 @@
+{ storage
+    (pair (map %apidata string (pair (int %humidity) (pair (int %pressure) (int %temp))))
+          (set %keysset address)) ;
+  parameter
+    (or (string %apiService)
+        (pair %feedData
+           (pair (string %city) (int %humidity))
+           (pair (int %pressure) (int %temp)))) ;
+  code { DUP ;
+         CDR ;
+         SWAP ;
+         CAR ;
+         IF_LEFT
+           { { PUSH mutez 3000 ;
+               AMOUNT ;
+               COMPARE ;
+               EQ ;
+               IF { { SWAP ;
+                      DUP ;
+                      DUG 2 ;
+                      CAR ;
+                      SWAP ;
+                      DUP ;
+                      DUG 2 ;
+                      MEM ;
+                      IF { { NIL operation ;
+                             SENDER ;
+                             CONTRACT %getit (pair (int %humidity) (pair (int %pressure) (int %temp))) ;
+                             IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                             PUSH mutez 0 ;
+                             DIG 4 ;
+                             DUP ;
+                             DUG 5 ;
+                             CAR ;
+                             DIG 4 ;
+                             DUP ;
+                             DUG 5 ;
+                             GET ;
+                             IF_NONE { { PUSH string "Get-item:20" ; FAILWITH } } {} ;
+                             TRANSFER_TOKENS ;
+                             CONS } }
+                         { { NIL operation ;
+                             SENDER ;
+                             CONTRACT %getit (pair (int %humidity) (pair (int %pressure) (int %temp))) ;
+                             IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                             PUSH mutez 0 ;
+                             PUSH (pair (int %humidity) (pair (int %pressure) (int %temp))) (Pair 0 (Pair 0 0)) ;
+                             TRANSFER_TOKENS ;
+                             CONS } } } }
+                  { { NIL operation ;
+                      SENDER ;
+                      CONTRACT %getit (pair (int %humidity) (pair (int %pressure) (int %temp))) ;
+                      IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                      PUSH mutez 0 ;
+                      PUSH (pair (int %humidity) (pair (int %pressure) (int %temp))) (Pair 0 (Pair 0 0)) ;
+                      TRANSFER_TOKENS ;
+                      CONS } } ;
+               SWAP ;
+               DROP } }
+           { { SWAP ;
+               DUP ;
+               DUG 2 ;
+               CDR ;
+               SENDER ;
+               MEM ;
+               IF { { SWAP ;
+                      DUP ;
+                      DUG 2 ;
+                      DUP ;
+                      CDR ;
+                      SWAP ;
+                      CAR ;
+                      DIG 2 ;
+                      DUP ;
+                      DUG 3 ;
+                      CDR ;
+                      CDR ;
+                      DIG 3 ;
+                      DUP ;
+                      DUG 4 ;
+                      CDR ;
+                      CAR ;
+                      PAIR %pressure %temp ;
+                      DIG 3 ;
+                      DUP ;
+                      DUG 4 ;
+                      CAR ;
+                      CDR ;
+                      PAIR %humidity ;
+                      SOME ;
+                      DIG 3 ;
+                      DUP ;
+                      DUG 4 ;
+                      CAR ;
+                      CAR ;
+                      UPDATE ;
+                      PAIR ;
+                      DUG 2 ;
+                      SWAP ;
+                      DROP } }
+                  { {} } ;
+               DROP ;
+               NIL operation } } ;
+         PAIR } }

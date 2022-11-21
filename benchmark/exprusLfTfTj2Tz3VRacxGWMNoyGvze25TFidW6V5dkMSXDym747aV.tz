@@ -1,0 +1,116 @@
+{ storage
+    (pair (set %keysset address)
+          (pair (address %owner) (map %stockData string (pair (int %marketCap) (int %price))))) ;
+  parameter
+    (or (address %addDataContributor)
+        (or (pair %feedData (string %companyName) (pair (int %marketCap) (int %price)))
+            (string %getDataFromOrO))) ;
+  code { DUP ;
+         CDR ;
+         SWAP ;
+         CAR ;
+         IF_LEFT
+           { { SWAP ;
+               DUP ;
+               DUG 2 ;
+               CDR ;
+               CAR ;
+               SENDER ;
+               COMPARE ;
+               EQ ;
+               IF { { SWAP ;
+                      DUP ;
+                      DUG 2 ;
+                      DUP ;
+                      CDR ;
+                      SWAP ;
+                      CAR ;
+                      PUSH bool True ;
+                      DIG 3 ;
+                      DUP ;
+                      DUG 4 ;
+                      UPDATE ;
+                      PAIR ;
+                      DUG 2 ;
+                      SWAP ;
+                      DROP } }
+                  { {} } ;
+               DROP ;
+               NIL operation } }
+           { IF_LEFT
+               { { SWAP ;
+                   DUP ;
+                   DUG 2 ;
+                   CAR ;
+                   SENDER ;
+                   MEM ;
+                   IF { { SWAP ;
+                          DUP ;
+                          DUG 2 ;
+                          DUP ;
+                          CAR ;
+                          SWAP ;
+                          CDR ;
+                          DUP ;
+                          CAR ;
+                          SWAP ;
+                          CDR ;
+                          DIG 3 ;
+                          DUP ;
+                          DUG 4 ;
+                          CDR ;
+                          CDR ;
+                          DIG 4 ;
+                          DUP ;
+                          DUG 5 ;
+                          CDR ;
+                          CAR ;
+                          PAIR %marketCap %price ;
+                          SOME ;
+                          DIG 4 ;
+                          DUP ;
+                          DUG 5 ;
+                          CAR ;
+                          UPDATE ;
+                          SWAP ;
+                          PAIR ;
+                          SWAP ;
+                          PAIR ;
+                          DUG 2 ;
+                          SWAP ;
+                          DROP } }
+                      { {} } ;
+                   DROP ;
+                   NIL operation } }
+               { { PUSH mutez 5000 ;
+                   AMOUNT ;
+                   COMPARE ;
+                   EQ ;
+                   IF { { NIL operation ;
+                          SENDER ;
+                          CONTRACT %receiveDataFromOrO (pair (int %marketCap) (int %price)) ;
+                          IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                          PUSH mutez 0 ;
+                          DIG 4 ;
+                          DUP ;
+                          DUG 5 ;
+                          CDR ;
+                          CDR ;
+                          DIG 4 ;
+                          DUP ;
+                          DUG 5 ;
+                          GET ;
+                          IF_NONE { { PUSH string "Get-item:23" ; FAILWITH } } {} ;
+                          TRANSFER_TOKENS ;
+                          CONS } }
+                      { { NIL operation ;
+                          SENDER ;
+                          CONTRACT %receiveDataFromOrO (pair (int %marketCap) (int %price)) ;
+                          IF_NONE { { PUSH unit Unit ; FAILWITH } } { {} } ;
+                          AMOUNT ;
+                          PUSH (pair (int %marketCap) (int %price)) (Pair 0 0) ;
+                          TRANSFER_TOKENS ;
+                          CONS } } ;
+                   SWAP ;
+                   DROP } } } ;
+         PAIR } }

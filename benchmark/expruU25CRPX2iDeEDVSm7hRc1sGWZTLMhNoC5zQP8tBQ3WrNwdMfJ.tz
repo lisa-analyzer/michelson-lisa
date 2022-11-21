@@ -1,0 +1,24 @@
+{ storage unit ;
+  parameter (pair (contract %k nat) (nat %x)) ;
+  code { DUP ;
+         CDR ;
+         SWAP ;
+         CAR ;
+         DUP ;
+         CAR ;
+         NIL operation ;
+         SWAP ;
+         PUSH mutez 0 ;
+         PUSH nat 1 ;
+         DIG 4 ;
+         DUP ;
+         DUG 5 ;
+         CDR ;
+         PUSH nat 3 ;
+         MUL ;
+         ADD ;
+         TRANSFER_TOKENS ;
+         CONS ;
+         SWAP ;
+         DROP ;
+         PAIR } }

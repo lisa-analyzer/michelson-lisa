@@ -1,0 +1,49 @@
+{ parameter (or (unit %deposit) (mutez %withdraw)) ;
+  storage (pair (address %guildContract) (address %owner)) ;
+  code { DUP ;
+         CDR ;
+         SWAP ;
+         CAR ;
+         IF_LEFT
+           { DROP ;
+             DUP ;
+             CDR ;
+             SOURCE ;
+             COMPARE ;
+             EQ ;
+             IF {}
+                { PUSH string "WrongCondition: self.data.owner == sp.source" ; FAILWITH } ;
+             DUP ;
+             CAR ;
+             CONTRACT %deposit mutez ;
+             NIL operation ;
+             SWAP ;
+             IF_NONE { PUSH int 29 ; FAILWITH } {} ;
+             AMOUNT ;
+             BALANCE ;
+             TRANSFER_TOKENS ;
+             CONS }
+           { SOURCE ;
+             DIG 2 ;
+             DUP ;
+             DUG 3 ;
+             CDR ;
+             COMPARE ;
+             EQ ;
+             IF {}
+                { PUSH string "WrongCondition: self.data.owner == sp.source" ; FAILWITH } ;
+             NIL operation ;
+             DIG 2 ;
+             DUP ;
+             DUG 3 ;
+             CAR ;
+             CONTRACT %withdraw (pair (mutez %amountRequested) (mutez %balance)) ;
+             IF_NONE { PUSH int 41 ; FAILWITH } {} ;
+             DIG 2 ;
+             DUP ;
+             BALANCE ;
+             SWAP ;
+             PAIR %amountRequested %balance ;
+             TRANSFER_TOKENS ;
+             CONS } ;
+         PAIR } }

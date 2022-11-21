@@ -1,0 +1,736 @@
+{ parameter
+    (or (mutez %default)
+        (or (pair %init_tezos_swap
+               bytes
+               (pair timestamp
+                     (pair bytes
+                           (pair (or :secret_hash_algo (unit %Sha256) (or (unit %Sha512) (unit %Blake2b256)))
+                                 address))))
+            (or (pair %init_erc_swap
+                   bytes
+                   (pair timestamp
+                         (pair bytes
+                               (pair (or :secret_hash_algo (unit %Sha256) (or (unit %Sha512) (unit %Blake2b256)))
+                                     (pair address (pair nat address))))))
+                (or (pair %receiver_spends bytes (pair bytes key_hash))
+                    (pair %sender_refunds bytes key_hash))))) ;
+  storage
+    (pair :storage
+       (big_map
+          bytes
+          (pair :atomic_swap
+             (mutez %amount)
+             (pair (nat %amount_nat)
+                   (pair (option %contract_address address)
+                         (pair (timestamp %created_at)
+                               (pair (timestamp %lock_time)
+                                     (pair (address %receiver)
+                                           (pair (bytes %secret_hash)
+                                                 (pair (or :secret_hash_algo %secret_hash_type
+                                                          (unit %Sha256)
+                                                          (or (unit %Sha512) (unit %Blake2b256)))
+                                                       (pair (address %sender)
+                                                             (pair (option %spent_at timestamp)
+                                                                   (pair (or :swap_state %state
+                                                                            (unit %Initialized)
+                                                                            (or (unit %ReceiverSpent) (unit %SenderRefunded)))
+                                                                         (bytes %uuid)))))))))))))
+       nat) ;
+  code { DUP ;
+         DIP { CDR @storage_slash_1 } ;
+         CAR @parameter_slash_2 ;
+         DUP @parameter ;
+         IF_LEFT
+           { RENAME @to_forward_slash_3 ; PUSH string "Not implemented" ; FAILWITH }
+           { IF_LEFT
+               { RENAME @_uuid_lock_time_secret_hash_secret_hash_type_receiver_slash_5 ;
+                 DIP 2 { DUP @storage } ;
+                 DIG 2 ;
+                 DIP { DUP } ;
+                 SWAP ;
+                 CAR @uuid ;
+                 DIP 2 { DUP } ;
+                 DIG 2 ;
+                 { CDR ; CDR ; CAR @secret_hash } ;
+                 DIP 3 { DUP } ;
+                 DIG 3 ;
+                 { CDR ; CDR ; CDR ; CAR @secret_hash_type } ;
+                 DUP @secret_hash_type ;
+                 IF_LEFT
+                   { DROP ; PUSH nat 32 }
+                   { IF_LEFT { DROP ; PUSH nat 64 } { DROP ; PUSH nat 32 } } ;
+                 RENAME @expected_len ;
+                 DUP @expected_len ;
+                 DIP 3 { DUP @secret_hash } ;
+                 DIG 3 ;
+                 SIZE ;
+                 COMPARE ;
+                 NEQ ;
+                 IF { DUP @expected_len ;
+                      PUSH string "Secret hash length must be " ;
+                      PAIR ;
+                      FAILWITH }
+                    { UNIT } ;
+                 DROP ;
+                 PUSH mutez 0 ;
+                 AMOUNT ;
+                 COMPARE ;
+                 LE ;
+                 IF { PUSH string "Transaction amount must be greater than zero" ; FAILWITH }
+                    { UNIT } ;
+                 DROP ;
+                 DIP 4 { DUP @storage } ;
+                 DIG 4 ;
+                 CDR %version ;
+                 DIP 5 { DUP @storage } ;
+                 DIG 5 ;
+                 CAR %swaps ;
+                 DIP 6 { DUP @storage } ;
+                 DIG 6 ;
+                 CAR %swaps ;
+                 DIP 6 { DUP @uuid } ;
+                 DIG 6 ;
+                 GET ;
+                 IF_NONE
+                   { DIP 5 { DUP @uuid } ;
+                     DIG 5 ;
+                     PUSH (or :swap_state
+                             (unit %Initialized)
+                             (or (unit %ReceiverSpent) (unit %SenderRefunded)))
+                          (Left Unit) ;
+                     PAIR %state %uuid ;
+                     NONE timestamp ;
+                     PAIR %spent_at ;
+                     SOURCE ;
+                     PAIR %sender ;
+                     DIP 4 { DUP @secret_hash_type } ;
+                     DIG 4 ;
+                     PAIR %secret_hash_type ;
+                     DIP 5 { DUP @secret_hash } ;
+                     DIG 5 ;
+                     PAIR %secret_hash ;
+                     DIP 8 { DUP } ;
+                     DIG 8 ;
+                     { CDR ; CDR ; CDR ; CDR @receiver } ;
+                     PAIR %receiver ;
+                     DIP 8 { DUP } ;
+                     DIG 8 ;
+                     { CDR ; CAR @lock_time } ;
+                     PAIR %lock_time ;
+                     NOW ;
+                     PAIR %created_at ;
+                     NONE address ;
+                     PAIR %contract_address ;
+                     PUSH nat 0 ;
+                     PAIR %amount_nat ;
+                     AMOUNT ;
+                     PAIR %amount }
+                   { PUSH string "Swap was initialized already" ; FAILWITH } ;
+                 RENAME @new_swap ;
+                 DIP 6 { DUP @uuid } ;
+                 DIG 6 ;
+                 DIP { SOME } ;
+                 DIP 4 { DROP 6 } ;
+                 UPDATE @new_swaps ;
+                 PAIR %swaps %version ;
+                 NIL operation ;
+                 PAIR }
+               { IF_LEFT
+                   { RENAME @_uuid_lock_time_secret_hash_secret_hash_type_receiver_amount_contract_addr_slash_16 ;
+                     DIP 2 { DUP @storage } ;
+                     DIG 2 ;
+                     DIP { DUP } ;
+                     SWAP ;
+                     CAR @uuid ;
+                     DIP 2 { DUP } ;
+                     DIG 2 ;
+                     { CDR ; CDR ; CAR @secret_hash } ;
+                     DIP 3 { DUP } ;
+                     DIG 3 ;
+                     { CDR ; CDR ; CDR ; CAR @secret_hash_type } ;
+                     DIP 4 { DUP } ;
+                     DIG 4 ;
+                     { CDR ; CDR ; CDR ; CDR ; CDR ; CAR @amount } ;
+                     DIP 5 { DUP } ;
+                     DIG 5 ;
+                     { CDR ; CDR ; CDR ; CDR ; CDR ; CDR @contract_addr } ;
+                     PUSH mutez 0 ;
+                     AMOUNT ;
+                     COMPARE ;
+                     GT ;
+                     IF { PUSH string "Tx amount must be zero" ; FAILWITH } { UNIT } ;
+                     DROP ;
+                     DIP 2 { DUP @secret_hash_type } ;
+                     DIG 2 ;
+                     IF_LEFT
+                       { DROP ; PUSH nat 32 }
+                       { IF_LEFT { DROP ; PUSH nat 64 } { DROP ; PUSH nat 32 } } ;
+                     RENAME @expected_len ;
+                     DUP @expected_len ;
+                     DIP 5 { DUP @secret_hash } ;
+                     DIG 5 ;
+                     SIZE ;
+                     COMPARE ;
+                     NEQ ;
+                     IF { DUP @expected_len ;
+                          PUSH string "Secret hash length must be " ;
+                          PAIR ;
+                          FAILWITH }
+                        { UNIT } ;
+                     DROP ;
+                     PUSH nat 0 ;
+                     DIP 3 { DUP @amount } ;
+                     DIG 3 ;
+                     COMPARE ;
+                     LE ;
+                     IF { PUSH string "ERC amount must be greater than zero" ; FAILWITH }
+                        { UNIT } ;
+                     DROP ;
+                     DIP 6 { DUP @storage } ;
+                     DIG 6 ;
+                     CDR %version ;
+                     DIP 7 { DUP @storage } ;
+                     DIG 7 ;
+                     CAR %swaps ;
+                     DIP 8 { DUP @storage } ;
+                     DIG 8 ;
+                     CAR %swaps ;
+                     DIP 8 { DUP @uuid } ;
+                     DIG 8 ;
+                     GET ;
+                     IF_NONE
+                       { DIP 7 { DUP @uuid } ;
+                         DIG 7 ;
+                         PUSH (or :swap_state
+                                 (unit %Initialized)
+                                 (or (unit %ReceiverSpent) (unit %SenderRefunded)))
+                              (Left Unit) ;
+                         PAIR %state %uuid ;
+                         NONE timestamp ;
+                         PAIR %spent_at ;
+                         SOURCE ;
+                         PAIR %sender ;
+                         DIP 6 { DUP @secret_hash_type } ;
+                         DIG 6 ;
+                         PAIR %secret_hash_type ;
+                         DIP 7 { DUP @secret_hash } ;
+                         DIG 7 ;
+                         PAIR %secret_hash ;
+                         DIP 10 { DUP } ;
+                         DIG 10 ;
+                         { CDR ; CDR ; CDR ; CDR ; CAR @receiver } ;
+                         PAIR %receiver ;
+                         DIP 10 { DUP } ;
+                         DIG 10 ;
+                         { CDR ; CAR @lock_time } ;
+                         PAIR %lock_time ;
+                         NOW ;
+                         PAIR %created_at ;
+                         DIP 4 { DUP @contract_addr } ;
+                         DIG 4 ;
+                         SOME ;
+                         PAIR %contract_address ;
+                         DIP 5 { DUP @amount } ;
+                         DIG 5 ;
+                         PAIR %amount_nat ;
+                         AMOUNT ;
+                         PAIR %amount }
+                       { PUSH string "Swap was initialized already" ; FAILWITH } ;
+                     RENAME @new_swap ;
+                     DIP 8 { DUP @uuid } ;
+                     DIG 8 ;
+                     DIP { SOME } ;
+                     UPDATE @new_swaps ;
+                     PAIR %swaps %version ;
+                     NIL operation ;
+                     DIP 3 { DUP @contract_addr } ;
+                     DIG 3 ;
+                     CONTRACT %transfer (pair address (pair address nat)) ;
+                     IF_NONE
+                       { DIP 3 { DUP @contract_addr } ;
+                         DIG 3 ;
+                         PUSH string "Cannot recover erc contract from:" ;
+                         PAIR ;
+                         FAILWITH }
+                       { DUP @my_contract ;
+                         PUSH mutez 0 ;
+                         DIP 7 { DUP @amount } ;
+                         DIG 7 ;
+                         DIP 3 { DROP } ;
+                         SELF ;
+                         ADDRESS @my_address ;
+                         PAIR ;
+                         SOURCE ;
+                         PAIR ;
+                         TRANSFER_TOKENS } ;
+                     DIP 3 { DROP 8 } ;
+                     RENAME @op ;
+                     CONS ;
+                     PAIR }
+                   { IF_LEFT
+                       { RENAME @_uuid_secret_send_to_slash_32 ;
+                         DIP 2 { DUP @storage } ;
+                         DIG 2 ;
+                         DIP { DUP } ;
+                         SWAP ;
+                         CAR @uuid ;
+                         DIP 2 { DUP } ;
+                         DIG 2 ;
+                         { CDR ; CAR @secret } ;
+                         PUSH nat 32 ;
+                         DIP { DUP @secret } ;
+                         SWAP ;
+                         SIZE ;
+                         COMPARE ;
+                         NEQ ;
+                         IF { PUSH string "Secret length must be 32" ; FAILWITH } { UNIT } ;
+                         DROP ;
+                         PUSH mutez 0 ;
+                         AMOUNT ;
+                         COMPARE ;
+                         GT ;
+                         IF { PUSH string "Tx amount must be zero" ; FAILWITH } { UNIT } ;
+                         DROP ;
+                         DIP 2 { DUP @storage } ;
+                         DIG 2 ;
+                         CAR %swaps ;
+                         DIP 2 { DUP @uuid } ;
+                         DIG 2 ;
+                         GET ;
+                         IF_NONE
+                           { PUSH string "Swap was not initialized" ; FAILWITH }
+                           { DUP @swap ;
+                             { CDR ; CDR ; CDR ; CDR ; CDR ; CDR ; CDR ; CDR ; CDR ; CDR ; CAR %state } ;
+                             IF_LEFT
+                               { RENAME @__slash_38 ; DIP { DUP @swap } ; SWAP ; DIP { DROP } }
+                               { DROP ; PUSH string "Swap must be in initialized state" ; FAILWITH } ;
+                             DIP { DROP } } ;
+                         RENAME @swap ;
+                         DUP @swap ;
+                         { CDR ; CDR ; CDR ; CDR ; CDR ; CAR %receiver } ;
+                         SOURCE ;
+                         COMPARE ;
+                         NEQ ;
+                         IF { PUSH string "Tx must be sent from receiver address" ; FAILWITH }
+                            { UNIT } ;
+                         DROP ;
+                         DUP @swap ;
+                         { CDR ; CDR ; CDR ; CDR ; CDR ; CDR ; CAR %secret_hash } ;
+                         DIP { DUP @swap } ;
+                         SWAP ;
+                         { CDR ; CDR ; CDR ; CDR ; CDR ; CDR ; CDR ; CAR %secret_hash_type } ;
+                         IF_LEFT
+                           { DROP ; DIP 2 { DUP @secret } ; DIG 2 ; SHA256 }
+                           { IF_LEFT
+                               { DROP ; DIP 2 { DUP @secret } ; DIG 2 ; SHA512 }
+                               { DROP ; DIP 2 { DUP @secret } ; DIG 2 ; BLAKE2B } } ;
+                         RENAME @hashed_secret ;
+                         COMPARE ;
+                         NEQ ;
+                         IF { PUSH string "Invalid secret" ; FAILWITH } { UNIT } ;
+                         DROP ;
+                         DUP @swap ;
+                         DUP ;
+                         CAR %amount ;
+                         SWAP ;
+                         CDR ;
+                         DUP ;
+                         CAR %amount_nat ;
+                         SWAP ;
+                         CDR ;
+                         DUP ;
+                         CAR %contract_address ;
+                         SWAP ;
+                         CDR ;
+                         DUP ;
+                         CAR %created_at ;
+                         SWAP ;
+                         CDR ;
+                         DUP ;
+                         CAR %lock_time ;
+                         SWAP ;
+                         CDR ;
+                         DUP ;
+                         CAR %receiver ;
+                         SWAP ;
+                         CDR ;
+                         DUP ;
+                         CAR %secret_hash ;
+                         SWAP ;
+                         CDR ;
+                         DUP ;
+                         CAR %secret_hash_type ;
+                         SWAP ;
+                         CDR ;
+                         DUP ;
+                         CAR %sender ;
+                         SWAP ;
+                         CDR ;
+                         DUP ;
+                         CAR %spent_at ;
+                         SWAP ;
+                         CDR ;
+                         CDR %uuid ;
+                         PUSH (or :swap_state
+                                 (unit %Initialized)
+                                 (or (unit %ReceiverSpent) (unit %SenderRefunded)))
+                              (Right (Left Unit)) ;
+                         PAIR %state %uuid ;
+                         SWAP ;
+                         PAIR %spent_at ;
+                         SWAP ;
+                         PAIR %sender ;
+                         SWAP ;
+                         PAIR %secret_hash_type ;
+                         SWAP ;
+                         PAIR %secret_hash ;
+                         SWAP ;
+                         PAIR %receiver ;
+                         SWAP ;
+                         PAIR %lock_time ;
+                         SWAP ;
+                         PAIR %created_at ;
+                         SWAP ;
+                         PAIR %contract_address ;
+                         SWAP ;
+                         PAIR %amount_nat ;
+                         SWAP ;
+                         PAIR @swap %amount ;
+                         DUP ;
+                         CAR %amount ;
+                         SWAP ;
+                         CDR ;
+                         DUP ;
+                         CAR %amount_nat ;
+                         SWAP ;
+                         CDR ;
+                         DUP ;
+                         CAR %contract_address ;
+                         SWAP ;
+                         CDR ;
+                         DUP ;
+                         CAR %created_at ;
+                         SWAP ;
+                         CDR ;
+                         DUP ;
+                         CAR %lock_time ;
+                         SWAP ;
+                         CDR ;
+                         DUP ;
+                         CAR %receiver ;
+                         SWAP ;
+                         CDR ;
+                         DUP ;
+                         CAR %secret_hash ;
+                         SWAP ;
+                         CDR ;
+                         DUP ;
+                         CAR %secret_hash_type ;
+                         SWAP ;
+                         CDR ;
+                         DUP ;
+                         CAR %sender ;
+                         SWAP ;
+                         CDR ;
+                         CDR ;
+                         NOW @timestamp ;
+                         SOME ;
+                         PAIR %spent_at ;
+                         SWAP ;
+                         PAIR %sender ;
+                         SWAP ;
+                         PAIR %secret_hash_type ;
+                         SWAP ;
+                         PAIR %secret_hash ;
+                         SWAP ;
+                         PAIR %receiver ;
+                         SWAP ;
+                         PAIR %lock_time ;
+                         SWAP ;
+                         PAIR %created_at ;
+                         SWAP ;
+                         PAIR %contract_address ;
+                         SWAP ;
+                         PAIR %amount_nat ;
+                         SWAP ;
+                         PAIR @swap %amount ;
+                         DIP 4 { DUP @storage } ;
+                         DIG 4 ;
+                         CDR %version ;
+                         DIP 5 { DUP @storage } ;
+                         DIG 5 ;
+                         CAR %swaps ;
+                         DIP 2 { DUP @swap } ;
+                         DIG 2 ;
+                         SOME ;
+                         DIP 6 { DUP @uuid } ;
+                         DIG 6 ;
+                         UPDATE @new_swaps ;
+                         PAIR %swaps %version ;
+                         NIL operation ;
+                         DIP 2 { DUP @swap } ;
+                         DIG 2 ;
+                         { CDR ; CDR ; CAR %contract_address } ;
+                         IF_NONE
+                           { DIP 7 { DUP } ;
+                             DIG 7 ;
+                             { CDR ; CDR @send_to } ;
+                             IMPLICIT_ACCOUNT ;
+                             DIP 3 { DUP @swap } ;
+                             DIG 3 ;
+                             CAR %amount ;
+                             UNIT ;
+                             TRANSFER_TOKENS }
+                           { DUP @contract_addr ;
+                             CONTRACT %transfer (pair address (pair address nat)) ;
+                             IF_NONE
+                               { DUP @contract_addr ;
+                                 PUSH string "Cannot recover erc contract from:" ;
+                                 PAIR ;
+                                 FAILWITH }
+                               { DUP @my_contract ;
+                                 PUSH mutez 0 ;
+                                 DIP 6 { DUP @swap } ;
+                                 DIG 6 ;
+                                 { CDR ; CAR %amount_nat } ;
+                                 DIP 7 { DUP @swap } ;
+                                 DIG 7 ;
+                                 DIP 4 { DROP } ;
+                                 { CDR ; CDR ; CDR ; CDR ; CDR ; CAR %receiver } ;
+                                 PAIR ;
+                                 SELF ;
+                                 ADDRESS @my_address ;
+                                 PAIR ;
+                                 TRANSFER_TOKENS } ;
+                             DIP { DROP } } ;
+                         DIP 3 { DROP 6 } ;
+                         RENAME @op ;
+                         CONS ;
+                         PAIR }
+                       { RENAME @_uuid_send_to_slash_49 ;
+                         DIP 2 { DUP @storage } ;
+                         DIG 2 ;
+                         DIP { DUP } ;
+                         SWAP ;
+                         CAR @uuid ;
+                         PUSH mutez 0 ;
+                         AMOUNT ;
+                         COMPARE ;
+                         GT ;
+                         IF { PUSH string "Tx amount must be zero" ; FAILWITH } { UNIT } ;
+                         DROP ;
+                         DIP { DUP @storage } ;
+                         SWAP ;
+                         CAR %swaps ;
+                         DIP { DUP @uuid } ;
+                         SWAP ;
+                         GET ;
+                         IF_NONE
+                           { PUSH string "Swap was not initialized" ; FAILWITH }
+                           { DUP @swap ;
+                             { CDR ; CDR ; CDR ; CDR ; CDR ; CDR ; CDR ; CDR ; CDR ; CDR ; CAR %state } ;
+                             IF_LEFT
+                               { RENAME @__slash_54 ; DIP { DUP @swap } ; SWAP ; DIP { DROP } }
+                               { DROP ; PUSH string "Swap must be in initialized state" ; FAILWITH } ;
+                             DIP { DROP } } ;
+                         RENAME @swap ;
+                         NOW @timestamp ;
+                         DIP { DUP @swap } ;
+                         SWAP ;
+                         { CDR ; CDR ; CDR ; CDR ; CAR %lock_time } ;
+                         DIP { DUP @timestamp } ;
+                         SWAP ;
+                         COMPARE ;
+                         LE ;
+                         IF { PUSH string "Too early to refund" ; FAILWITH } { UNIT } ;
+                         DROP ;
+                         DIP { DUP @swap } ;
+                         SWAP ;
+                         { CDR ; CDR ; CDR ; CDR ; CDR ; CDR ; CDR ; CDR ; CAR %sender } ;
+                         SOURCE ;
+                         COMPARE ;
+                         NEQ ;
+                         IF { PUSH string "Tx must be sent from sender address" ; FAILWITH }
+                            { UNIT } ;
+                         DROP ;
+                         DIP { DUP @swap } ;
+                         SWAP ;
+                         DUP ;
+                         CAR %amount ;
+                         SWAP ;
+                         CDR ;
+                         DUP ;
+                         CAR %amount_nat ;
+                         SWAP ;
+                         CDR ;
+                         DUP ;
+                         CAR %contract_address ;
+                         SWAP ;
+                         CDR ;
+                         DUP ;
+                         CAR %created_at ;
+                         SWAP ;
+                         CDR ;
+                         DUP ;
+                         CAR %lock_time ;
+                         SWAP ;
+                         CDR ;
+                         DUP ;
+                         CAR %receiver ;
+                         SWAP ;
+                         CDR ;
+                         DUP ;
+                         CAR %secret_hash ;
+                         SWAP ;
+                         CDR ;
+                         DUP ;
+                         CAR %secret_hash_type ;
+                         SWAP ;
+                         CDR ;
+                         DUP ;
+                         CAR %sender ;
+                         SWAP ;
+                         CDR ;
+                         DUP ;
+                         CAR %spent_at ;
+                         SWAP ;
+                         CDR ;
+                         CDR %uuid ;
+                         PUSH (or :swap_state
+                                 (unit %Initialized)
+                                 (or (unit %ReceiverSpent) (unit %SenderRefunded)))
+                              (Right (Right Unit)) ;
+                         PAIR %state %uuid ;
+                         SWAP ;
+                         PAIR %spent_at ;
+                         SWAP ;
+                         PAIR %sender ;
+                         SWAP ;
+                         PAIR %secret_hash_type ;
+                         SWAP ;
+                         PAIR %secret_hash ;
+                         SWAP ;
+                         PAIR %receiver ;
+                         SWAP ;
+                         PAIR %lock_time ;
+                         SWAP ;
+                         PAIR %created_at ;
+                         SWAP ;
+                         PAIR %contract_address ;
+                         SWAP ;
+                         PAIR %amount_nat ;
+                         SWAP ;
+                         PAIR @swap %amount ;
+                         DUP ;
+                         CAR %amount ;
+                         SWAP ;
+                         CDR ;
+                         DUP ;
+                         CAR %amount_nat ;
+                         SWAP ;
+                         CDR ;
+                         DUP ;
+                         CAR %contract_address ;
+                         SWAP ;
+                         CDR ;
+                         DUP ;
+                         CAR %created_at ;
+                         SWAP ;
+                         CDR ;
+                         DUP ;
+                         CAR %lock_time ;
+                         SWAP ;
+                         CDR ;
+                         DUP ;
+                         CAR %receiver ;
+                         SWAP ;
+                         CDR ;
+                         DUP ;
+                         CAR %secret_hash ;
+                         SWAP ;
+                         CDR ;
+                         DUP ;
+                         CAR %secret_hash_type ;
+                         SWAP ;
+                         CDR ;
+                         DUP ;
+                         CAR %sender ;
+                         SWAP ;
+                         CDR ;
+                         CDR ;
+                         DIP 10 { DUP @timestamp } ;
+                         DIG 10 ;
+                         SOME ;
+                         PAIR %spent_at ;
+                         SWAP ;
+                         PAIR %sender ;
+                         SWAP ;
+                         PAIR %secret_hash_type ;
+                         SWAP ;
+                         PAIR %secret_hash ;
+                         SWAP ;
+                         PAIR %receiver ;
+                         SWAP ;
+                         PAIR %lock_time ;
+                         SWAP ;
+                         PAIR %created_at ;
+                         SWAP ;
+                         PAIR %contract_address ;
+                         SWAP ;
+                         PAIR %amount_nat ;
+                         SWAP ;
+                         PAIR @swap %amount ;
+                         DIP 4 { DUP @storage } ;
+                         DIG 4 ;
+                         CDR %version ;
+                         DIP 5 { DUP @storage } ;
+                         DIG 5 ;
+                         CAR %swaps ;
+                         DIP 2 { DUP @swap } ;
+                         DIG 2 ;
+                         SOME ;
+                         DIP 6 { DUP @uuid } ;
+                         DIG 6 ;
+                         UPDATE @new_swaps ;
+                         PAIR %swaps %version ;
+                         NIL operation ;
+                         DIP 2 { DUP @swap } ;
+                         DIG 2 ;
+                         { CDR ; CDR ; CAR %contract_address } ;
+                         IF_NONE
+                           { DIP 7 { DUP } ;
+                             DIG 7 ;
+                             CDR @send_to ;
+                             IMPLICIT_ACCOUNT ;
+                             DIP 3 { DUP @swap } ;
+                             DIG 3 ;
+                             CAR %amount ;
+                             UNIT ;
+                             TRANSFER_TOKENS }
+                           { DUP @contract_addr ;
+                             CONTRACT %transfer (pair address (pair address nat)) ;
+                             IF_NONE
+                               { DUP @contract_addr ;
+                                 PUSH string "Cannot recover erc contract from:" ;
+                                 PAIR ;
+                                 FAILWITH }
+                               { DUP @my_contract ;
+                                 PUSH mutez 0 ;
+                                 DIP 6 { DUP @swap } ;
+                                 DIG 6 ;
+                                 { CDR ; CAR %amount_nat } ;
+                                 DIP 7 { DUP @swap } ;
+                                 DIG 7 ;
+                                 DIP 4 { DROP } ;
+                                 { CDR ; CDR ; CDR ; CDR ; CDR ; CDR ; CDR ; CDR ; CAR %sender } ;
+                                 PAIR ;
+                                 SELF ;
+                                 ADDRESS @my_address ;
+                                 PAIR ;
+                                 TRANSFER_TOKENS } ;
+                             DIP { DROP } } ;
+                         DIP 3 { DROP 6 } ;
+                         RENAME @op ;
+                         CONS ;
+                         PAIR } } } } ;
+         DIP { DROP 2 } } }

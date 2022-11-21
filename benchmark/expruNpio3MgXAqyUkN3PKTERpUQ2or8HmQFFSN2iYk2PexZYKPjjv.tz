@@ -1,0 +1,25 @@
+{ parameter (or (unit %receive) (unit %set)) ;
+  storage mutez ;
+  code { DUP ;
+         CAR ;
+         IF_LEFT
+           { SENDER ;
+             CONTRACT unit ;
+             IF_NONE { PUSH string "bad address for get_contract" ; FAILWITH } {} ;
+             DUP ;
+             AMOUNT ;
+             UNIT ;
+             TRANSFER_TOKENS ;
+             DIG 3 ;
+             DUP ;
+             DUG 4 ;
+             CDR ;
+             NIL operation ;
+             DIG 2 ;
+             DUP ;
+             DUG 3 ;
+             CONS ;
+             PAIR ;
+             DIP { DROP 3 } }
+           { BALANCE ; DUP ; NIL operation ; PAIR ; DIP { DROP 2 } } ;
+         DIP { DROP } } }

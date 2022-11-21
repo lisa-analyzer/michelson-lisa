@@ -1,0 +1,14 @@
+{ parameter (unit %default) ;
+  storage (pair (address %fa2) (list (pair address (pair address (pair nat nat))))) ;
+  code { CDR ;
+         DUP ;
+         DIP { { { DUP ; CAR ; DIP { CDR } } } ;
+               CONTRACT (list (pair address (pair address (pair nat nat)))) ;
+               { IF_NONE { { UNIT ; FAILWITH } } {} } ;
+               SWAP ;
+               DIP { PUSH mutez 0 } ;
+               TRANSFER_TOKENS ;
+               DIP { NIL operation } ;
+               CONS } ;
+         SWAP ;
+         PAIR } }
