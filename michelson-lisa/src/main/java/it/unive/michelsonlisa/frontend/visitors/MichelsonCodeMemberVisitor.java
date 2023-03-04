@@ -963,6 +963,8 @@ public class MichelsonCodeMemberVisitor extends MichelsonParserBaseVisitor<Objec
 			e = visitGet_instr(ctx.get_instr());
 		else if (ctx.update_instr() != null)
 			e = visitUpdate_instr(ctx.update_instr());
+		else if (ctx.get_and_update_instr() != null)
+			e = visitGetAndUpdate_instr(ctx.get_and_update_instr());
 		else if (ctx.if_instr() != null)
 			return visitIf_instr(ctx.if_instr());
 		else if (ctx.loop_instr() != null)
@@ -971,6 +973,8 @@ public class MichelsonCodeMemberVisitor extends MichelsonParserBaseVisitor<Objec
 			return visitLoop_left_instr(ctx.loop_left_instr());
 		else if (ctx.lambda_instr() != null)
 			e = visitLambda_instr(ctx.lambda_instr());
+		else if (ctx.lambda_rec_instr() != null)
+			e = visitLambda_rec_instr(ctx.lambda_rec_instr());
 		else if (ctx.dip_instr() != null)
 			return visitDip_instr(ctx.dip_instr());
 		else if (ctx.unpack_instr() != null)
@@ -2324,8 +2328,7 @@ public class MichelsonCodeMemberVisitor extends MichelsonParserBaseVisitor<Objec
 		}
 	}
 
-	public Expression visitUpdate_instr(
-			Update_instrContext ctx) {
+	public Expression visitUpdate_instr(Update_instrContext ctx) {
 		
 		
 		if (ctx.NAL_CONST() == null) {
@@ -2341,7 +2344,13 @@ public class MichelsonCodeMemberVisitor extends MichelsonParserBaseVisitor<Objec
 		}
 
 	}
-
+	
+	
+	public Expression  visitGetAndUpdate_instr(Get_and_update_instrContext ctx) {
+		
+		throw new UnsupportedOperationException("Unsupported instruction: " + "GET_AND_UPDATE");
+	}
+	
 	public Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> visitIf_instr(If_instrContext ctx) {
 
 		NodeList<CFG, Statement, Edge> nL = new NodeList<>(SEQUENTIAL_SINGLETON);
@@ -2637,6 +2646,11 @@ public class MichelsonCodeMemberVisitor extends MichelsonParserBaseVisitor<Objec
 		return lambda;
 	}
 
+	public Expression visitLambda_rec_instr(Lambda_rec_instrContext ctx) {
+		
+		throw new UnsupportedOperationException("Unsupported instruction: " + "LAMBDA_REC");
+	}
+	
 	public Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> visitDip_instr(Dip_instrContext ctx) {
 
 		int n = 1;

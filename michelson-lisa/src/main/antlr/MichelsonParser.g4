@@ -61,7 +61,9 @@ instruction :
   | map_instr
   | get_instr
   | update_instr
+  | get_and_update_instr
   | lambda_instr
+  | lambda_rec_instr
   | unpack_instr
   | contract_instr
   | sapling_empty_state
@@ -163,10 +165,12 @@ map_instr : MAP VAR_ANNOTATION* block;
 iter_instr : ITER block;
 get_instr : GET VAR_ANNOTATION* NAL_CONST?;
 update_instr : UPDATE VAR_ANNOTATION* NAL_CONST?;
+get_and_update_instr: GET_AND_UPDATE VAR_ANNOTATION*;
 if_instr : IF block block;
 loop_instr : LOOP block;
 loop_left_instr :  LOOP_LEFT block;
 lambda_instr : LAMBDA VAR_ANNOTATION* type type block;
+lambda_rec_instr : LAMBDA_REC VAR_ANNOTATION* type type block;
 dip_instr : DIP NAL_CONST? block;
 unpack_instr : UNPACK VAR_ANNOTATION* type;
 contract_instr : CONTRACT (FIELD_ANNOTATION | WVAR_ANNOTATION)? type;
