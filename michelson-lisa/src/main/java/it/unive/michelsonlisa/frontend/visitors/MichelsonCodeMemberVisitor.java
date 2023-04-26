@@ -1902,7 +1902,7 @@ public class MichelsonCodeMemberVisitor extends MichelsonParserBaseVisitor<Objec
 			nat = (MichelsonNaturalData) visitNatConst(ctx.NAL_CONST());
 			e = new MichelsonUnpair(cfg, filepath, MichelsonFileUtils.getLine(ctx), MichelsonFileUtils.getCol(ctx),
 					buildNExpressionArray(nat));
-			//FIXME: c'è un bug perchè se faccio la unpair di N poi devo aggiungere N allo stack e non 2 valori e basta
+			//FIXME: c'ï¿½ un bug perchï¿½ se faccio la unpair di N poi devo aggiungere N allo stack e non 2 valori e basta
 		}
 		
 		NodeList<CFG, Statement, Edge> nL = new NodeList<>(SEQUENTIAL_SINGLETON);
@@ -1913,7 +1913,7 @@ public class MichelsonCodeMemberVisitor extends MichelsonParserBaseVisitor<Objec
 		mapAssignamentNode.put((VariableRef) left.getLeft(), left);
 		mapAssignamentNode.put((VariableRef) right.getLeft(), right);
 
-		//FIXME: c'è un bug perchè se faccio la unpair di N poi devo aggiungere N allo stack e non 2 valori e basta
+		//FIXME: c'ï¿½ un bug perchï¿½ se faccio la unpair di N poi devo aggiungere N allo stack e non 2 valori e basta
 		List<Object> list = nat != null ? inputTracker.getUnpair(nat.getValue().intValueExact()) : inputTracker.getUnpair();
 		checkPossibleInput((VariableRef)left.getLeft(), list.get(0));
 		checkPossibleInput((VariableRef)right.getLeft(), list.get(1));
@@ -2629,11 +2629,8 @@ public class MichelsonCodeMemberVisitor extends MichelsonParserBaseVisitor<Objec
 	public Expression visitLambda_instr(
 			Lambda_instrContext ctx) {
 		
-
-		Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> block = null;
-		
 		MichelsonLambdaVisitor visitor = new MichelsonLambdaVisitor(filepath, descriptor, countLambda);
-		block = visitor.visitLambdaMember(ctx);
+		Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> block = visitor.visitLambdaMember(ctx);
 		
 		MichelsonLambda lambda = new MichelsonLambda(cfg, filepath, MichelsonFileUtils.getLine(ctx), MichelsonFileUtils.getCol(ctx), visitor.getParamType(), visitor.getRetType());
 		

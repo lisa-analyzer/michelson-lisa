@@ -312,8 +312,7 @@ public class MichelsonLambdaVisitor extends MichelsonParserBaseVisitor<Object> {
 	}
 
 	private void simplifyCFG() {
-		
-		for( Statement st : nodeList.getExits())
+		for (Statement st : nodeList.getExits())
 			if((st instanceof NoOp ) && !nodeList.getIngoingEdges(st).isEmpty()) {
 				Ret ret = new Ret(cfg, descriptor.getLocation());
 				if (!st.stopsExecution() && nodeList.followersOf(st).isEmpty())
@@ -321,7 +320,6 @@ public class MichelsonLambdaVisitor extends MichelsonParserBaseVisitor<Object> {
 				nodeList.addEdge(new SequentialEdge(st, ret));
 			}
 		cfg.simplify();
-		
 	}
 
 	//-------------------------------DATA------------------------------------------------
@@ -527,7 +525,7 @@ public class MichelsonLambdaVisitor extends MichelsonParserBaseVisitor<Object> {
 		if (value != null && value.getText() != null) {
 			SourceCodeLocation location = MichelsonFileUtils.locationOf(filepath, ctx);
 			// TODO: should be use something to adopt an infinite arithmetic as Michelson
-			return new MichelsonIntegerData(cfg, location, new Integer(ctx.MINUS() != null ? "-" + value.getText() : value.getText()));
+			return new MichelsonIntegerData(cfg, location, Integer.parseInt(ctx.MINUS() != null ? "-" + value.getText() : value.getText()));
 		}
 
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
@@ -2657,17 +2655,16 @@ public class MichelsonLambdaVisitor extends MichelsonParserBaseVisitor<Object> {
 		return new MichelsonContract(cfg, MichelsonFileUtils.locationOf(filepath, ctx), type.getValue(), address);
 	}
 
-	private int counterCreateContract = 0;
 	public Expression visitCreate_contract_instr(
 			Create_contract_instrContext ctx) {
 
 		List<VariableRef> values = symbolicStacks.get(currentStack).pop(3);
 		MichelsonCreateContract create = new MichelsonCreateContract(cfg, MichelsonFileUtils.locationOf(filepath, ctx), values.get(0), values.get(1), values.get(2));
 		
-		ContractContext contract = ctx.contract(); 		
-		ParameterContext parameter = contract.parameter();
-		StorageContext storage = contract.storage();
-		CodeContext code = contract.code();
+//		ContractContext contract = ctx.contract(); 		
+//		ParameterContext parameter = contract.parameter();
+//		StorageContext storage = contract.storage();
+//		CodeContext code = contract.code();
 		
 	/*	
 	    MichelsonLambdaVisitor contractVisitor = new MichelsonLambdaVisitor(filepath, new CFGDescriptor(MichelsonFileUtils.locationOf(filepath, contract), new Unit("") {}, false, "CREATE_CONTRACT_"+counterCreateContract));

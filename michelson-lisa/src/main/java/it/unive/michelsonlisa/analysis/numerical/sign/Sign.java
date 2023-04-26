@@ -29,7 +29,7 @@ import it.unive.michelsonlisa.symblic.value.operator.binary.PhiOperator;
 /**
  * Sign Domain that handle also the PhiOperator
  */
-public class Sign extends BaseNonRelationalValueDomain<Sign> {
+public class Sign implements BaseNonRelationalValueDomain<Sign> {
 
 	private static final Sign POS = new Sign((byte) 4);
 	private static final Sign NEG = new Sign((byte) 3);
@@ -266,64 +266,64 @@ public class Sign extends BaseNonRelationalValueDomain<Sign> {
 	@Override
 	public ValueEnvironment<Sign> assumeBinaryExpression(
 			ValueEnvironment<Sign> environment, BinaryOperator operator, ValueExpression left,
-			ValueExpression right, ProgramPoint pp) throws SemanticException {
+			ValueExpression right, ProgramPoint src, ProgramPoint dest) throws SemanticException {
 		if (operator == ComparisonEq.INSTANCE)
 			if (left instanceof Identifier)
-				environment = environment.assign((Identifier) left, right, pp);
+				environment = environment.assign((Identifier) left, right, src);
 			else if (right instanceof Identifier)
-				environment = environment.assign((Identifier) right, left, pp);
+				environment = environment.assign((Identifier) right, left, src);
 			else
 				return environment;
 		else if (operator == ComparisonGe.INSTANCE)
 			if (left instanceof Identifier) {
-				Sign rightSign = eval(right, environment, pp);
+				Sign rightSign = eval(right, environment, src);
 				if (rightSign.isPositive())
-					environment = environment.assign((Identifier) left, right, pp);
+					environment = environment.assign((Identifier) left, right, src);
 			} else if (right instanceof Identifier) {
-				Sign leftSign = eval(left, environment, pp);
+				Sign leftSign = eval(left, environment, src);
 				if (leftSign.isNegative())
-					environment = environment.assign((Identifier) right, left, pp);
+					environment = environment.assign((Identifier) right, left, src);
 			} else
 				return environment;
 		else if (operator == ComparisonLe.INSTANCE)
 			if (left instanceof Identifier) {
-				Sign rightSign = eval(right, environment, pp);
+				Sign rightSign = eval(right, environment, src);
 				if (rightSign.isNegative())
-					environment = environment.assign((Identifier) left, right, pp);
+					environment = environment.assign((Identifier) left, right, src);
 			} else if (right instanceof Identifier) {
-				Sign leftSign = eval(left, environment, pp);
+				Sign leftSign = eval(left, environment, src);
 				if (leftSign.isPositive())
-					environment = environment.assign((Identifier) right, left, pp);
+					environment = environment.assign((Identifier) right, left, src);
 			} else
 				return environment;
 		else if (operator == ComparisonLt.INSTANCE)
 			if (left instanceof Identifier) {
-				Sign rightSign = eval(right, environment, pp);
+				Sign rightSign = eval(right, environment, src);
 				if (rightSign.isNegative() || rightSign.isZero())
 					// x < 0/-
 					environment = environment.assign((Identifier) left,
-							new Constant(right.getStaticType(), -1, right.getCodeLocation()), pp);
+							new Constant(right.getStaticType(), -1, right.getCodeLocation()), src);
 			} else if (right instanceof Identifier) {
-				Sign leftSign = eval(left, environment, pp);
+				Sign leftSign = eval(left, environment, src);
 				if (leftSign.isPositive() || leftSign.isZero())
 					// 0/+ < x
 					environment = environment.assign((Identifier) right,
-							new Constant(left.getStaticType(), 1, left.getCodeLocation()), pp);
+							new Constant(left.getStaticType(), 1, left.getCodeLocation()), src);
 			} else
 				return environment;
 		else if (operator == ComparisonGt.INSTANCE)
 			if (left instanceof Identifier) {
-				Sign rightSign = eval(right, environment, pp);
+				Sign rightSign = eval(right, environment, src);
 				if (rightSign.isPositive() || rightSign.isZero())
 					// x > +/0
 					environment = environment.assign((Identifier) left,
-							new Constant(right.getStaticType(), 1, right.getCodeLocation()), pp);
+							new Constant(right.getStaticType(), 1, right.getCodeLocation()), src);
 			} else if (right instanceof Identifier) {
-				Sign leftSign = eval(left, environment, pp);
+				Sign leftSign = eval(left, environment, src);
 				if (leftSign.isNegative() || leftSign.isZero())
 					// -/0 > x
 					environment = environment.assign((Identifier) right,
-							new Constant(left.getStaticType(), -1, right.getCodeLocation()), pp);
+							new Constant(left.getStaticType(), -1, right.getCodeLocation()), src);
 			} else
 				return environment;
 

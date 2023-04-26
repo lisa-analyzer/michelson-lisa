@@ -6,8 +6,6 @@ import it.unive.lisa.analysis.nonrelational.value.BaseNonRelationalValueDomain;
 import it.unive.lisa.analysis.representation.DomainRepresentation;
 import it.unive.lisa.analysis.representation.StringRepresentation;
 import it.unive.lisa.program.annotations.Annotation;
-import it.unive.lisa.program.annotations.matcher.AnnotationMatcher;
-import it.unive.lisa.program.annotations.matcher.BasicAnnotationMatcher;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.program.cfg.statement.Assignment;
 import it.unive.lisa.symbolic.SymbolicExpression;
@@ -22,7 +20,7 @@ import it.unive.michelsonlisa.cfg.statement.instrumentation.MichelsonParameterAn
 /**
  * The taint domain, used for the taint analysis.
  */
-public class TaintDomain extends BaseNonRelationalValueDomain<TaintDomain> {
+public class TaintDomain implements BaseNonRelationalValueDomain<TaintDomain> {
 
 	/**
 	 * The annotation Tainted.
@@ -30,19 +28,9 @@ public class TaintDomain extends BaseNonRelationalValueDomain<TaintDomain> {
 	public static final Annotation TAINTED_ANNOTATION = new Annotation("lisa.taint.Tainted");
 
 	/**
-	 * The matcher for the Tainted annotation.
-	 */
-	private static final AnnotationMatcher TAINTED_MATCHER = new BasicAnnotationMatcher(TAINTED_ANNOTATION);
-
-	/**
 	 * The annotation Clean.
 	 */
 	public static final Annotation CLEAN_ANNOTATION = new Annotation("lisa.taint.Clean");
-
-	/**
-	 * The matcher for the Clean annotation.
-	 */
-	private static final AnnotationMatcher CLEAN_MATCHER = new BasicAnnotationMatcher(CLEAN_ANNOTATION);
 
 	/**
 	 * The top state.
@@ -67,7 +55,8 @@ public class TaintDomain extends BaseNonRelationalValueDomain<TaintDomain> {
 	private final byte v;
 
 	/**
-	 * Builds a new instance of taint, referring to the top element of the lattice.
+	 * Builds a new instance of taint, referring to the top element of the
+	 * lattice.
 	 */
 	public TaintDomain() {
 		this((byte) 3);
@@ -76,14 +65,14 @@ public class TaintDomain extends BaseNonRelationalValueDomain<TaintDomain> {
 	private TaintDomain(byte v) {
 		this.v = v;
 	}
-		
+
 	@Override
 	public TaintDomain variable(Identifier id, ProgramPoint pp) throws SemanticException {
 
-		if(pp instanceof Assignment && ((Assignment) pp).getRight() instanceof MichelsonParameterAndStore) {
+		if (pp instanceof Assignment && ((Assignment) pp).getRight() instanceof MichelsonParameterAndStore) {
 			return TAINTED;
 		}
-		return super.variable(id, pp);
+		return BaseNonRelationalValueDomain.super.variable(id, pp);
 	}
 
 	@Override
@@ -111,7 +100,7 @@ public class TaintDomain extends BaseNonRelationalValueDomain<TaintDomain> {
 	public boolean isTainted() {
 		return this == TAINTED;
 	}
-	
+
 	public boolean isClean() {
 		return this == CLEAN;
 	}
@@ -137,7 +126,7 @@ public class TaintDomain extends BaseNonRelationalValueDomain<TaintDomain> {
 	@Override
 	public TaintDomain evalBinaryExpression(BinaryOperator operator, TaintDomain left, TaintDomain right,
 			ProgramPoint pp) throws SemanticException {
-		
+
 		if (left == TAINTED || right == TAINTED)
 			return TAINTED;
 
@@ -161,7 +150,7 @@ public class TaintDomain extends BaseNonRelationalValueDomain<TaintDomain> {
 
 	@Override
 	public TaintDomain evalPushAny(PushAny pushAny, ProgramPoint pp) throws SemanticException {
- 		return TAINTED;
+		return TAINTED;
 	}
 
 	@Override

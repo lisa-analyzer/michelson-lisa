@@ -7,7 +7,6 @@ import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
 import it.unive.lisa.type.NumericType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
-import it.unive.lisa.util.collections.externalSet.ExternalSet;
 
 public class PhiOperator implements AdditionOperator, BinaryOperator {
 

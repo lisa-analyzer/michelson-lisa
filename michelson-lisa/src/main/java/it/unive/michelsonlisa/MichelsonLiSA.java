@@ -3,7 +3,7 @@ package it.unive.michelsonlisa;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.HashSet;
+import java.nio.charset.StandardCharsets;
 
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.apache.commons.cli.CommandLine;
@@ -19,13 +19,13 @@ import org.apache.logging.log4j.Logger;
 
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSA;
-import it.unive.lisa.LiSAConfiguration;
-import it.unive.lisa.LiSAConfiguration.GraphType;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.MonolithicHeap;
 import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.types.InferredTypes;
+import it.unive.lisa.conf.LiSAConfiguration;
+import it.unive.lisa.conf.LiSAConfiguration.GraphType;
 import it.unive.lisa.outputs.json.JsonReport;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.util.file.FileManager;
@@ -51,15 +51,15 @@ public class MichelsonLiSA {
 		Option output = new Option("o", "output", true, "output file path");
 		output.setRequired(true);
 		options.addOption(output);
-		
+
 		Option analysis = new Option("a", "analysis", true, "the analysis to perform (sign, ucci)");
 		output.setRequired(true);
 		options.addOption(analysis);
-		
+
 		Option dump_opt = new Option("d", "dump", false, "dump the analysis");
 		dump_opt.setRequired(false);
 		options.addOption(dump_opt);
-		
+
 		CommandLineParser parser = new DefaultParser();
 		HelpFormatter formatter = new HelpFormatter();
 		CommandLine cmd = null;
@@ -76,40 +76,41 @@ public class MichelsonLiSA {
 		String filePath = cmd.getOptionValue("input");
 
 		String outputDir = cmd.getOptionValue("output");
-		
+
 		String analysisChoice = cmd.getOptionValue("analysis");
-		
+
 		LiSAConfiguration conf = new LiSAConfiguration();
 
-		conf.workdir =outputDir;
+		conf.workdir = outputDir;
 		conf.jsonOutput = true;
-		
+		conf.optimize = false;// need to set conf.hotspots if optimization is turned on
+
 		conf.analysisGraphs = cmd.hasOption(dump_opt) ? GraphType.HTML_WITH_SUBNODES : GraphType.NONE;
-		
+
 		AnnotationLoader annotationLoader = null;
-		
-		switch(analysisChoice) {
-	
-			case "sign":
-				conf.abstractState = new SimpleAbstractState<>(
-						new MonolithicHeap(),
-						new ValueEnvironment<>(new Sign()),
-						new TypeEnvironment<>(new InferredTypes()));
-				break;
-			
-			case "ucci": 
-				if(!containSinks(filePath))
-					exit(conf);
-				conf.abstractState = new SimpleAbstractState<>(
-						new MonolithicHeap(),
-						new ValueEnvironment<>(new TaintDomain()),
-						new TypeEnvironment<>(new InferredTypes()));
-				conf.semanticChecks.add(new TaintChecker());
-				
-				annotationLoader = new AnnotationLoader(new CrossContractInvokingAnnotationSet());
-				break;
+
+		switch (analysisChoice) {
+
+		case "sign":
+			conf.abstractState = new SimpleAbstractState<>(
+					new MonolithicHeap(),
+					new ValueEnvironment<>(new Sign()),
+					new TypeEnvironment<>(new InferredTypes()));
+			break;
+
+		case "ucci":
+			if (!containSinks(filePath))
+				exit(conf);
+			conf.abstractState = new SimpleAbstractState<>(
+					new MonolithicHeap(),
+					new ValueEnvironment<>(new TaintDomain()),
+					new TypeEnvironment<>(new InferredTypes()));
+			conf.semanticChecks.add(new TaintChecker());
+
+			annotationLoader = new AnnotationLoader(new CrossContractInvokingAnnotationSet());
+			break;
 		}
-		
+
 		Program program = null;
 
 		File theDir = new File(outputDir);
@@ -119,7 +120,7 @@ public class MichelsonLiSA {
 		try {
 
 			program = MichelsonFrontEnd.processFile(filePath);
-			if(annotationLoader != null)
+			if (annotationLoader != null)
 				annotationLoader.load(program);
 		} catch (ParseCancellationException e) {
 			// a parsing error occurred
@@ -154,14 +155,14 @@ public class MichelsonLiSA {
 	}
 
 	private static void exit(LiSAConfiguration conf) {
-		
-		if(conf.jsonOutput) {
+
+		if (conf.jsonOutput) {
 			LOG.info("Dumping reported warnings to 'report.json'");
 			FileManager fileManager = new FileManager(conf.workdir);
-			
-			JsonReport report = new JsonReport(new HashSet<>(), fileManager.createdFiles());
+
+			JsonReport report = new JsonReport();
 			try {
-				
+
 				fileManager.mkOutputFile("report.json", writer -> {
 					report.dump(writer);
 					LOG.info("Report file dumped to report.json");
@@ -174,16 +175,16 @@ public class MichelsonLiSA {
 	}
 
 	private static boolean containSinks(String filePath) {
-		
+
 		try {
 			FileInputStream inputStream = new FileInputStream(filePath);
-		    String rawText = IOUtils.toString(inputStream);
-		    inputStream.close();
-		    return rawText.toUpperCase().contains("TRANSFER_TOKENS");	
+			String rawText = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+			inputStream.close();
+			return rawText.toUpperCase().contains("TRANSFER_TOKENS");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		return true;
 	}
 

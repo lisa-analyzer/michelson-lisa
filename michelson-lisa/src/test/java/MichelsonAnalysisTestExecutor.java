@@ -13,7 +13,7 @@ import org.apache.commons.io.FileUtils;
 
 import it.unive.lisa.AnalysisException;
 import it.unive.lisa.LiSA;
-import it.unive.lisa.LiSAConfiguration;
+import it.unive.lisa.conf.LiSAConfiguration;
 import it.unive.lisa.outputs.json.JsonReport;
 import it.unive.lisa.program.Program;
 import it.unive.michelsonlisa.frontend.MichelsonFrontEnd;

@@ -1,13 +1,13 @@
 import org.junit.Test;
 
 import it.unive.lisa.AnalysisSetupException;
-import it.unive.lisa.LiSAConfiguration;
-import it.unive.lisa.LiSAConfiguration.GraphType;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.MonolithicHeap;
 import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.types.InferredTypes;
+import it.unive.lisa.conf.LiSAConfiguration;
+import it.unive.lisa.conf.LiSAConfiguration.GraphType;
 import it.unive.michelsonlisa.analysis.numerical.sign.Sign;
 
 public class SmartContractsTest extends MichelsonAnalysisTestExecutor {

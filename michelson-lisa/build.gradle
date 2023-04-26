@@ -29,19 +29,16 @@ mainClassName = 'it.unive.michelsonlisa.MichelsonLiSA'
 dependencies {
     antlr 'org.antlr:antlr4:4.8-1'    
     testImplementation 'junit:junit:4.12'
-    implementation 'io.github.lisa-analyzer:lisa-core:0.1b7'
-    implementation 'io.github.lisa-analyzer:lisa-sdk:0.1b7'
-    implementation 'io.github.lisa-analyzer:lisa-imp:0.1b7'
+    implementation 'io.github.lisa-analyzer:lisa-sdk:0.1b8'
+    implementation 'io.github.lisa-analyzer:lisa-analyses:0.1b8'
+    implementation 'io.github.lisa-analyzer:lisa-program:0.1b8'
       
     implementation 'commons-cli:commons-cli:1.5.0'
     
     implementation 'javax.xml.bind:jaxb-api:2.2.4'
 	implementation 'com.sun.xml.bind:jaxb-impl:2.3.2'
 	implementation 'com.sun.xml.bind:jaxb-core:2.3.0.1'
-	
 }
-
-
 
 jar {
     manifest {
