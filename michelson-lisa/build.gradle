@@ -3,7 +3,7 @@ plugins {
     id 'application'
    	id 'antlr'
    	id 'eclipse'
-    id 'com.diffplug.spotless' version '5.15.0'
+    id 'com.diffplug.spotless' version '6.18.0'
     id 'checkstyle' 
 }
 
@@ -33,11 +33,11 @@ dependencies {
     implementation 'io.github.lisa-analyzer:lisa-sdk:0.1b7'
     implementation 'io.github.lisa-analyzer:lisa-imp:0.1b7'
       
-    implementation group: 'commons-cli', name: 'commons-cli', version: '1.5.0'
+    implementation 'commons-cli:commons-cli:1.5.0'
     
-    compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.2.4'
-	compile group: 'com.sun.xml.bind', name: 'jaxb-impl', version: '2.3.2'
-	compile group: 'com.sun.xml.bind', name: 'jaxb-core', version: '2.3.0.1'
+    implementation 'javax.xml.bind:jaxb-api:2.2.4'
+	implementation 'com.sun.xml.bind:jaxb-impl:2.3.2'
+	implementation 'com.sun.xml.bind:jaxb-core:2.3.0.1'
 	
 }
 
@@ -77,8 +77,8 @@ checkstyleTest.enabled = false
 checkstyleMain {
     finalizedBy 'checkstyleErrorMessage'
     reports {
-        xml.enabled false
-        html.enabled false
+        xml.required = false
+        html.required = false
     }
 }
 
@@ -107,13 +107,11 @@ spotless {
         // use the eclipse formatting with the one provided with the project
         eclipse().configFile(new File(rootProject.projectDir, 'spotless-formatting.xml'))
     
+        target 'src/**/*.java'    
         // ignore generated code
-        target project.fileTree(project.projectDir) {
-            include '**/*.java'
-            exclude '**/build/generated/**'
-            exclude '**/build/generated-src/**'
-            exclude '**/target/generated-sources/**'
-        }
+        targetExclude '**/build/generated/**/*.java'
+        targetExclude '**/build/generated-src/**/*.java'
+        targetExclude '**/target/generated-sources/**/*.java'
     }
     antlr4 {
         target 'src/*/antlr/**/*.g4'
