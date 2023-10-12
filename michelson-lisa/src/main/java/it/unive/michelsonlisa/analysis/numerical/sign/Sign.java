@@ -1,12 +1,11 @@
 package it.unive.michelsonlisa.analysis.numerical.sign;
 
 import it.unive.lisa.analysis.Lattice;
-import it.unive.lisa.analysis.SemanticDomain.Satisfiability;
 import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.SemanticOracle;
+import it.unive.lisa.analysis.lattices.Satisfiability;
 import it.unive.lisa.analysis.nonrelational.value.BaseNonRelationalValueDomain;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
-import it.unive.lisa.analysis.representation.DomainRepresentation;
-import it.unive.lisa.analysis.representation.StringRepresentation;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Identifier;
@@ -24,6 +23,8 @@ import it.unive.lisa.symbolic.value.operator.binary.ComparisonLt;
 import it.unive.lisa.symbolic.value.operator.ternary.TernaryOperator;
 import it.unive.lisa.symbolic.value.operator.unary.NumericNegation;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
+import it.unive.lisa.util.representation.StringRepresentation;
+import it.unive.lisa.util.representation.StructuredRepresentation;
 import it.unive.michelsonlisa.symblic.value.operator.binary.PhiOperator;
 
 /**
@@ -62,7 +63,7 @@ public class Sign implements BaseNonRelationalValueDomain<Sign> {
 	}
 
 	@Override
-	public DomainRepresentation representation() {
+	public StructuredRepresentation representation() {
 		if (isBottom())
 			return Lattice.bottomRepresentation();
 		if (isTop())
@@ -79,13 +80,18 @@ public class Sign implements BaseNonRelationalValueDomain<Sign> {
 		return new StringRepresentation(repr);
 	}
 
+	
+	
 	@Override
-	public Sign evalNullConstant(ProgramPoint pp) {
+	public Sign evalNullConstant(ProgramPoint pp, SemanticOracle oracle) throws SemanticException {
 		return top();
 	}
+	
+	
 
 	@Override
-	public Sign evalNonNullConstant(Constant constant, ProgramPoint pp) {
+	public Sign evalNonNullConstant(Constant constant, ProgramPoint pp, SemanticOracle oracle)
+			throws SemanticException {
 		if (constant.getValue() instanceof Integer) {
 			Integer i = (Integer) constant.getValue();
 			return i == 0 ? ZERO : i > 0 ? POS : NEG;
@@ -113,7 +119,7 @@ public class Sign implements BaseNonRelationalValueDomain<Sign> {
 	}
 
 	@Override
-	public Sign evalUnaryExpression(UnaryOperator operator, Sign arg, ProgramPoint pp) {
+	public Sign evalUnaryExpression(UnaryOperator operator, Sign arg, ProgramPoint pp, SemanticOracle oracle) {
 		if (operator == NumericNegation.INSTANCE)
 			if (arg.isPositive())
 				return NEG;
@@ -127,7 +133,7 @@ public class Sign implements BaseNonRelationalValueDomain<Sign> {
 	}
 
 	@Override
-	public Sign evalBinaryExpression(BinaryOperator operator, Sign left, Sign right, ProgramPoint pp) {
+	public Sign evalBinaryExpression(BinaryOperator operator, Sign left, Sign right, ProgramPoint pp, SemanticOracle oracle) {
 		if (operator instanceof AdditionOperator)
 			if (left.isZero())
 				return right;
@@ -213,9 +219,12 @@ public class Sign implements BaseNonRelationalValueDomain<Sign> {
 		return true;
 	}
 
+	
+	
+	
 	@Override
-	public Satisfiability satisfiesBinaryExpression(BinaryOperator operator, Sign left, Sign right,
-			ProgramPoint pp) {
+	public Satisfiability satisfiesBinaryExpression(BinaryOperator operator, Sign left, Sign right, ProgramPoint pp,
+			SemanticOracle oracle) throws SemanticException {
 		if (left.isTop() || right.isTop())
 			return Satisfiability.UNKNOWN;
 
@@ -259,71 +268,71 @@ public class Sign implements BaseNonRelationalValueDomain<Sign> {
 
 	@Override
 	public Satisfiability satisfiesTernaryExpression(TernaryOperator operator, Sign left, Sign middle, Sign right,
-			ProgramPoint pp) {
+			ProgramPoint pp, SemanticOracle oracle) throws SemanticException {
 		return Satisfiability.UNKNOWN;
 	}
 
 	@Override
 	public ValueEnvironment<Sign> assumeBinaryExpression(
 			ValueEnvironment<Sign> environment, BinaryOperator operator, ValueExpression left,
-			ValueExpression right, ProgramPoint src, ProgramPoint dest) throws SemanticException {
+			ValueExpression right, ProgramPoint src, ProgramPoint dest, SemanticOracle oracle) throws SemanticException {
 		if (operator == ComparisonEq.INSTANCE)
 			if (left instanceof Identifier)
-				environment = environment.assign((Identifier) left, right, src);
+				environment = environment.assign((Identifier) left, right, src, oracle);
 			else if (right instanceof Identifier)
-				environment = environment.assign((Identifier) right, left, src);
+				environment = environment.assign((Identifier) right, left, src, oracle);
 			else
 				return environment;
 		else if (operator == ComparisonGe.INSTANCE)
 			if (left instanceof Identifier) {
-				Sign rightSign = eval(right, environment, src);
+				Sign rightSign = eval(right, environment, src, oracle);
 				if (rightSign.isPositive())
-					environment = environment.assign((Identifier) left, right, src);
+					environment = environment.assign((Identifier) left, right, src, oracle);
 			} else if (right instanceof Identifier) {
-				Sign leftSign = eval(left, environment, src);
+				Sign leftSign = eval(left, environment, src, oracle);
 				if (leftSign.isNegative())
-					environment = environment.assign((Identifier) right, left, src);
+					environment = environment.assign((Identifier) right, left, src, oracle);
 			} else
 				return environment;
 		else if (operator == ComparisonLe.INSTANCE)
 			if (left instanceof Identifier) {
-				Sign rightSign = eval(right, environment, src);
+				Sign rightSign = eval(right, environment, src, oracle);
 				if (rightSign.isNegative())
-					environment = environment.assign((Identifier) left, right, src);
+					environment = environment.assign((Identifier) left, right, src, oracle);
 			} else if (right instanceof Identifier) {
-				Sign leftSign = eval(left, environment, src);
+				Sign leftSign = eval(left, environment, src, oracle);
 				if (leftSign.isPositive())
-					environment = environment.assign((Identifier) right, left, src);
+					environment = environment.assign((Identifier) right, left, src, oracle);
 			} else
 				return environment;
 		else if (operator == ComparisonLt.INSTANCE)
 			if (left instanceof Identifier) {
-				Sign rightSign = eval(right, environment, src);
+				Sign rightSign = eval(right, environment, src, oracle);
 				if (rightSign.isNegative() || rightSign.isZero())
 					// x < 0/-
 					environment = environment.assign((Identifier) left,
-							new Constant(right.getStaticType(), -1, right.getCodeLocation()), src);
+							new Constant(right.getStaticType(), -1, right.getCodeLocation()), src, oracle);
 			} else if (right instanceof Identifier) {
-				Sign leftSign = eval(left, environment, src);
+				Sign leftSign = eval(left, environment, src, oracle);
 				if (leftSign.isPositive() || leftSign.isZero())
 					// 0/+ < x
 					environment = environment.assign((Identifier) right,
-							new Constant(left.getStaticType(), 1, left.getCodeLocation()), src);
+							new Constant(left.getStaticType(), 1, left.getCodeLocation()), src, oracle);
 			} else
 				return environment;
 		else if (operator == ComparisonGt.INSTANCE)
 			if (left instanceof Identifier) {
-				Sign rightSign = eval(right, environment, src);
+				Sign rightSign = eval(right, environment, src, oracle);
 				if (rightSign.isPositive() || rightSign.isZero())
 					// x > +/0
 					environment = environment.assign((Identifier) left,
-							new Constant(right.getStaticType(), 1, right.getCodeLocation()), src);
+							new Constant(right.getStaticType(), 1, right.getCodeLocation()), src, oracle);
 			} else if (right instanceof Identifier) {
-				Sign leftSign = eval(left, environment, src);
+				Sign leftSign = eval(left, environment, src, oracle);
 				if (leftSign.isNegative() || leftSign.isZero())
 					// -/0 > x
 					environment = environment.assign((Identifier) right,
-							new Constant(left.getStaticType(), -1, right.getCodeLocation()), src);
+							new Constant(left.getStaticType(), -1, right.getCodeLocation()), src, oracle);
 			} else
 				return environment;
 

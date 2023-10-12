@@ -8,9 +8,9 @@ import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import it.unive.lisa.analysis.nonInterference.NonInterference;
+import it.unive.lisa.analysis.taint.Taint;
 import it.unive.lisa.program.cfg.statement.Statement;
-import it.unive.michelsonlisa.analysis.flow.ni.IntegrityNIDomain;
-import it.unive.michelsonlisa.analysis.flow.taint.TaintDomain;
 import it.unive.michelsonlisa.annotations.AnnotationSet;
 import it.unive.michelsonlisa.annotations.CodeAnnotation;
 import it.unive.michelsonlisa.annotations.MethodAnnotation;
@@ -69,8 +69,8 @@ public abstract class FlowAnalysisAnnotationSet extends AnnotationSet {
 		for (Entry<Kind, Set<Class<? extends Statement>>> entry : SOURCE_CODE_MEMBER_ANNOTATIONS.entrySet())
 			if (entry.getKey() == Kind.METHOD)
 				entry.getValue().forEach(mtd -> {
-						set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, mtd));
-						set.add(new MethodAnnotation(IntegrityNIDomain.LOW_ANNOTATION, mtd));
+						set.add(new MethodAnnotation(Taint.TAINTED_ANNOTATION, mtd));
+						set.add(new MethodAnnotation(NonInterference.LOW_CONF_ANNOTATION, mtd));
 					});
 
 		// sink
@@ -92,8 +92,8 @@ public abstract class FlowAnalysisAnnotationSet extends AnnotationSet {
 		for (Entry<Kind, Set<Class<? extends Statement>>> entry : SOURCE_CONSTRUCTORS_ANNOTATIONS.entrySet())
 			if (entry.getKey() == Kind.METHOD)
 				entry.getValue().forEach(mtd -> {
-						set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION,  mtd));
-						set.add(new MethodAnnotation(IntegrityNIDomain.LOW_ANNOTATION, mtd));
+						set.add(new MethodAnnotation(Taint.TAINTED_ANNOTATION,  mtd));
+						set.add(new MethodAnnotation(NonInterference.LOW_CONF_ANNOTATION, mtd));
 					});
 
 		// sinks
@@ -132,15 +132,15 @@ public abstract class FlowAnalysisAnnotationSet extends AnnotationSet {
 		for (Entry<Kind, Set<Class<? extends Statement>>> entry : SOURCE_CODE_MEMBER_ANNOTATIONS.entrySet())
 			if (entry.getKey() == Kind.METHOD)
 					entry.getValue().forEach(mtd -> {
-						set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, mtd));
-						set.add(new MethodAnnotation(IntegrityNIDomain.LOW_ANNOTATION, mtd));
+						set.add(new MethodAnnotation(Taint.TAINTED_ANNOTATION, mtd));
+						set.add(new MethodAnnotation(NonInterference.LOW_CONF_ANNOTATION, mtd));
 					});
 
 		for (Entry<Kind, Set<Class<? extends Statement>>> entry : SOURCE_CONSTRUCTORS_ANNOTATIONS.entrySet())
 			if (entry.getKey() == Kind.METHOD)
 				entry.getValue().forEach(mtd -> {
-						set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, mtd));
-						set.add(new MethodAnnotation(IntegrityNIDomain.LOW_ANNOTATION, mtd));
+						set.add(new MethodAnnotation(Taint.TAINTED_ANNOTATION, mtd));
+						set.add(new MethodAnnotation(NonInterference.LOW_CONF_ANNOTATION, mtd));
 					});
 
 		return set;

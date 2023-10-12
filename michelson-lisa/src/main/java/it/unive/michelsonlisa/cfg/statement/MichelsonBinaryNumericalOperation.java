@@ -3,23 +3,22 @@ package it.unive.michelsonlisa.cfg.statement;
 import java.util.HashSet;
 import java.util.Set;
 
-import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 
 public interface MichelsonBinaryNumericalOperation {
 
-	public default Set<Type> resultType(SymbolicExpression left, SymbolicExpression right) {
-		if (left.getRuntimeTypes(null).stream().noneMatch(Type::isNumericType)
-				&& right.getRuntimeTypes(null).stream().noneMatch(Type::isNumericType))
+	public default Set<Type> resultType(Set<Type> leftTypes, Set<Type> rightTypes) {
+		if (leftTypes.stream().noneMatch(Type::isNumericType)
+				&& rightTypes.stream().noneMatch(Type::isNumericType))
 			// if none have numeric types in them, we cannot really compute the
 			// result
 			return Set.of(Untyped.INSTANCE);
 
 		Set<Type> result = new HashSet<>();
-		for (Type t1 : left.getRuntimeTypes(null))
+		for (Type t1 : leftTypes)
 			if(t1.isNumericType() || t1.isUntyped())
-				for (Type t2 : right.getRuntimeTypes(null))
+				for (Type t2 : rightTypes)
 					if(t2.isNumericType() || t2.isUntyped())
 						if (t1.isUntyped() && t2.isUntyped())
 							// we do not really consider this case,

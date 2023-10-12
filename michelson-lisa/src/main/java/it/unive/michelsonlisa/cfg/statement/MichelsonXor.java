@@ -4,9 +4,6 @@ import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
-import it.unive.lisa.analysis.heap.HeapDomain;
-import it.unive.lisa.analysis.value.TypeDomain;
-import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
@@ -42,19 +39,20 @@ public class MichelsonXor extends BinaryExpression implements StackConsumer, Sta
 	}
 	
 	@Override
-	public <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
-			InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-			SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
+	public <A extends AbstractState<A>> AnalysisState<A> fwdBinarySemantics(InterproceduralAnalysis<A> interprocedural,
+			AnalysisState<A> state, SymbolicExpression left, SymbolicExpression right, StatementStore<A> expressions)
 			throws SemanticException {
-		AnalysisState<A, H, V, T> result = state.top();
-		for (Type leftType : left.getRuntimeTypes(null))
-			for (Type rightType : right.getRuntimeTypes(null))
+		AnalysisState<A> result = state.top();
+		
+		
+		for (Type leftType : state.getState().getRuntimeTypesOf(left, this, state.getState()))
+			for (Type rightType : state.getState().getRuntimeTypesOf(right, this, state.getState()))
 				if ((leftType.isUntyped() || (leftType.isNumericType() && leftType.asNumericType().isIntegral())) &&
 						(rightType.isUntyped()
 								|| (rightType.isNumericType() && rightType.asNumericType().isIntegral()))) {
 					// TODO: LiSA has not symbolic expression handling bitwise,
 					// return top at the moment
-					AnalysisState<A, H, V, T> tmp = state
+					AnalysisState<A> tmp = state
 							.smallStepSemantics(new PushAny(resultType(leftType, rightType), getLocation()), this);
 					result = result.lub(tmp);
 				}

@@ -23,13 +23,13 @@ import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.MonolithicHeap;
 import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
+import it.unive.lisa.analysis.taint.Taint;
 import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.conf.LiSAConfiguration;
 import it.unive.lisa.conf.LiSAConfiguration.GraphType;
 import it.unive.lisa.outputs.json.JsonReport;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.util.file.FileManager;
-import it.unive.michelsonlisa.analysis.flow.taint.TaintDomain;
 import it.unive.michelsonlisa.analysis.numerical.sign.Sign;
 import it.unive.michelsonlisa.annotations.sets.CrossContractInvokingAnnotationSet;
 import it.unive.michelsonlisa.checkers.TaintChecker;
@@ -103,7 +103,7 @@ public class MichelsonLiSA {
 				exit(conf);
 			conf.abstractState = new SimpleAbstractState<>(
 					new MonolithicHeap(),
-					new ValueEnvironment<>(new TaintDomain()),
+					new ValueEnvironment<>(new Taint()),
 					new TypeEnvironment<>(new InferredTypes()));
 			conf.semanticChecks.add(new TaintChecker());
 

@@ -6,9 +6,6 @@ import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
-import it.unive.lisa.analysis.heap.HeapDomain;
-import it.unive.lisa.analysis.value.TypeDomain;
-import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
@@ -35,11 +32,10 @@ public class MichelsonHash_key extends it.unive.lisa.program.cfg.statement.Unary
 		if(!(type instanceof MichelsonKeyType || type.equals(Untyped.INSTANCE)))
 			throw new IllegalArgumentException("The value of type "+type+" cannot used in HASH_KEY");
 	}
-	
+
 	@Override
-	public <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
-			InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-			SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
+	public <A extends AbstractState<A>> AnalysisState<A> fwdUnarySemantics(InterproceduralAnalysis<A> interprocedural,
+			AnalysisState<A> state, SymbolicExpression expr, StatementStore<A> expressions) throws SemanticException {
 		UnaryOperator opt = new UnaryOperator() {
 
 			@Override
@@ -48,5 +44,6 @@ public class MichelsonHash_key extends it.unive.lisa.program.cfg.statement.Unary
 			}
 		};
 		return state.smallStepSemantics(new UnaryExpression(MichelsonKeyHashType.INSTANCE, expr, opt, getLocation()), this);
+	
 	}
 }
