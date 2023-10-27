@@ -18,6 +18,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import it.unive.lisa.AnalysisSetupException;
+import it.unive.lisa.DefaultConfiguration;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.MonolithicHeap;
@@ -79,11 +80,10 @@ public class MichelsonLiSA {
 
 		String analysisChoice = cmd.getOptionValue("analysis");
 
-		LiSAConfiguration conf = new LiSAConfiguration();
+		LiSAConfiguration conf = new DefaultConfiguration();
 
 		conf.workdir = outputDir;
 		conf.jsonOutput = true;
-		conf.optimize = false;// need to set conf.hotspots if optimization is turned on
 
 		conf.analysisGraphs = cmd.hasOption(dump_opt) ? GraphType.HTML_WITH_SUBNODES : GraphType.NONE;
 

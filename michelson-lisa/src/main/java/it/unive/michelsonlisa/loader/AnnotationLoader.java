@@ -65,7 +65,7 @@ public class AnnotationLoader implements Loader {
 
 	@Override
 	public void load(Program program) {
-		Collection<CodeMember> codeMembers = program.getCodeMembers();
+		Collection<CodeMember> codeMembers = program.getCodeMembersRecursively();
 	//	Collection<NativeCFG> constructs = program.getAllCFGs();
 
 		for (CodeMember cm : codeMembers)

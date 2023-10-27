@@ -15,6 +15,7 @@ import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 import it.unive.michelsonlisa.cfg.statement.interfaces.StackConsumer;
 import it.unive.michelsonlisa.cfg.statement.interfaces.StackProducer;
+import it.unive.michelsonlisa.cfg.type.MichelsonAddressType;
 import it.unive.michelsonlisa.cfg.type.MichelsonMutezType;
 import it.unive.michelsonlisa.cfg.type.MichelsonOperationType;
 import it.unive.michelsonlisa.cfg.type.composite.MichelsonContractType;
@@ -30,7 +31,7 @@ public class MichelsonTransfer_tokens extends NaryExpression implements StackCon
 	private void checkParameterTypes(Type t2, Type t3) {
 		if(!(t2 instanceof MichelsonMutezType || t2.equals(Untyped.INSTANCE)))
 			throw new IllegalArgumentException("The value of type "+t2+" cannot used in TRANSFER_TOKENS");
-		if(!(t3 instanceof MichelsonContractType || t3.equals(Untyped.INSTANCE)))
+		if(!(t3 instanceof MichelsonContractType || t3 instanceof MichelsonAddressType|| t3.equals(Untyped.INSTANCE)))
 			throw new IllegalArgumentException("The value of type "+t3+" cannot used in TRANSFER_TOKENS");
 	}
 
